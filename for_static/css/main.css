@@ -1,0 +1,35 @@
+*,
+*:before,
+*:after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.user-panel {
+    display: flex;
+    align-items: center;
+}
+
+.exit {
+    margin-left: 30px;
+
+}
+
+.requests {
+    width: 100%;
+    max-height: 300px;
+    overflow: scroll;
+}
+
+.form-add {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.template-input {
+    width: 400px;
+    display: inline-block;
+}
+

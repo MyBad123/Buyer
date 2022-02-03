@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="{% static 'css/new_user.css' %}" rel="stylesheet">
+</head>
+<body>
+<div class="main">
+    <div class="bg-secondary menu">
+        <p class="menu_item menu_users">пользователи</p>
+        <p class="menu_item menu_db">база данных</p>
+        <p class="menu_item menu_exit">выход</p>
+    </div>
+    <div class="content">
+        <div class="auth_form">
+            <div class="content-form">
+                <p class="reg_word">Добавить нового пользователя</p>
+                <div class="container_input">
+                    <input type="text" class="form-control input_login" placeholder="Логин">
+                    <span class="span_login">Почта</span>
+                </div>
+                <div class="container_input">
+                    <input type="password" class="form-control input_password" placeholder="Пароль">
+                    <span class="span_password">Пароль</span>
+                </div>
+                <p class="btn btn-primary auth_btn">Создать</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        //focus and blur inputs
+        document.querySelector(".input_login").addEventListener('focus', () => {
+            document.querySelector(".span_login").style.opacity = "1";
+            document.querySelector(".span_login").style.color = "#000";
+            document.querySelector(".span_login").innerHTML = "Почта";
+        })
+        document.querySelector(".input_login").addEventListener('blur', () => {
+            let inputValue = document.querySelector(".span_login").value;
+            if (inputValue === "") {
+                document.querySelector(".span_login").style.opacity = "0";
+            }
+        })
+
+        document.querySelector(".input_password").addEventListener('focus', () => {
+            document.querySelector(".span_password").style.opacity = "1";
+        })
+        document.querySelector(".input_password").addEventListener('blur', () => {
+            let inputValue = document.querySelector(".span_login").value;
+            if (inputValue === "") {
+                document.querySelector(".span_password").style.opacity = "0";
+            }
+        })
+
+
+
+        //click to btn
+        document.querySelector(".auth_btn").addEventListener('click', async (e) => {
+            document.querySelector(".auth_btn").innerHTML = "Загрузка";
+            document.querySelector(".auth_btn").style.pointerEvents = 'none';
+
+            let request = await fetch('/user-add/', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json;charset=utf-8",
+                    "X-CSRFToken": csrftoken
+                },
+                body: JSON.stringify({
+                    "login": document.querySelector(".input_login").value,
+                    "password": document.querySelector(".input_password").value
+                })
+            })
+            let response = await request.json();
+
+            if (request.ok) {
+                console.log("wow");
+                document.querySelector(".input_login").value = "";
+                document.querySelector(".input_password").value = "";
+            }
+            else {
+                document.querySelector(".span_login").innerHTML = "Такой логин уже существует";
+                document.querySelector(".span_login").style.color = "red";
+            }
+
+            setTimeout(() => {
+                document.querySelector(".auth_btn").style.pointerEvents = '';
+                document.querySelector(".auth_btn").innerHTML = "Создать";
+            }, 1000);
+        })
+
+        //nav
+        document.querySelector(".menu_users").onclick = () => {
+            window.location.href = "/admin/";
+        }
+        document.querySelector(".menu_db").onclick = () => {
+            window.location.href = "/db/";
+        }
+        document.querySelector(".menu_exit").onclick = async () => {
+            let request = await fetch("/exit/");
+            window.location.href = "/";
+        }
+    </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+
+</body>
+</html>
