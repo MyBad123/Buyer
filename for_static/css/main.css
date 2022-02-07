@@ -11,6 +11,10 @@
     align-items: center;
 }
 
+.new-request {
+    margin-left: 30px;
+}
+
 .exit {
     margin-left: 30px;
 

@@ -212,3 +212,7 @@ ENV/
 /site
 
 # End of https://www.gitignore.io/api/macos,linux,django,python,pycharm
+
+# for migrations
+/app/migrations
+!/app/migrations/__init__.py
