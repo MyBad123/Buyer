@@ -26,7 +26,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app'
+    'app',
+    'request'
 ]
 
 MIDDLEWARE = [
@@ -116,3 +117,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'for_static')
 ]
+
+# celery settings
+CELERY_BROKER_URL = 'amqp://gena:Qwer1234!@localhost:5672/buyer'

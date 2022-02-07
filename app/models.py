@@ -9,3 +9,6 @@ class RequestModel(models.Model):
     date_creation = models.DateField()
     status = models.CharField(max_length=50)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'request'

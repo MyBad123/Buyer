@@ -16,7 +16,9 @@ from ..models import (
 from ..utils import (
     post_and_auth
 )
-
+from request.tasks import (
+    add
+)
 
 class AuthMethods:
     @staticmethod
@@ -136,6 +138,9 @@ class UserMethods:
                 user=request.user
             )
             new_date = str(new_request_object.date_creation)
+
+            # start celery task
+            add.delay(new_request_object.id)
             return redirect('/user-new-request-page/')
         else:
             return redirect('/user-new-request-page/')
