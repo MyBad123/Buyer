@@ -27,12 +27,13 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = '__all__'
 
+
 class RequestsSerializer(serializers.ModelSerializer):
     user = UserSerializer()
 
     class Meta:
         model = RequestModel
-        fields = ['name', 'date_creation', 'status', 'user']
+        fields = ['name', 'datetime_on_search', 'datetime_on_tree', 'user']
 
 
 class RequestsTableSerializer(serializers.ModelSerializer):
@@ -42,7 +43,14 @@ class RequestsTableSerializer(serializers.ModelSerializer):
     def get_data(serializer):
         data = []
         for i in serializer.data:
-            date = i.get('date_creation')
+            # get date
+            date = i.get('datetime_on_search')
+
+            # get status
+            if i.get('datetime_on_tree') is None:
+                status = 'on search'
+            else:
+                status = 'on analise'
             data.append({
                 'name': i.get('name'),
                 'date_creation': f'{ date[8:10] }.{ date[5:7] }.{ date[0:4] }',

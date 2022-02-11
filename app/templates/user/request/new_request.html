@@ -31,6 +31,7 @@
 
 <div class="container">
     <form method="post" action="/user-new-request/" method="post">
+        {% csrf_token %}
 
         <div class="mt-4 my-3 p-3 bg-body rounded shadow-sm">
             <div class="row mb-3 align-items-center">
@@ -39,11 +40,11 @@
                 </div>
                 <div class="col-12 col-md-6">
                     {% if error %}
-                        <input class="form-control is-invalid input-request" placeholder="заявка" type="text" name="login">
+                        <input class="form-control is-invalid input-request" placeholder="заявка" type="text" name="request">
                         <span class="my-span" style="color: #dc3545">введите корректную заявку</span>
                     {% else %}
 
-                        <input class="form-control input-request" placeholder="заявка" type="text" name="login">
+                        <input class="form-control input-request" placeholder="заявка" type="text" name="request">
                     {% endif %}
                 </div>
             </div>

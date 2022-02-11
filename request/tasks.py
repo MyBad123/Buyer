@@ -9,6 +9,7 @@ from app.models import RequestModel
 def add(id):
     sleep(10)
 
+    return id
     request_object = RequestModel.objects.get(
         id=id
     )

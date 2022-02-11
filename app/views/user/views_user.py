@@ -95,7 +95,7 @@ class UserMethods:
             return redirect('/admin/')
         else:
             # get all request objects
-            request_objects = RequestModel.objects.all().order_by('date_creation', )
+            request_objects = RequestModel.objects.all().order_by('datetime_on_search', 'datetime_on_tree')
 
             # if request_objects is empty
             if len(request_objects) == 0:
@@ -118,26 +118,28 @@ class UserMethods:
         elif not request.user.is_authenticated:
             return redirect('/')
         else:
-            return render(request, 'user/new_request/new_request.html', context={
+            return render(request, 'user/request/new_request.html', context={
                 'error': False
             })
 
     @staticmethod
     def new_request(request):
+        print(request.POST)
         if not post_and_auth(request):
             return redirect('/')
 
         new_request = request.POST.get('request', None)
         if new_request == '':
-            return render(request, 'user/new_request/new_request.html', context={
+            print(1)
+            return render(request, 'user/request/new_request.html', context={
                 'error': True
             })
 
         if new_request is not None:
             new_request_object = RequestModel.objects.create(
                 name=str(new_request),
-                date_creation=datetime.date.today(),
-                status='new',
+                datetime_on_search=datetime.date.today(),
+                datetime_on_tree=None,
                 user=request.user
             )
             new_date = str(new_request_object.date_creation)
@@ -146,7 +148,8 @@ class UserMethods:
             add.delay(new_request_object.id)
             return redirect('/user-thanks/')
         else:
-            return render(request, 'user/new_request/new_request.html', context={
+            print(2)
+            return render(request, 'user/request/new_request.html', context={
                 'error': True
             })
 

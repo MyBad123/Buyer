@@ -6,9 +6,11 @@ class RequestModel(models.Model):
     """Model for user's request."""
 
     name = models.CharField(max_length=200)
-    date_creation = models.DateField()
-    status = models.CharField(max_length=50)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    datetime_on_search = models.DateTimeField(null=True, blank=True)
+    datetime_on_tree = models.DateTimeField(null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
 
     class Meta:
         db_table = 'request'
+
+
