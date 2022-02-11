@@ -1,8 +1,9 @@
 from django.urls import path
 
-from .views.views_db import *
-from .views.views_admin import *
-from .views.views_user import *
+from .views.user.views_user import *
+from .views.user.view_thanks import *
+from .views.db.views_db import *
+from .views.admin.views_admin import *
 
 urlpatterns = [
     path('admin/', AdminMethods.get_admin_page),
@@ -19,5 +20,13 @@ urlpatterns = [
     path('exit/', AuthMethods.exit),
     path('user-page/', UserMethods.get_users_page),
     path('user-new-request-page/', UserMethods.new_request_page),
-    path('user-new-request/', UserMethods.new_request)
+    path('user-new-request/', UserMethods.new_request),
+    # path('user-thanks/', )
 ]
+
+'''
+AdminMethods
+DbMethods
+AuthMethods
+UserMethods
+'''

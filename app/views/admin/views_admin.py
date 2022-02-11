@@ -4,13 +4,13 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 
-from ..serializers import (
+from app.serializers import (
     AuthSerizliser,
     UpdateSerialize,
     DeleteSerializer,
 )
-from ..utils import (
-    post_and_auth
+from app.utils import (
+    post_and_admin
 )
 
 
@@ -20,7 +20,6 @@ class AdminMethods:
         """get admin page"""
 
         users = User.objects.all().exclude(username='gena').order_by('id').filter(is_superuser=False)
-        print(request.user)
         if request.user.is_superuser:
             return render(request, 'admin.html', context={
                 'users': users
@@ -28,12 +27,12 @@ class AdminMethods:
         elif not request.user.is_authenticated:
             return redirect('/')
         else:
-            redirect('/app/user-page/')
+            return redirect('/app/user-page/')
 
     @staticmethod
     def get_new_user_page(request):
         if request.user.is_superuser:
-            return render(request, 'new_user.html')
+            return render(request, 'admin/new_user.html')
         else:
             return redirect("/app/user-page/")
 
@@ -41,7 +40,7 @@ class AdminMethods:
     def new_user(request):
         """add new user in db"""
 
-        if not post_and_auth(request):
+        if not post_and_admin(request):
             return JsonResponse(data={
                 "error": "1"
             }, status=400)
@@ -85,7 +84,7 @@ class AdminMethods:
             return redirect('/app/admin/')
 
         if request.user.is_superuser:
-            return render(request, 'update_user.html', context={
+            return render(request, 'admin/update_user.html', context={
                 "login": user.username
             })
         else:
@@ -93,7 +92,7 @@ class AdminMethods:
 
     @staticmethod
     def update_user(request):
-        if not post_and_auth(request):
+        if not post_and_admin(request):
             return JsonResponse(data={
                 "error": "1"
             }, status=400)
@@ -151,7 +150,6 @@ class AdminMethods:
 
         # serialize data
         if not DeleteSerializer(data=data).is_valid():
-            print(3)
             return JsonResponse(data={
                 "error": "3"
             }, status=400)

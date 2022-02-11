@@ -5,16 +5,18 @@ from django.contrib.sessions.models import Session
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 
-
-from ..serializers import (
-    AuthSerizliser,
+from app.serializers import (
+    AuthSerizliser
 )
 
 
 class DbMethods:
     @staticmethod
     def get_db_page(request):
-        return render(request, 'db.html')
+        return render(request, 'db/db.html', context={
+            'login': False,
+            'password': False
+        })
 
     @staticmethod
     def delete(request):
@@ -33,14 +35,21 @@ class DbMethods:
             })
 
         # get data from request
-        try:
-            data = json.loads(request.body)
-        except:
-            data = {}
+        data = {
+            'login': request.POST.get('login', None),
+            'password': request.POST.get('password', None)
+        }
 
-        if not AuthSerizliser(data=data).is_valid():
-            return JsonResponse(data={
-                'error': '2'
+        if data.get('login') is None or data.get('login') == '':
+            return render(request, 'db/db.html', context={
+                'login': True,
+                'password': False
+            })
+
+        if data.get('password') is None or data.get('password') == '':
+            return render(request, 'db/db.html', context={
+                'login': False,
+                'password': True
             })
 
         # delete data
@@ -60,4 +69,7 @@ class DbMethods:
                 username=str(i) + '@gmail.com',
                 password='Pass@word1'
             )
-        return JsonResponse(data={}, status=200)
+        return render(request, 'db/db.html', context={
+            'login': False,
+            'password': False
+        })

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+</head>
+<body>
+<nav b-3agnm270m7="" class="navbar navbar-expand-lg navbar-dark bg-dark bg-gradient">
+    <div b-3agnm270m7="" class="container">
+        <a class="navbar-brand pt-0 pb-1" href="/">Buyer</a>
+        <div b-3agnm270m7="" class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
+            <ul b-3agnm270m7="" class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li b-3agnm270m7="" class="nav-item">
+                    <a class="nav-link active" href="/user-new-request-page/">Новая заявка</a>
+                </li>
+                <li b-3agnm270m7="" class="nav-item">
+                    <a class="nav-link active" href="/db/">База данных</a>
+                </li>
+                <li b-3agnm270m7="" class="nav-item">
+                    <span class="nav-link active exit" >Выйти</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <form method="post" action="/user-new-request/" method="post">
+
+        <div class="mt-4 my-3 p-3 bg-body rounded shadow-sm">
+            <div class="row mb-3 align-items-center">
+                <div class="col-12 col-md-3">
+                    <label class="col-form-label p-0" for="Name">Заявка</label>
+                </div>
+                <div class="col-12 col-md-6">
+                    {% if error %}
+                        <input class="form-control is-invalid input-request" placeholder="заявка" type="text" name="login">
+                        <span class="my-span" style="color: #dc3545">введите корректную заявку</span>
+                    {% else %}
+
+                        <input class="form-control input-request" placeholder="заявка" type="text" name="login">
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row pt-2">
+                <div class="col-12 col-md-9 text-center text-md-end">
+                    <button type="submit" class="btn btn-primary" >Создать</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+
+     <script>
+         //exit from profile
+         document.querySelector(".exit").onclick = async () => {
+             let request = await fetch('/exit/');
+             window.location.href = "/";
+         }
+
+         document.querySelector('.input-request').onfocus = () => {
+             try {
+                 document.querySelector('.my-span').style.opacity = '0';
+                 document.querySelector('.input-request').classList.remove('is-invalid');
+             } catch {}
+         }
+     </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+
+</body>
+</html>

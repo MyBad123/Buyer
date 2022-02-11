@@ -68,8 +68,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'b2b',
-        'USER': 'guest',
-        'PASSWORD': 'Pass@word!',
+        'USER': 'buyer_user',
+        'PASSWORD': 'KJNjkjnkerKJNEKRF3456',
         'HOST': 'localhost',
         'PORT': ''
     }
@@ -120,3 +120,6 @@ STATICFILES_DIRS = [
 
 # celery settings
 CELERY_BROKER_URL = 'amqp://gena:Qwer1234!@localhost:5672/buyer'
+
+
+

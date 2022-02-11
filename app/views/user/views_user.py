@@ -5,20 +5,21 @@ from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 
-from ..serializers import (
+from app.serializers import (
     AuthSerizliser,
     RequestsTableSerializer,
     RequestsSerializer
 )
-from ..models import (
+from app.models import (
     RequestModel
 )
-from ..utils import (
+from app.utils import (
     post_and_auth
 )
 from request.tasks import (
     add
 )
+
 
 class AuthMethods:
     @staticmethod
@@ -26,7 +27,7 @@ class AuthMethods:
         """view for get auth page"""
 
         if not request.user.is_authenticated:
-            return render(request, 'auth.html', context={})
+            return render(request, 'user/auth/auth.html', context={})
         elif request.user.is_superuser:
             return redirect('/admin/')
         else:
@@ -102,7 +103,7 @@ class UserMethods:
             else:
                 request_empty = False
 
-            return render(request, 'main.html', context={
+            return render(request, 'user/main/main.html', context={
                 'user': request.user,
                 'requests': RequestsTableSerializer.get_data(
                     RequestsSerializer(request_objects, many=True)
@@ -117,18 +118,20 @@ class UserMethods:
         elif not request.user.is_authenticated:
             return redirect('/')
         else:
-            return render(request, 'new_request.html')
+            return render(request, 'user/new_request/new_request.html', context={
+                'error': False
+            })
 
     @staticmethod
     def new_request(request):
         if not post_and_auth(request):
-            return JsonResponse(data={
-                "error": "1"
-            }, status=400)
+            return redirect('/')
 
         new_request = request.POST.get('request', None)
         if new_request == '':
-            return redirect('/user-new-request-page/')
+            return render(request, 'user/new_request/new_request.html', context={
+                'error': True
+            })
 
         if new_request is not None:
             new_request_object = RequestModel.objects.create(
@@ -141,6 +144,10 @@ class UserMethods:
 
             # start celery task
             add.delay(new_request_object.id)
-            return redirect('/user-new-request-page/')
+            return redirect('/user-thanks/')
         else:
-            return redirect('/user-new-request-page/')
+            return render(request, 'user/new_request/new_request.html', context={
+                'error': True
+            })
+
+
