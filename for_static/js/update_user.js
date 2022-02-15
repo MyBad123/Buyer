@@ -80,14 +80,8 @@ document.querySelector(".auth_btn").addEventListener('click', async () => {
 
 })
 
-//nav
-document.querySelector(".menu_users").onclick = () => {
-    window.location.href = "/admin/";
-}
-document.querySelector(".menu_db").onclick = () => {
-    window.location.href = "/db/";
-}
-document.querySelector(".menu_exit").onclick = async () => {
+
+document.querySelector(".exit").onclick = async () => {
     let request = await fetch("/exit/");
     window.location.href = "/";
 }

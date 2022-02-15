@@ -1,8 +1,8 @@
 def post_and_admin(request):
     if request.method == 'POST' and request.user.is_superuser:
-        return False
-    else:
         return True
+    else:
+        return False
 
 
 def post_and_auth(request):

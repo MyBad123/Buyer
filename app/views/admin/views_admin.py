@@ -21,7 +21,7 @@ class AdminMethods:
 
         users = User.objects.all().exclude(username='gena').order_by('id').filter(is_superuser=False)
         if request.user.is_superuser:
-            return render(request, 'admin.html', context={
+            return render(request, 'admin/admin.html', context={
                 'users': users
             })
         elif not request.user.is_authenticated:
@@ -53,7 +53,6 @@ class AdminMethods:
 
         # control validation for data
         if not AuthSerizliser(data=data).is_valid():
-            print(3)
             return JsonResponse(data={
                 "error": "3"
             }, status=400)

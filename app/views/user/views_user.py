@@ -142,7 +142,6 @@ class UserMethods:
                 datetime_on_tree=None,
                 user=request.user
             )
-            new_date = str(new_request_object.date_creation)
 
             # start celery task
             add.delay(new_request_object.id)
