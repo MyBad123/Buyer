@@ -1,13 +1,11 @@
-import json
-
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.http import JsonResponse
 
-from app.serializers import (
-    AuthSerizliser
-)
+# for exceptions
+from django.db.models.deletion import ProtectedError
+from django.db.utils import IntegrityError
 
 
 class DbMethods:
@@ -21,7 +19,11 @@ class DbMethods:
     @staticmethod
     def delete(request):
         for i in User.objects.all():
-            i.delete()
+            try:
+                i.delete()
+            except ProtectedError:
+                pass
+
         for i in Session.objects.all():
             i.delete()
 
@@ -54,22 +56,37 @@ class DbMethods:
 
         # delete data
         for i in User.objects.all():
-            i.delete()
+            try:
+                i.delete()
+            except ProtectedError:
+                pass
+
         for i in Session.objects.all():
             i.delete()
 
-        User.objects.create_superuser(
-            username=data.get('login'),
-            email=data.get('login') + '@gmail.com',
-            password=data.get('password')
-        )
+        # create superuser and add his to model
+        try:
+            User.objects.create_superuser(
+                username=data.get('login'),
+                email=data.get('login') + '@gmail.com',
+                password=data.get('password')
+            )
+        except IntegrityError:
+            pass
 
         for i in range(0, 50):
-            User.objects.create_user(
-                username=str(i) + '@gmail.com',
-                password='Pass@word1'
-            )
+            try:
+                User.objects.create_user(
+                    username=str(i) + '@gmail.com',
+                    password='Pass@word1'
+                )
+            except IntegrityError:
+                pass
         return render(request, 'db/db.html', context={
             'login': False,
             'password': False
         })
+
+
+
+

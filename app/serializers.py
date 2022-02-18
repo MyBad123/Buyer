@@ -33,7 +33,7 @@ class RequestsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RequestModel
-        fields = ['name', 'datetime_on_search', 'datetime_on_tree', 'user']
+        fields = ['name', 'datetime_on_search', 'datetime_on_tree', 'datetime_on_finish', 'user']
 
 
 class RequestsTableSerializer(serializers.ModelSerializer):
@@ -54,7 +54,7 @@ class RequestsTableSerializer(serializers.ModelSerializer):
             data.append({
                 'name': i.get('name'),
                 'date_creation': f'{ date[8:10] }.{ date[5:7] }.{ date[0:4] }',
-                'status': i.get('status'),
+                'status': status,
                 'user': i.get('user').get('username')
             })
 

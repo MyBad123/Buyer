@@ -140,6 +140,7 @@ class UserMethods:
                 name=str(new_request),
                 datetime_on_search=datetime.date.today(),
                 datetime_on_tree=None,
+                datetime_on_finish=None,
                 user=request.user
             )
 
@@ -147,7 +148,6 @@ class UserMethods:
             add.delay(new_request_object.id)
             return redirect('/user-thanks/')
         else:
-            print(2)
             return render(request, 'user/request/new_request.html', context={
                 'error': True
             })
