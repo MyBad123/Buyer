@@ -5,5 +5,9 @@ document.querySelector(".exit").onclick = async () => {
     window.location.href = "/";
 }
 
-
+for (let i of document.querySelectorAll('.item')) {
+    i.onclick = (e) => {
+        e.target.closest('.item').querySelector('.item-ref')
+    }
+}
 

@@ -95,7 +95,9 @@ class UserMethods:
             return redirect('/admin/')
         else:
             # get all request objects
-            request_objects = RequestModel.objects.all().order_by('datetime_on_search', 'datetime_on_tree')
+            request_objects = RequestModel.objects.all().order_by(
+                'datetime_created'
+            )
 
             # if request_objects is empty
             if len(request_objects) == 0:
