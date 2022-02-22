@@ -81,7 +81,7 @@ class AuthMethods:
     @staticmethod
     def exit(request):
         logout(request)
-        return JsonResponse(data={}, status=200)
+        return redirect('/')
 
 
 class UserMethods:

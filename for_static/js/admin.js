@@ -44,9 +44,3 @@ for (let i of document.querySelectorAll(".btn_change")) {
         window.location.href = "/update-user-page/?id=" + valueId;
     })
 }
-
-//exit from admin panel
-document.querySelector(".exit").onclick = async () => {
-    let request = await fetch("/exit/");
-    window.location.href = "/";
-}

@@ -92,7 +92,14 @@ class WorkWithDataForSeo:
                 break
 
     def write_results_to_db_google(self):
+        for_index = 0
         for i in self.response_google.json().get('tasks')[0].get('result')[0].get('items'):
+
+            if for_index == 10:
+                break
+            else:
+                for_index += 1
+
             ResultModel.objects.create(
                 request=self.request_object,
                 system='google',
@@ -102,7 +109,14 @@ class WorkWithDataForSeo:
         self.change_datetime('datetime_google_finished')
 
     def write_results_to_db_yandex(self):
+        for_index = 0
         for i in self.response_yandex.json().get('tasks')[0].get('result')[0].get('items'):
+
+            if for_index == 10:
+                break
+            else:
+                for_index += 1
+
             ResultModel.objects.create(
                 request=self.request_object,
                 system='yandex',
@@ -132,3 +146,5 @@ def add(id_object):
     class_search.write_results_to_db_yandex()
 
     wow.delay(id_object)
+
+

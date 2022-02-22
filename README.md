@@ -46,6 +46,22 @@ mkdir app/migrations
 touch app/migrations/__init__.py
 ```
 Recreate db:
+```sh
+sudo -u postgres psql
+DROP DATABASE b2b;
+CREATE DATABASE b2b;
+GRANT ALL PRIVILEGES ON DATABASE b2b TO buyer_user;
+\q
+```
+Commands for migrations:
+```sh
+python3 maange.py makemigrations
+python3 manage.py migrate
+```
+# Run celery
+```sh
+celery -A Buyer worker -l INFO
+```
 
 # Flake8
 [Flake8](https://flake8.pycqa.org/en/latest/#) is is a great toolkit for checking your code base against coding style (PEP8), programming errors (like “library imported but unused” and “Undefined name”) and to check cyclomatic complexity.

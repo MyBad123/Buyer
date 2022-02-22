@@ -81,10 +81,6 @@ document.querySelector(".auth_btn").addEventListener('click', async () => {
 })
 
 
-document.querySelector(".exit").onclick = async () => {
-    let request = await fetch("/exit/");
-    window.location.href = "/";
-}
 
 
 
