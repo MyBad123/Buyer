@@ -20,6 +20,7 @@ class RequestModel(models.Model):
         db_table = 'requests'
 
 
+
 class ResultModel(models.Model):
     """Models for urls of request"""
 

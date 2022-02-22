@@ -121,37 +121,39 @@ class UserMethods:
             return redirect('/')
         else:
             return render(request, 'user/request/new_request.html', context={
-                'error': False
+                'error_name': False,
+                'error_words': False
             })
 
     @staticmethod
     def new_request(request):
-        print(request.POST)
         if not post_and_auth(request):
             return redirect('/')
 
         new_request = request.POST.get('request', None)
-        if new_request == '':
-            print(1)
+        if (new_request == '') or (type(new_request) != str):
             return render(request, 'user/request/new_request.html', context={
-                'error': True
+                'error': True,
+                'error_words': False
             })
 
-        if new_request is not None:
-            new_request_object = RequestModel.objects.create(
-                name=str(new_request),
-                datetime_on_search=datetime.date.today(),
-                datetime_on_tree=None,
-                datetime_on_finish=None,
-                user=request.user
-            )
-
-            # start celery task
-            add.delay(new_request_object.id)
-            return redirect('/user-thanks/')
-        else:
+        words = request.POST.get('words', None)
+        if (words == '') or (type(words) != str):
             return render(request, 'user/request/new_request.html', context={
-                'error': True
+                'error': False,
+                'error_words': True
             })
+
+        new_request_object = RequestModel.objects.create(
+            name=new_request,
+            words=words,
+            datetime_created=datetime.datetime.now(),
+            user=request.user
+        )
+        add.delay(new_request_object.id)
+
+        return redirect('/user-thanks/')
+
+
 
 
