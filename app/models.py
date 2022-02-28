@@ -27,7 +27,25 @@ class ResultModel(models.Model):
     request = models.ForeignKey(RequestModel, on_delete=models.CASCADE)
     system = models.CharField(max_length=20)
     url = models.TextField()
+    status = models.BooleanField(default=False)
+    mail = models.EmailField(null=True, blank=True, default=None)
 
     class Meta:
         db_table = 'search_engine_results'
+
+
+class MessageModel(models.Model):
+    """Model for email message with company"""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    result = models.ForeignKey(ResultModel, on_delete=models.CASCADE)
+    datetime = models.DateTimeField()
+    route = models.CharField(max_length=20)
+    message = models.TextField()
+
+    class Meta:
+        db_table = 'mail_with_result'
+
+
+
 

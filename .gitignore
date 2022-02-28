@@ -216,3 +216,5 @@ ENV/
 # for migrations
 /app/migrations
 !/app/migrations/__init__.py
+
+/test
