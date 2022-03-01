@@ -6,6 +6,7 @@ from .views.db.views_db import *
 from .views.admin.views_admin import *
 from .views.user.view_request_one import *
 from .views.user.chat import *
+from .views.user.view_result import *
 
 urlpatterns = [
     path('admin/', AdminMethods.get_admin_page),
@@ -26,5 +27,6 @@ urlpatterns = [
     path('user-thanks/', RequestThanks.get_thanks_page),
     path('request-page/', RequestOneView.no_request_redirect),
     path('request-page/<int:id>/', RequestOneView.get_request),
+    path('results/<int:pk>/', Results.get_result_page),
     path('chat/<int:id>/', ChatViews.get_page)
 ]

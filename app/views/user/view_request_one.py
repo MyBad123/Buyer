@@ -6,9 +6,7 @@ from django.shortcuts import (
 from app.models import RequestModel, ResultModel
 from app.serializers import (
     RequestsSerializer,
-    RequestsTableSerializer,
-    ResultSerialzier,
-    ForResultSerialzier
+    RequestsTableSerializer
 )
 
 
@@ -36,18 +34,6 @@ class RequestOneView:
             RequestsSerializer(request_object)
         )
 
-        # update context with RequestTable
-        results = ResultModel.objects.filter(
-            request=request_object, 
-            status=True
-        )
-        results_serializer = ForResultSerialzier(
-            ResultSerialzier(results, many=True)
-        )
-        context.update({
-            'results': results_serializer.get_data()
-        })
-
         # get number of results
         results = len(ResultModel.objects.filter(
             request=request_object
@@ -56,13 +42,21 @@ class RequestOneView:
             request=request_object,
             status=True
         ))
-
-
-        if request_object.datetime_yandex_finished is None:
-            for_result = True
-        else: 
-            for_result = False
         
+        # get data for modificate template
+        results_bool = True if results else False
+        all_results_bool = True if request_object.datetime_yandex_finished is None else False
+        control_results_bool = True if request_object.datetime_processing_finished is None else False
+    
+        # update context with new_data
+        context.update({
+            'results': results,
+            'control_results': control_results,
+            'results_bool': results_bool,
+            'all_results_bool': all_results_bool,
+            'control_results_bool': control_results_bool
+        })
+
         return render(
             request,
             'user/request_one/request_one.html',
