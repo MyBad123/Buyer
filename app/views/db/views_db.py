@@ -122,7 +122,17 @@ class DbMethods:
                     status=True,
                     mail='genag4448@gmail.com'
                 )
-            
+
+            # get yandex results
+            for j in range(0, 10):
+                ResultModel.objects.create(
+                    request=request_object,
+                    system='yandex',
+                    url='https://vk.com',
+                    status=True,
+                    mail='genag4448@gmail.com'
+                )
+
 
 class DbView:
     @staticmethod

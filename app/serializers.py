@@ -1,7 +1,8 @@
+from statistics import mode
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import RequestModel
+from .models import RequestModel, ResultModel
 
 class AuthSerizliser(serializers.Serializer):
     """serializer"""
@@ -186,3 +187,31 @@ class RequestsTableSerializer(serializers.ModelSerializer):
             'datetime_processing_finished_bool': datetime_processing_finished_bool,
             'datetime_processing_finished': datetime_processing_finished
         }
+
+
+class ResultSerialzier(serializers.ModelSerializer):
+    """serializer for ResultModel"""
+
+    class Meta:
+        model = ResultModel
+        fields = '__all__'
+
+
+class ForResultSerialzier:
+    """utils for ResultSerialzier"""
+
+    def __init__(self, serializer):
+        self.serializer = serializer
+
+    def get_data(self):
+        """convert OrderList to list"""
+
+        list_data = []
+        for i in self.serializer.data:
+            list_data.append({
+                'mail': i.get('mail'),
+                'system': i.get('system'),
+                'url': i.get('url')
+            })
+
+        return list_data

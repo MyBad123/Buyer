@@ -1,0 +1,21 @@
+<div class="mt-4 my-3 p-3 bg-body rounded shadow-sm">
+    <h1>Результаты поиска</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Почта</th>
+            <th scope="col">Url</th>
+            <th scope="col">Система</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for i in results %}
+            <tr class="item">
+                <td>{{ i.mail }}</td>
+                <td>{{ i.url }}</td>
+                <td>{{ i.system }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
