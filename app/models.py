@@ -1,3 +1,4 @@
+from operator import mod
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -38,14 +39,12 @@ class MessageModel(models.Model):
     """Model for email message with company"""
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    result = models.ForeignKey(ResultModel, on_delete=models.CASCADE)
+    mail = models.EmailField()
     datetime = models.DateTimeField()
     route = models.CharField(max_length=20)
     message = models.TextField()
 
     class Meta:
-        db_table = 'mail_with_result'
-
-
-
-
+        db_table = 'mail'
+        ordering = ['user', 'datetime']
+        
