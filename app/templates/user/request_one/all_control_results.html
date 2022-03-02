@@ -24,6 +24,9 @@
                 <li b-3agnm270m7="" class="nav-item">
                     <a class="nav-link active" href="/exit/">Выйти</a>
                 </li>
+                <li b-3agnm270m7="" class="nav-item">
+                    <a class="nav-link" href="/request-page/{{ id }}/">Назад</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -32,49 +35,51 @@
 <div class="container">
     <div class="mt-4 my-3 p-3 bg-body rounded shadow-sm">
         <h2>Название: {{ name }} </h2>
-        <div>Ключевые слова: {{ words }}</div>
-    </div>
-    <div class="mt-4 my-3 p-3 bg-body rounded shadow-sm">
-        <h2>Дополнительная информация</h2>
-        <div>Кто запросил: {{ user }}</div>
-        <div>Состояние: {{ stage }}</div>
-        <div>Дата и время создания: {{ datetime_created }}</div>
-
-        {% if datetime_google_started_bool %}
-            <div>Дата и время начала поиска в google: {{ datetime_google_started }}</div>
-        {% endif %}
-
-        {% if datetime_google_finished_bool %}
-            <div>Дата и время окончания поиска в google: {{ datetime_google_finished }}</div>
-        {% endif %}
-
-        {% if datetime_yandex_started_bool %}
-            <div>Дата и время начала поиска в yandex: {{ datetime_yandex_started }}</div>
-        {% endif %}
-
-        {% if datetime_yandex_finished_bool %}
-            <div>Дата и время окончания поиска в yandex: {{ datetime_yandex_finished }}</div>
-        {% endif %}
-
-        {% if datetime_site_parsing_started_bool %}
-            <div>Дата и время начала парсинга ссылок: {{ datetime_site_parsing_started }}</div>
-        {% endif %}
-
-        {% if datetime_processing_finished_bool %}
-            <div>Дата и время окончания: {{ datetime_processing_finished }}</div>
-        {% endif %}
+        <p>Ключевые слова: {{ words }}</p>
+        <p>Примечание: данная страница предназначена для перехода по ссылкам результатов</p>
     </div>
     
-    {% if results_bool %}
-        <div class="mt-4 my-3 p-3 bg-body rounded shadow-sm">
-            <h2>Результаты поиска</h2>
-            <a class="link-primary" href="/results/{{ id }}/">Результатов найдено {% if all_results_bool %}(поиск не закончился){% endif %}: {{ results }}</a>
-            <br>
-            <a class="link-primary" href="#">из них корректные {% if control_results_bool %}(парсинг не закончился){% endif %}: {{ control_results }}</a>
-        </div>
-    {% endif %}
-</div>
+    <div class="mt-4 my-3 p-3 bg-body rounded shadow-sm results-block">
+        <h2>Результаты поиска</h2>
 
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Почта</th>
+                    <th scope="col">Сылка</th>
+                    <th scope="col">Система</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in results_serializer %}
+                    <tr class="item">
+                        <td>{{ i.mail }}</td>
+                        <td>{{ i.url }}</td>
+                        <td>{{ i.system }}</td>
+                    </tr>
+                {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="my-1 p-1 bg-body rounded shadow-sm">
+        <div class="modal-header">
+            <h2 class="modal-title">Написать письмо</h2>
+        </div>
+        <div class="modal-body">
+            <div class="form-floating">
+                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
+                <label for="floatingTextarea2">Тело письма</label>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary">Отмена</button>
+            <button type="button" class="btn btn-primary">Отправить</button>
+        </div>
+    </div>
+</div>
+<script src="{% static 'js/all_control_results.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>

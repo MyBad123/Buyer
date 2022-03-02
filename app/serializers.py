@@ -168,6 +168,7 @@ class RequestsTableSerializer(serializers.ModelSerializer):
 
 
         return {
+            'id': serializer.data.get('id'),
             'name': serializer.data.get('name'),
             'words': serializer.data.get('words'),
             'user': serializer.data.get('user').get('username'),
@@ -205,6 +206,19 @@ class ForResultSerialzier:
 
     def get_data(self):
         """convert OrderList to list"""
+
+        list_data = []
+        for i in self.serializer.data:
+            list_data.append({
+                'id': i.get('id'),
+                'system': i.get('system'),
+                'url': i.get('url')
+            })
+
+        return list_data
+
+    def get_control_data(self):
+        """convert control OrderList to list"""
 
         list_data = []
         for i in self.serializer.data:

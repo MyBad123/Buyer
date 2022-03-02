@@ -28,5 +28,6 @@ urlpatterns = [
     path('request-page/', RequestOneView.no_request_redirect),
     path('request-page/<int:id>/', RequestOneView.get_request),
     path('results/<int:pk>/', Results.get_result_page),
+    path('control-results/<int:pk>/', Results.get_correct_result_page),
     path('chat/<int:id>/', ChatViews.get_page)
 ]
