@@ -5,7 +5,7 @@ from .views.user.view_thanks import *
 from .views.db.views_db import *
 from .views.admin.views_admin import *
 from .views.user.view_request_one import *
-from .views.user.chat import *
+from .views.user.view_chat import *
 from .views.user.view_result import *
 
 urlpatterns = [
@@ -29,5 +29,5 @@ urlpatterns = [
     path('request-page/<int:id>/', RequestOneView.get_request),
     path('results/<int:pk>/', Results.get_result_page),
     path('control-results/<int:pk>/', Results.get_correct_result_page),
-    path('chat/<int:id>/', ChatViews.get_page)
+    path('chat/', ChatViews.get_page)
 ]

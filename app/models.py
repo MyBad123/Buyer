@@ -21,7 +21,6 @@ class RequestModel(models.Model):
         db_table = 'requests'
 
 
-
 class ResultModel(models.Model):
     """Models for urls of request"""
 
@@ -45,6 +44,8 @@ class MessageModel(models.Model):
     message = models.TextField()
 
     class Meta:
-        db_table = 'mail'
+        db_table = 'mail_from_results'
         ordering = ['user', 'datetime']
+
+
         
