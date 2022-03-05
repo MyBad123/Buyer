@@ -42,8 +42,7 @@ def find_links(link, depth):
                     and not re.fullmatch(r'.*.jpg|.*.png$', str(part_link_page.get('href'))):
                 time.sleep(4)
                 list_urls.append(link)
-                depth += 1
-                find_links(link, depth)
+                find_links(link, depth+1)
 
 
 def site_parsing(url, req):
