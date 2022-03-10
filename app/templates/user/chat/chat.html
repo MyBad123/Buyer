@@ -19,6 +19,9 @@
                     <a class="nav-link active" href="/user-new-request-page/">Новая заявка</a>
                 </li>
                 <li b-3agnm270m7="" class="nav-item">
+                    <a class="nav-link active" href="/chat/">Чат</a>
+                </li>
+                <li b-3agnm270m7="" class="nav-item">
                     <a class="nav-link active" href="/db/">База данных</a>
                 </li>
                 <li b-3agnm270m7="" class="nav-item">
@@ -35,7 +38,7 @@
             <h2> Сообщения </h2>
             <div class="list-group">
                 {% for i in mail_arr %}
-                    <a href="#" class="list-group-item list-group-item-action">{{ i }}</a>
+                    <a href="/chat/{{ i.id }}/" class="list-group-item list-group-item-action">{{ i.mail }}</a>
                 {% endfor %}
             </div>
         </div>

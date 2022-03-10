@@ -42,10 +42,21 @@ class MessageModel(models.Model):
     datetime = models.DateTimeField()
     route = models.CharField(max_length=20)
     message = models.TextField()
+    number = models.CharField(max_length=20)
 
     class Meta:
         db_table = 'mail_from_results'
         ordering = ['user', 'datetime']
+
+
+class MailForMessageModel(models.Model):
+    """for message id"""
+
+    mail = models.EmailField(unique=True)
+    
+    class Meta:
+        db_table = 'mails'
+        ordering = ['mail']
 
 
         

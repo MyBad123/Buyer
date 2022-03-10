@@ -16,7 +16,7 @@ cd ./Buyer
 Install dependencies to virtual enviroment:
 ```sh
 virtualenv env
-pip install -r requests.txt
+pip install -r requirements.txt
 ```
 
 Create db and migrate struct of db from django:

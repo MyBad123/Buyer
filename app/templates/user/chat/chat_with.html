@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="{% static 'css/chat/chat_with.css' %}" rel="stylesheet">
+</head>
+<body>
+    <nav b-3agnm270m7="" class="navbar navbar-expand-lg navbar-dark bg-dark bg-gradient my-nav">
+        <div b-3agnm270m7="" class="container">
+            <a class="navbar-brand pt-0 pb-1" href="/">Buyer</a>
+            <div b-3agnm270m7="" class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
+                <ul b-3agnm270m7="" class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li b-3agnm270m7="" class="nav-item">
+                        <a class="nav-link active" href="/user-new-request-page/">Новая заявка</a>
+                    </li>
+                    <li b-3agnm270m7="" class="nav-item">
+                        <a class="nav-link active" href="/chat/">Чат</a>
+                    </li>
+                    <li b-3agnm270m7="" class="nav-item">
+                        <a class="nav-link active" href="/db/">База данных</a>
+                    </li>
+                    <li b-3agnm270m7="" class="nav-item">
+                        <a class="nav-link active" href="/exit/">Выйти</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="my-1 p-1 bg-body rounded shadow-sm my-messages">
+            <div class="messages-container">
+                {% for i in mail_arr %}
+                    {% if i.route_bool%}
+                        <div class="message-container-from">
+                            <span class="message">{{ i.body }}</span>
+                        </div>
+                    {% else %}
+                        <div class="message-container-to">
+                            <span class="message">{{ i.body }}</span>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="my-1 p-1 bg-body rounded shadow-sm">
+            <div class="modal-header">
+                <h2 class="modal-title">Написать письмо</h2>
+            </div>
+            <div class="modal-body">
+                <div class="form-floating">
+                    <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
+                    <label for="floatingTextarea2">Тело письма</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Отправить</button>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'js/chat/chat_with.js' %}"></script>
+</body>
+</html>

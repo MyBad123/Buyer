@@ -70,7 +70,7 @@
             <h2>Результаты поиска</h2>
             <a class="link-primary" href="/results/{{ id }}/">Результатов найдено {% if all_results_bool %}(поиск не закончился){% endif %}: {{ results }}</a>
             <br>
-            <a class="link-primary" href="#">из них корректные {% if control_results_bool %}(парсинг не закончился){% endif %}: {{ control_results }}</a>
+            <a class="link-primary" href="/control-results/{{ id }}/">из них корректные {% if control_results_bool %}(парсинг не закончился){% endif %}: {{ control_results }}</a>
         </div>
     {% endif %}
 </div>
