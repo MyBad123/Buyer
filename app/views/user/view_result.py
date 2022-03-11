@@ -1,8 +1,42 @@
-from unittest import result
+from email.utils import parseaddr
 from django.shortcuts import render, redirect
 
 from app.models import RequestModel, ResultModel
 from app.serializers import ResultSerialzier, ForResultSerialzier
+
+
+class MessageControlData:
+    """control data of message"""
+
+    def __init__(self, data):
+        self.data = data
+
+    def control_data_type(self):
+        """data is dict or no"""
+
+        if type(self.data) != dict:
+            return True
+
+        return False
+
+    def control_type_fields(self):
+        """control mails and text"""
+
+        # control availability of fields
+        if self.data.get('text', None) is None:
+            return True
+
+        if self.data.get('mails', None) is None:
+            return True    
+
+        # control type of data fields
+        if type(self.data.get('text')) != str:
+            return True
+
+        if type(self.data.get('mails')) != list:
+            return True
+
+        return False
 
 
 class Results:

@@ -1,6 +1,11 @@
-from email import message
-from tkinter import E
+import json
+import smtplib
+import datetime
+
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from django.shortcuts import render, redirect
+from django.http.response import JsonResponse
 
 from app.models import MessageModel, MailForMessageModel
 
@@ -11,6 +16,17 @@ class ChatUtils:
         """control user on permissions"""
 
         if request.user.is_anonymous:
+            return True
+
+        return False
+
+    def control_permissions_with_post(self, request):
+        """control user on permissions"""
+
+        if request.user.is_anonymous:
+            return True
+
+        if request.method != 'POST':
             return True
 
         return False
@@ -86,6 +102,77 @@ class ChatUtils:
             'mail_arr': data
         }
 
+    def send_message(self, mail, text):
+        """send message to mail"""
+
+        mailMsg = MIMEMultipart()
+        mailTo = mail
+        mailMessage = text
+        mailMsg.attach(MIMEText(mailMessage, 'plain'))
+        mailServer = smtplib.SMTP('smtp.mail.ru: 25')
+        mailServer.starttls()
+        mailServer.login('gena.kuznetsov@internet.ru', 'o%pdUaeIUI12')
+        mailServer.sendmail('gena.kuznetsov@internet.ru', mailTo, mailMsg.as_string())
+        mailServer.quit()
+
+
+class PushMessage:
+    """invalid data or no"""
+
+    def __init__(self, data):
+        self.data = data 
+
+    def control_dict(self):
+        """data is dict or no"""
+
+        if type(self.data) != dict:
+            return True
+
+        return False
+
+    def control_data_on_dict(self):
+        """control names of fields"""
+
+        # control fields 
+        if self.data.get('id', None) is None:
+            return True
+
+        if self.data.get('text', None) is None:
+            return True
+
+        # control data in fields
+        if type(self.data.get('id')) != str:
+            return True
+
+        if type(self.data.get('text')) != str:
+            return True
+
+        return False
+
+    def control_id_int(self):
+        """send an error if not decoded to a number"""
+
+        try:
+            int(self.data.get('id'))
+        except ValueError:
+            return True
+
+        return False
+
+    def control_data(self):
+        """use all methods"""
+
+        if self.control_dict():
+            return True
+
+        if self.control_data_on_dict():
+            return True
+
+        if self.control_id_int():
+            return True
+
+        return False
+
 
 class ChatViews:
     """methods for chat"""
@@ -135,4 +222,65 @@ class ChatViews:
             context=context
         )
 
+    @staticmethod
+    def push_message(request):
+        """add new message"""
+
+        # object for use utilities
+        utils_object = ChatUtils()
+
+        # control permissions and view of request
+        if utils_object.control_permissions_with_post(request):
+            return JsonResponse(
+                data={'message': 'c'}, 
+                status=400
+            )
+
+        # control data
+        try:
+            data = json.loads(request.body)
+        except json.decoder.JSONDecodeError:
+            return JsonResponse(
+                data={'message': 'invalid data'}, 
+                status=400
+            )
+
+        serializer = PushMessage(data)
+        if serializer.control_data():
+            return JsonResponse(
+                data={'message': 'invalid data'}, 
+                status=400
+            )
+
+        # control permissions to mail 
+        mail = utils_object.control_mail_from_request(
+            request, data.get('id')
+        )
+        if mail is None:
+            return JsonResponse(
+                data={'message': 'access error'}, 
+                status=400
+            )
+
+        # save to db
+        message_object = MessageModel.objects.create(
+            user=request.user,
+            mail=mail,
+            datetime=datetime.datetime.now(),
+            route='from',
+            message=data.get('text'),
+            number=None
+        )
+
+        # update db object 
+        message_object.number = str(request.user.id) + '-' + str(message_object.id)
+        message_object.save()
+
+        # send message to mail
+        utils_object.send_message(
+            mail=message_object.mail,
+            text=message_object.message
+        )
+
+        return JsonResponse(data={})
         
