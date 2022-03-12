@@ -10,7 +10,8 @@
     <link href="{% static 'css/main.css' %}" rel="stylesheet">
 </head>
 <body>
-<nav b-3agnm270m7="" class="navbar navbar-expand-lg navbar-dark bg-dark bg-gradient">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark bg-gradient">
     <div b-3agnm270m7="" class="container">
         <a class="navbar-brand pt-0 pb-1" href="/">Buyer</a>
         <div b-3agnm270m7="" class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
@@ -28,20 +29,18 @@
                     <a class="nav-link active" href="/exit/">Выйти</a>
                 </li>
             </ul>
+            <span class="d-flex text-white">{{ user }}</span>
         </div>
     </div>
 </nav>
+
 
 <div class="container">
     <div class="mt-4 my-3 p-3 bg-body rounded shadow-sm">
         <h2>Создание новой заявки</h2>
         <p>Вы можете создать новую заявку <a href="/user-new-request-page/">тут</a></p>
     </div>
-    <div class="mt-4 my-3 p-3 bg-body rounded shadow-sm">
-        <h2> Приветствуем в нашем сервисе</h2>
-
-        <div> {{ user }} </div>
-    </div>
+    
 
     <div class="mt-4 my-3 p-3 bg-body rounded shadow-sm">
         {% if request_empty %}
@@ -52,8 +51,8 @@
                         <tr>
                             <th scope="col">название</th>
                             <th scope="col">дата создания</th>
-                            <th scope="col">статус</th>
                             <th scope="col">пользователь</th>
+                            <th scope="col">статус</th>
                         </tr>
                 </thead>
                 <tbody class="table-content">
@@ -62,8 +61,8 @@
                             <td style="display: none"><a href="/request-page/{{ request.id }}/" class="item-ref"></a>></td>
                             <td>{{ request.name }}</td>
                             <td>{{ request.date_creation }}</td>
-                            <td>{{ request.status }}</td>
                             <td>{{ request.user }}</td>
+                            <td>{{ request.status }}</td>
                         </tr>
                     {% endfor %}
 
