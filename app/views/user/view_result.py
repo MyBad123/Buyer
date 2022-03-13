@@ -1,8 +1,16 @@
+import json 
+
 from email.utils import parseaddr
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
 from app.models import RequestModel, ResultModel
 from app.serializers import ResultSerialzier, ForResultSerialzier
+
+from request.tasks import send
+
+class MessageControlDataError(Exception):
+    pass
 
 
 class MessageControlData:
@@ -27,8 +35,7 @@ class MessageControlData:
             return True
 
         if self.data.get('mails', None) is None:
-            return True    
-
+            return True 
         # control type of data fields
         if type(self.data.get('text')) != str:
             return True
@@ -36,10 +43,72 @@ class MessageControlData:
         if type(self.data.get('mails')) != list:
             return True
 
+        for i in self.data.get('mails'):
+            if type(i) != str:
+                return True
+
+        return False
+
+    def all_control(self):
+        """use all methods in this class"""
+
+        if self.control_data_type():
+            return True
+
+        if self.control_type_fields():
+            return True
+
         return False
 
 
-class Results:
+class MessageUtils(MessageControlData):
+    """metods for send_messages in view"""
+
+    def __init__(self, request):
+        
+        # control data
+        if self.control_permission_and_post(request):
+            raise MessageControlDataError()
+
+        # decode data
+        try:
+            decode_data = json.loads(request.body)
+        except json.JSONDecodeError:
+            raise MessageControlDataError()
+
+        # get data for serializer
+        data = {
+            'text': decode_data.get('text'),
+            'mails': decode_data.get('mails')
+        }
+        
+        super().__init__(data)
+
+    def control_permission_and_post(self, request):
+        """method for control request and user's permission"""
+
+        # control post or no 
+        if request.method != 'POST':
+            return True
+
+        # control permission user
+        if request.user.is_anonymous:
+            return True
+
+        return False
+
+    def send_message(self, user):
+        """send message to all mails"""
+
+        # update data
+        self.data.update({
+            'user': user.id
+        })
+
+        send.delay(self.data)
+        
+
+class ResultsView:
     """views for result"""
 
     @staticmethod
@@ -63,7 +132,7 @@ class Results:
         """get all results of request"""
         
         # control permissions and pk
-        if Results.control_user_and_id(request, pk):
+        if ResultsView.control_user_and_id(request, pk):
             return redirect('/')
         else:
             request_object = RequestModel.objects.get(id=pk)
@@ -95,7 +164,7 @@ class Results:
         """get results for push mail"""
 
         # control permissions and pk
-        if Results.control_user_and_id(request, pk):
+        if ResultsView.control_user_and_id(request, pk):
             return redirect('/')
         else:
             request_object = RequestModel.objects.get(id=pk)
@@ -124,5 +193,25 @@ class Results:
             context=context
         )
 
+    @staticmethod
+    def send_messages(request):
+        """method for send to mail"""
         
+        # to initialize control object for this func
+        try:
+            utils_object = MessageUtils(request)
+        except MessageControlDataError:
+            return JsonResponse(data={
+                'error': 'this user does not have access'
+            }, status=400)
+        
+        # control data in serializer
+        if utils_object.all_control():
+            return JsonResponse(data={
+                'erorr': 'bad data'
+            }, status=400)
 
+        # send message
+        utils_object.send_message(request.user)
+
+        return JsonResponse(data={})

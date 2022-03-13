@@ -278,6 +278,4 @@ class ForResultSerialzier:
                 'urls': data_after_root.get(i).get('urls')
             })
 
-        print(list_data)
-
         return list_data

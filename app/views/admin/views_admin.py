@@ -104,7 +104,6 @@ class AdminMethods:
 
         # control validation for data
         if not UpdateSerialize(data=data).is_valid():
-            print(3)
             return JsonResponse(data={
                 "error": "3"
             }, status=400)
@@ -130,13 +129,11 @@ class AdminMethods:
     @staticmethod
     def delete_user(request):
         if request.method != 'POST':
-            print(1)
             return JsonResponse(data={
                 "error": "1"
             }, status=400)
 
         if not request.user.is_superuser:
-            print(2)
             return JsonResponse(data={
                 "error": "2"
             }, status=400)

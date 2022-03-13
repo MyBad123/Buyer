@@ -38,13 +38,11 @@ class AuthMethods:
         """view for user's auth"""
 
         if request.method != 'POST':
-            print(1)
             return JsonResponse(data={
                 "error": "1"
             }, status=400)
 
         if request.user.is_authenticated:
-            print(2)
             return JsonResponse(data={
                 "error": "2"
             }, status=400)
@@ -58,13 +56,11 @@ class AuthMethods:
 
         # control validation for data
         if not AuthSerizliser(data=data).is_valid():
-            print(3)
             return JsonResponse(data={
                 "error": "3"
             }, status=400)
 
         # to authenticate user
-        print(data['login'], ' ', data['password'])
         user = authenticate(
             username=data['login'],
             password=data['password']
@@ -73,7 +69,6 @@ class AuthMethods:
             login(request, user)
             return JsonResponse(data={}, status=200)
         else:
-            print(4)
             return JsonResponse(data={
                 "error": "4"
             }, status=400)

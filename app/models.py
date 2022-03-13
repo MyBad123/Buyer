@@ -42,7 +42,7 @@ class MessageModel(models.Model):
     datetime = models.DateTimeField()
     route = models.CharField(max_length=20)
     message = models.TextField()
-    number = models.CharField(max_length=20, null=True, blank=True)
+    number = models.CharField(max_length=50, null=True, blank=True)
 
     class Meta:
         db_table = 'mail_from_results'
@@ -59,4 +59,12 @@ class MailForMessageModel(models.Model):
         ordering = ['mail']
 
 
+class WaitingMessages(models.Model):
+    """list of waiting messages by number"""
+
+    number = models.CharField(max_length=50, null=True, blank=True)
+    datetime = models.DateTimeField()
+
+    class Meta:
+        db_table = 'waiting_messages'
         

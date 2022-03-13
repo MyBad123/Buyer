@@ -27,8 +27,9 @@ urlpatterns = [
     path('user-thanks/', RequestThanks.get_thanks_page),
     path('request-page/', RequestOneView.no_request_redirect),
     path('request-page/<int:id>/', RequestOneView.get_request),
-    path('results/<int:pk>/', Results.get_result_page),
-    path('control-results/<int:pk>/', Results.get_correct_result_page),
+    path('results/<int:pk>/', ResultsView.get_result_page),
+    path('control-results/<int:pk>/', ResultsView.get_correct_result_page),
+    path('control-results-send-message/', ResultsView.send_messages),
     path('chat/', ChatViews.get_page),
     path('chat/<int:pk>/', ChatViews.get_page_with_mail),
     path('push-message/', ChatViews.push_message)

@@ -1,12 +1,16 @@
+from pydoc import text
 import requests
 import datetime
 
 from time import sleep
 from celery import shared_task
 from requests.auth import HTTPBasicAuth
+from django.contrib.auth.models import User
 
 from app.models import RequestModel, ResultModel
 from htmlTree.tasks import wow
+
+from .mail import Mail
 
 
 class WorkWithDataForSeo:
@@ -187,4 +191,22 @@ def add(id_object):
 
     wow.delay(id_object)
 
+
+@shared_task
+def send(data: dict):
+    """func for sending mails"""
+
+    # update user in date
+    user_object = User.objects.get(id=data.get('user'))
+    data.update({
+        'user': user_object
+    })
+
+    mail_object = Mail(
+        text=data.get('text')
+    )
+    mail_object.send_mails(
+        mails=data.get('mails'),
+        user=data.get('user')
+    )
 
