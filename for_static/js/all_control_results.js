@@ -1,4 +1,5 @@
 // work with table
+/*
 for (let i of document.querySelectorAll(".item")) {
     i.onmouseover = (e) => {
         e.target.closest(".item").classList.add("table-primary");
@@ -36,3 +37,4 @@ for (let i of document.querySelectorAll(".item")) {
         }
     }
 }
+*/

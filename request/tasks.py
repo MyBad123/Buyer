@@ -133,7 +133,7 @@ def add(id_object):
     except RequestModel.DoesNotExist:
         return None
 
-    class_search = WorkWithDataForSeo(request_object)
+    # class_search = WorkWithDataForSeo(request_object)
 
     # work with google search
     # class_search.request_to_google()
@@ -145,17 +145,29 @@ def add(id_object):
     # class_search.get_yandex_results()
     # class_search.write_results_to_db_yandex()
 
-    for i in range(1, 10):
-        ResultModel.objects.create(
+    list_refs = [
+        'https://taxibox.ru/models/reklamniy-svetovoi-korob-na-taksi-big-1000.html',
+        'https://exomenu.ru/python10/',
+        'https://www.tangleteezer.ru/all-brushes/hairspray/detangling-sprays/detangling-spray-for-kids/',
+        'https://nskshapki.ru/catalog/product/id/3851/',
+        'https://belobuv.ru/wl-1e-inblu-krossovki-zhenskie.html'
+    ]    
+    index_system = 0
+
+    for i in list_refs:
+        index_system += 1
+        
+        if (index_system % 2):
+            ResultModel.objects.create(
                 request=request_object,
                 system='yandex',
-                url='https://vk.com'
+                url=i
             )
-
-        ResultModel.objects.create(
+        else:
+            ResultModel.objects.create(
                 request=request_object,
                 system='google',
-                url='https://youtube.com'
+                url=i
             )
 
     request_object.datetime_google_started = datetime.datetime.now()

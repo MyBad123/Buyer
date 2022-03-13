@@ -81,25 +81,37 @@ class DbMethods:
         # list with data 
         data_list = [
             {
-                'name': 'окна', 
-                'words': 'купить окна белые пластиковые'
+                'name': 'шашки', 
+                'words': 'купить шашки такси желтые',
+                'page': 'https://taxibox.ru/models/reklamniy-svetovoi-korob-na-taksi-big-1000.html'
             },
             {
-                'name': 'окна', 
-                'words': 'купить окна черные пластиковые'
+                'name': 'питон', 
+                'words': 'купить питон', 
+                'page': 'https://exomenu.ru/python10/'
             },
             {
-                'name': 'двери', 
-                'words': 'купить двери белые'
+                'name': 'спрей', 
+                'words': 'спрей для волос недорогой',  
+                'page': 'https://www.tangleteezer.ru/all-brushes/hairspray/detangling-sprays/detangling-spray-for-kids/'
             },
             {
-                'name': 'двери', 
-                'words': 'купить двери черыне'
+                'name': 'шапку', 
+                'words': 'купить шапку женскую',
+                'page': 'https://nskshapki.ru/catalog/product/id/3851/'
+            },
+            {
+                'name': 'кроссы', 
+                'words': 'четкие кроссы',
+                'page': 'https://belobuv.ru/wl-1e-inblu-krossovki-zhenskie.html'
             }
         ] 
 
         # add data
+        index_system = 0
         for i in data_list:
+            index_system += 1
+
             request_object = RequestModel.objects.create(
                 name=i.get('name'),
                 words=i.get('words'),
@@ -112,23 +124,20 @@ class DbMethods:
                 datetime_processing_finished=datetime.datetime.now(),
                 user=User.objects.all()[1]
             )
-
-            # get google results
-            for j in range(0, 10):
+            
+            if (index_system % 2):
                 ResultModel.objects.create(
                     request=request_object,
                     system='google',
-                    url='https://vk.com',
+                    url=i.get('page'),
                     status=True,
                     mail='genag4448@gmail.com'
                 )
-
-            # get yandex results
-            for j in range(0, 10):
+            else:
                 ResultModel.objects.create(
                     request=request_object,
                     system='yandex',
-                    url='https://vk.com',
+                    url=i.get('page'),
                     status=True,
                     mail='genag4448@gmail.com'
                 )

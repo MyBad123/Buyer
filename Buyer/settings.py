@@ -120,7 +120,7 @@ STATICFILES_DIRS = [
 ]
 
 # celery settings
-CELERY_BROKER_URL = 'amqp://guest@localhost//'
+CELERY_BROKER_URL = 'amqp://gena:Qwer1234!@localhost:5672/buyer'
 
 
 

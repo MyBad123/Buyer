@@ -1,4 +1,4 @@
-from statistics import mode
+from urllib import parse
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
@@ -220,12 +220,64 @@ class ForResultSerialzier:
     def get_control_data(self):
         """convert control OrderList to list"""
 
-        list_data = []
+        roots_arr = []
+        data_after_root = {
+            
+        }
+
         for i in self.serializer.data:
+            # parce url and get to root_list
+            parse_object = parse.urlparse(
+                i.get('url')
+            )
+            if not parse_object.netloc in roots_arr:
+                # add url for control in future
+                roots_arr.append(parse_object.netloc)
+
+                # add data for user
+                data_after_root.update({
+                    parse_object.netloc: {
+                        'mail': i.get('mail'),
+                        'system': i.get('system'),
+                        'urls': [{
+                            'url': i.get('url'),
+                            'number': str(1)
+                        }]
+                    }
+                })
+
+            else:
+                # get data for update
+                user_object = data_after_root.get(parse_object.netloc)
+                user_object_mail = user_object.get('mail')
+                user_object_system = user_object.get('system')
+                user_object_urls = user_object.get('urls')
+
+                # add new url to all urls
+                user_object_urls.append({
+                    'url': i.get('url'),
+                    'number': str(len(user_object_urls) + 1)
+                })
+
+                # update data
+                data_after_root.update({
+                    parse_object.netloc: {
+                        'mail': user_object_mail,
+                        'system': user_object_system,
+                        'urls': user_object_urls
+                    }
+                })
+        
+        # update data for return
+        list_data = []
+        for i in data_after_root.keys():
             list_data.append({
-                'mail': i.get('mail'),
-                'system': i.get('system'),
-                'url': i.get('url')
+                'root': i,
+                'mail': data_after_root.get(i).get('mail'),
+                'system': data_after_root.get(i).get('system'),
+                'urls': data_after_root.get(i).get('urls')
             })
+
+        print(list_data)
 
         return list_data
