@@ -3,7 +3,9 @@ from django.shortcuts import (
     render,
     redirect
 )
-from app.models import RequestModel, ResultModel
+from app.models import (
+    RequestModel, ResultModel, MailForMessageModel
+)
 from app.serializers import (
     RequestsSerializer,
     RequestsTableSerializer
@@ -47,6 +49,22 @@ class RequestOneView:
         results_bool = True if results else False
         all_results_bool = True if request_object.datetime_yandex_finished is None else False
         control_results_bool = True if request_object.datetime_processing_finished is None else False
+
+        # work with data for chat
+        for_messages_bool = MailForMessageModel.objects.filter(
+            result__request=request_object
+        )
+        messages_bool = True if len(for_messages_bool) else False
+        
+        messages = []
+        messages_struct = []
+        for i in for_messages_bool:
+            if i.mail not in messages:
+                messages.append(i.mail)
+                messages_struct.append({
+                    'id': i.id,
+                    'mail': i.mail
+                })
     
         # update context with new_data
         context.update({
@@ -54,7 +72,9 @@ class RequestOneView:
             'control_results': control_results,
             'results_bool': results_bool,
             'all_results_bool': all_results_bool,
-            'control_results_bool': control_results_bool
+            'control_results_bool': control_results_bool,
+            'messages_bool': messages_bool,
+            'messages': messages_struct
         })
 
         return render(

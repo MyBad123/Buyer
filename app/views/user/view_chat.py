@@ -34,17 +34,10 @@ class ChatUtils:
     def control_mail_from_request(self, request, pk):
         """get mail or no"""
 
-        # get user
-        user = request.user 
-
         # get mail from db 
         try:
-            mail = MailForMessageModel.objects.get(id=pk).mail
+            mail = MailForMessageModel.objects.get(id=pk)
         except MailForMessageModel.DoesNotExist:
-            return None
-
-        # does the user have a chat with this mail
-        if len(MessageModel.objects.filter(user=user, mail=mail)) == 0:
             return None
 
         return mail
@@ -82,7 +75,8 @@ class ChatUtils:
 
         # get all messages
         messages = MessageModel.objects.filter(
-            user=user, mail=mail
+            user=user, mail=mail.mail, 
+            result=mail.result 
         )
         
         # make data for context

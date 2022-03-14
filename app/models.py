@@ -1,4 +1,5 @@
 from operator import mod
+from statistics import mode
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -44,6 +45,9 @@ class MessageModel(models.Model):
     message = models.TextField()
     number = models.CharField(max_length=50, null=True, blank=True)
 
+    # for chats
+    result = models.ForeignKey(ResultModel, on_delete=models.CASCADE)
+
     class Meta:
         db_table = 'mail_from_results'
         ordering = ['user', 'datetime']
@@ -52,7 +56,8 @@ class MessageModel(models.Model):
 class MailForMessageModel(models.Model):
     """for message id"""
 
-    mail = models.EmailField(unique=True)
+    mail = models.EmailField()
+    result = models.ForeignKey(ResultModel, on_delete=models.CASCADE)
     
     class Meta:
         db_table = 'mails'
@@ -67,4 +72,3 @@ class WaitingMessages(models.Model):
 
     class Meta:
         db_table = 'waiting_messages'
-        

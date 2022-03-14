@@ -6,7 +6,7 @@ from django.db.utils import IntegrityError
 
 from app.models import (
     MessageModel, MailForMessageModel, 
-    WaitingMessages
+    WaitingMessages, ResultModel
 )
 
 
@@ -60,7 +60,8 @@ class Mail:
                 mail=i,
                 datetime=datetime.datetime.now(),
                 route='from',
-                message=self.text
+                message=self.text, 
+                result=ResultModel.objects.all()[0]
             )
             number = str(message_object.id) + '-' + str(user.id)
             
@@ -68,7 +69,6 @@ class Mail:
             message_object.save()
 
             # save some data to db 
-            self.set_mail_for_chat(i)
             self.set_number_for_waiting(number)
 
             # send message

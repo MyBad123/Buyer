@@ -27,6 +27,23 @@ class MessageControlData:
 
         return False
 
+    def control_id_request(self):
+        """control request_id"""
+
+        # work with types
+        try:
+            request_id = int(self.data.get('request_id'))
+        except ValueError:
+            return True
+
+        # work with model
+        try: 
+            RequestModel.objects.get(id=request_id)
+        except RequestModel.DoesNotExist:
+            return True
+
+        return False        
+
     def control_type_fields(self):
         """control mails and text"""
 
@@ -36,6 +53,10 @@ class MessageControlData:
 
         if self.data.get('mails', None) is None:
             return True 
+
+        if self.data.get('request_id', None) is None:
+            return True 
+
         # control type of data fields
         if type(self.data.get('text')) != str:
             return True
@@ -47,6 +68,9 @@ class MessageControlData:
             if type(i) != str:
                 return True
 
+        if type(self.data.get('request_id')) != str:
+            return True
+
         return False
 
     def all_control(self):
@@ -56,6 +80,9 @@ class MessageControlData:
             return True
 
         if self.control_type_fields():
+            return True
+
+        if self.control_id_request():
             return True
 
         return False
@@ -79,7 +106,8 @@ class MessageUtils(MessageControlData):
         # get data for serializer
         data = {
             'text': decode_data.get('text'),
-            'mails': decode_data.get('mails')
+            'mails': decode_data.get('mails'), 
+            'request_id': decode_data.get('request')
         }
         
         super().__init__(data)
@@ -104,6 +132,8 @@ class MessageUtils(MessageControlData):
         self.data.update({
             'user': user.id
         })
+
+        print(self.data)
 
         send.delay(self.data)
         

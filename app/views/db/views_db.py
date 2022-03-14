@@ -10,7 +10,7 @@ from django.db.models.deletion import ProtectedError
 from django.db.utils import IntegrityError
 
 from app.models import (
-    ResultModel, RequestModel
+    ResultModel, RequestModel, MailForMessageModel
 )
 
 
@@ -142,6 +142,25 @@ class DbMethods:
                     mail='genag4448@gmail.com'
                 )
 
+    def add_mails(self):
+        """add mails to result for chat"""
+
+        # get all result objects 
+        all_results = ResultModel.objects.all()
+
+        # set mails for chat
+        for i in all_results:
+            try:
+                MailForMessageModel.objects.get(
+                    mail=i.mail,
+                    result=i
+                )
+            except MailForMessageModel.DoesNotExist:
+                MailForMessageModel.objects.create(
+                    mail=i.mail,
+                    result=i
+                )
+
 
 class DbView:
     @staticmethod
@@ -190,6 +209,7 @@ class DbView:
         )
         db_object.create_users()
         db_object.add_request_data()
+        db_object.add_mails()
         
         return render(request, 'db/db.html', context={
             'login': False,

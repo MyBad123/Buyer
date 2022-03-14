@@ -18,7 +18,19 @@ const csrftoken = getCookie('csrftoken');
 
 // send message to mail
 document.getElementById("push_btn").onclick = async () => {
-    
+    // get id for redirect and making request
+    let thisHrefBool = true;
+    let index = -1;
+
+    while (thisHrefBool) {
+        index -= 1;
+        if (window.location.href.slice(index, -1)[0] === '/') {
+            thisHrefBool = false;
+        }
+    }
+    let thisPk = window.location.href.slice(index + 1, -1);
+
+
     // get text by input area 
     let textMessage = document.getElementById('floatingTextarea2').value;
     if (textMessage === '') {
@@ -53,21 +65,10 @@ document.getElementById("push_btn").onclick = async () => {
         },
         body: JSON.stringify({
             text: textMessage,
-            mails: mailArr
+            mails: mailArr, 
+            request: thisPk
         })
     })
-
-    // get id for redirect  
-    let thisHrefBool = true;
-    let index = -1;
-
-    while (thisHrefBool) {
-        index -= 1;
-        if (window.location.href.slice(index, -1)[0] === '/') {
-            thisHrefBool = false;
-        }
-    }
-    let thisPk = window.location.href.slice(index + 1, -1);
 
     // redirect to thanks page 
     window.location.href = '/control-results-send-message-thanks/' + thisPk + '/';
