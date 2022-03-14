@@ -1,44 +1,3 @@
-// work with table
-/*
-for (let i of document.querySelectorAll(".item")) {
-    i.onmouseover = (e) => {
-        e.target.closest(".item").classList.add("table-primary");
-    }
-    i.onmouseout = (e) => {
-        if (!(e.target.closest(".item").classList.contains('with-click'))) {
-            e.target.closest(".item").classList.remove("table-primary");
-        }
-    }
-    i.onclick = (e) => {
-        if (e.target.closest(".item").classList.contains("with-click")) {
-            e.target.closest(".item").classList.remove("with-click");
-            
-            // remove amil from form 
-            let wow = e.target.closest(".item").querySelector('td').innerHTML;
-
-            let index = 0;
-            for (let j of document.querySelector('.modal-body').querySelectorAll('button')) {
-                if ((j.innerHTML === wow) && (index === 0)) {
-                    document.querySelector('.modal-body').removeChild(j);
-                    index += 1;
-                }
-            }
-        }
-        else {
-            e.target.closest(".item").classList.add("with-click");
-
-            // add mail to form
-            let wow = e.target.closest(".item").querySelector('td').innerHTML;
-            
-            document.querySelector(".modal-body").insertAdjacentHTML(
-                'afterBegin', 
-                `<button type="button" class="btn btn-primary m-1">${ wow }</button>`
-            )
-        }
-    }
-}
-*/
-
 // get csrf token 
 function getCookie(name) {
     let cookieValue = null;
@@ -56,3 +15,61 @@ function getCookie(name) {
     return cookieValue;
 }
 const csrftoken = getCookie('csrftoken');
+
+// send message to mail
+document.getElementById("push_btn").onclick = async () => {
+    
+    // get text by input area 
+    let textMessage = document.getElementById('floatingTextarea2').value;
+    if (textMessage === '') {
+        return
+    }
+
+    // get mails for sending
+    let mailArr = []
+    for (let i of document.querySelectorAll('.form-check-input')) {
+        
+        // if checkbox is true, add mail to arr
+        if (i.checked) {
+            mailName = i.closest(".item").querySelector("td").innerHTML;
+            
+            // if mailArr has no mail, add it
+            if (!(mailArr.includes(mailName))) {
+                mailArr.push(mailName);
+            }
+        }
+    }
+    // control mailArr 
+    if (mailArr.length === 0) {
+        return
+    }
+
+    // send message by request
+    let request = await fetch('/control-results-send-message/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+            'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify({
+            text: textMessage,
+            mails: mailArr
+        })
+    })
+
+    // get id for redirect  
+    let thisHrefBool = true;
+    let index = -1;
+
+    while (thisHrefBool) {
+        index -= 1;
+        if (window.location.href.slice(index, -1)[0] === '/') {
+            thisHrefBool = false;
+        }
+    }
+    let thisPk = window.location.href.slice(index + 1, -1);
+
+    // redirect to thanks page 
+    window.location.href = '/control-results-send-message-thanks/' + thisPk + '/';
+}
+

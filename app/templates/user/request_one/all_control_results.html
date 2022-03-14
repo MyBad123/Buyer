@@ -24,15 +24,19 @@
                 <li b-3agnm270m7="" class="nav-item">
                     <a class="nav-link active" href="/exit/">Выйти</a>
                 </li>
-                <li b-3agnm270m7="" class="nav-item">
-                    <a class="nav-link" href="/request-page/{{ id }}/">Назад</a>
-                </li>
             </ul>
         </div>
     </div>
 </nav>
 
 <div class="container">
+    <div class="my-1 p-1 bg-body rounded shadow-sm">
+        <ol class="breadcrumb m-3">
+            <li class="breadcrumb-item"><a href="/request-page/{{ pk }}/">Заявка</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Результаты отобранные сканером</li>
+        </ol>
+    </div>
+
     <div class="mt-4 my-3 p-3 bg-body rounded shadow-sm">
         <h2>Название: {{ name }} </h2>
         <p>Ключевые слова: {{ words }}</p>
@@ -85,7 +89,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-primary">Отправить</button>
+            <button type="button" class="btn btn-primary" id="push_btn">Отправить</button>
         </div>
     </div>
 </div>

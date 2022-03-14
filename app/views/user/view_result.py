@@ -153,6 +153,11 @@ class ResultsView:
             'results_serializer': results_serializer.get_data()
         })
 
+        # get pk to context for work with refs
+        context.update({
+            'pk': pk
+        })
+
         return render(
             request, 
             'user/request_one/all_results.html',
@@ -187,6 +192,11 @@ class ResultsView:
             'results_serializer': serializer.get_control_data()
         })
 
+        # get pk to context for work with refs
+        context.update({
+            'pk': pk
+        })
+
         return render(
             request, 
             'user/request_one/all_control_results.html',
@@ -215,3 +225,15 @@ class ResultsView:
         utils_object.send_message(request.user)
 
         return JsonResponse(data={})
+
+    @staticmethod
+    def thanks_after_message(request, pk):
+        """thank the user for sending a message"""
+
+        # control permissions and pk
+        if ResultsView.control_user_and_id(request, pk):
+            return redirect('/')
+
+        return render(request, 'user/request_one/thanks.html', context={
+            'pk': pk
+        })

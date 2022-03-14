@@ -209,4 +209,3 @@ def send(data: dict):
         mails=data.get('mails'),
         user=data.get('user')
     )
-

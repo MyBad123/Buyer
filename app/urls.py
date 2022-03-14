@@ -30,6 +30,7 @@ urlpatterns = [
     path('results/<int:pk>/', ResultsView.get_result_page),
     path('control-results/<int:pk>/', ResultsView.get_correct_result_page),
     path('control-results-send-message/', ResultsView.send_messages),
+    path('control-results-send-message-thanks/<int:pk>/', ResultsView.thanks_after_message),
     path('chat/', ChatViews.get_page),
     path('chat/<int:pk>/', ChatViews.get_page_with_mail),
     path('push-message/', ChatViews.push_message)
