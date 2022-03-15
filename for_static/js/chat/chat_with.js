@@ -33,3 +33,40 @@ let getIdMail = () => {
     return window.location.href.slice(index + 1, -1);
 }
 const mailId = getIdMail();
+
+// send message to mail 
+document.getElementById('push_btn').onclick = async () => {
+    
+    // get struct of data for sendins
+    let requestData = await fetch('/chat-struct-for-message/', { 
+        method: "POST", 
+        headers: {
+            "Content-Type": "application/json;charset=utf-8", 
+            "X-CSRFToken": csrftoken 
+        }, 
+        body: JSON.stringify({ 
+            id: '1'
+        })
+    });
+    let resultData = await requestData.json();
+
+    // get text from text_area
+    let textArea = document.getElementById('floatingTextarea2').value;
+
+    // send message by request
+    let requestMessage = await fetch('/control-results-send-message/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+            'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify({
+            text: textArea,
+            mails: [resultData.mail], 
+            request: resultData.request_id
+        })
+    });
+
+    // work with components on page 
+    
+}

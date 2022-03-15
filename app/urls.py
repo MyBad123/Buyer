@@ -33,5 +33,5 @@ urlpatterns = [
     path('control-results-send-message-thanks/<int:pk>/', ResultsView.thanks_after_message),
     path('chat/', ChatViews.get_page),
     path('chat/<int:pk>/', ChatViews.get_page_with_mail),
-    path('push-message/', ChatViews.push_message)
+    path('chat-struct-for-message/', ChatViews.get_mail_struct)
 ]

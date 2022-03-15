@@ -203,7 +203,8 @@ def send(data: dict):
     })
 
     mail_object = Mail(
-        text=data.get('text')
+        text=data.get('text'),
+        request_id=data.get('request_id')
     )
     mail_object.send_mails(
         mails=data.get('mails'),

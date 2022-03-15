@@ -46,7 +46,7 @@ class MessageModel(models.Model):
     number = models.CharField(max_length=50, null=True, blank=True)
 
     # for chats
-    result = models.ForeignKey(ResultModel, on_delete=models.CASCADE)
+    request = models.ForeignKey(RequestModel, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'mail_from_results'
@@ -57,7 +57,7 @@ class MailForMessageModel(models.Model):
     """for message id"""
 
     mail = models.EmailField()
-    result = models.ForeignKey(ResultModel, on_delete=models.CASCADE)
+    request = models.ForeignKey(RequestModel, on_delete=models.CASCADE)
     
     class Meta:
         db_table = 'mails'

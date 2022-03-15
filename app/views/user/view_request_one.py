@@ -52,7 +52,7 @@ class RequestOneView:
 
         # work with data for chat
         for_messages_bool = MailForMessageModel.objects.filter(
-            result__request=request_object
+            request=request_object
         )
         messages_bool = True if len(for_messages_bool) else False
         

@@ -9,6 +9,7 @@ from app.serializers import ResultSerialzier, ForResultSerialzier
 
 from request.tasks import send
 
+
 class MessageControlDataError(Exception):
     pass
 
@@ -132,9 +133,7 @@ class MessageUtils(MessageControlData):
         self.data.update({
             'user': user.id
         })
-
-        print(self.data)
-
+        
         send.delay(self.data)
         
 

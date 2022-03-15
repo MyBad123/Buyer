@@ -19,9 +19,6 @@
                         <a class="nav-link active" href="/user-new-request-page/">Новая заявка</a>
                     </li>
                     <li b-3agnm270m7="" class="nav-item">
-                        <a class="nav-link active" href="/chat/">Чат</a>
-                    </li>
-                    <li b-3agnm270m7="" class="nav-item">
                         <a class="nav-link active" href="/db/">База данных</a>
                     </li>
                     <li b-3agnm270m7="" class="nav-item">
@@ -33,7 +30,25 @@
     </nav>
 
     <div class="container">
-        <div class="my-1 p-1 bg-body rounded shadow-sm my-messages">
+        
+        {% if see_chat %}
+            <div class="my-1 p-1 bg-body rounded shadow-sm my-messages">
+                <div class="messages-container">
+                    {% for i in mail_arr %}
+                        {% if i.route_bool%}
+                            <div class="message-container-from">
+                                <span class="message">{{ i.body }}</span>
+                            </div>
+                        {% else %}
+                            <div class="message-container-to">
+                                <span class="message">{{ i.body }}</span>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+        <div class="my-1 p-1 bg-body rounded shadow-sm my-messages display-none">
             <div class="messages-container">
                 {% for i in mail_arr %}
                     {% if i.route_bool%}
@@ -48,6 +63,7 @@
                 {% endfor %}
             </div>
         </div>
+        {% endif %}
 
         <div class="my-1 p-1 bg-body rounded shadow-sm">
             <div class="modal-header">
@@ -60,7 +76,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Отправить</button>
+                <button type="button" class="btn btn-primary" id="push_btn">Отправить</button>
             </div>
         </div>
     </div>

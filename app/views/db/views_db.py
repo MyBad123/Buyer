@@ -153,12 +153,12 @@ class DbMethods:
             try:
                 MailForMessageModel.objects.get(
                     mail=i.mail,
-                    result=i
+                    request=i.request
                 )
             except MailForMessageModel.DoesNotExist:
                 MailForMessageModel.objects.create(
                     mail=i.mail,
-                    result=i
+                    request=i.request
                 )
 
 

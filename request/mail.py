@@ -5,7 +5,7 @@ from email.message import EmailMessage
 from django.db.utils import IntegrityError
 
 from app.models import (
-    MessageModel, MailForMessageModel, 
+    MessageModel, MailForMessageModel, RequestModel, 
     WaitingMessages, ResultModel
 )
 
@@ -13,8 +13,9 @@ from app.models import (
 class Mail:
     """class for send mail"""
     
-    def __init__(self, text):
+    def __init__(self, text, request_id):
         self.text = text
+        self.request_id = request_id
 
     def send_mail(self, mail, subject_number):
         """send text to mail"""
@@ -31,16 +32,6 @@ class Mail:
         server.login("gena.kuznetsov@internet.ru", "o%pdUaeIUI12")
         server.send_message(msg)
         server.quit()
-
-    def set_mail_for_chat(self, mail):
-        """set mail to db"""
-
-        try:
-            MailForMessageModel.objects.create(
-                mail=mail
-            )
-        except IntegrityError:
-            pass
 
     def set_number_for_waiting(self, number):
         """set number to db"""
@@ -61,7 +52,7 @@ class Mail:
                 datetime=datetime.datetime.now(),
                 route='from',
                 message=self.text, 
-                result=ResultModel.objects.all()[0]
+                request=RequestModel.objects.get(id=int(self.request_id))
             )
             number = str(message_object.id) + '-' + str(user.id)
             
