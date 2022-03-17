@@ -9,13 +9,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*co=^6d)4)tuub4fsinf8x)p+un1-n(sm4c=ja*s*dta&dzqnu'
-
+#SECRET_KEY = 'django-insecure-*co=^6d)4)tuub4fsinf8x)p+un1-n(sm4c=ja*s*dta&dzqnu'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
+DEBUG = int(os.environ.get("DEBUG", default=0))
 
-ALLOWED_HOSTS = ['buyerdev.1d61.com', 'localhost', '127.0.0.1']
-
+#ALLOWED_HOSTS = ['buyerdev.1d61.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
 # Application definition
 
@@ -67,12 +68,12 @@ WSGI_APPLICATION = 'Buyer.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'b2b',
-        'USER': 'buyer_user',
-        'PASSWORD': 'KJNjkjnkerKJNEKRF3456',
-        'HOST': 'localhost',
-        'PORT': ''
+        'ENGINE': os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
+        'NAME': os.environ.get("SQL_DATABASE"),
+        'USER': os.environ.get("SQL_USER", "user"),
+        'PASSWORD': os.environ.get("SQL_PASSWORD", "password"),
+        'HOST': os.environ.get("SQL_HOST", "localhost"),
+        'PORT': os.environ.get("SQL_PORT", "5432")
     }
 }
 
@@ -113,14 +114,14 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'for_static')
 ]
 
 # celery settings
-CELERY_BROKER_URL = 'amqp://gena:Qwer1234!@localhost:5672/buyer'
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "amqp://buyerrabbitmqus:AS34As4FAswd4325rAWS@rabbit:5672"),
 
 
 
