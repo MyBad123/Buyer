@@ -34,6 +34,31 @@ let getIdMail = () => {
 }
 const mailId = getIdMail();
 
+// load file 
+let loadFunc = async () => {
+    
+    // make request for messages
+    let request = await fetch(`/chat-get-messages/${mailId}/`);
+    let responce = await request.json();
+
+    // work with responce
+    
+    
+    /* 
+    {% for i in mail_arr %}
+                    {% if i.route_bool%}
+                        <div class="message-container-from">
+                            <span class="message">{{ i.body }}</span>
+                        </div>
+                    {% else %}
+                        <div class="message-container-to">
+                            <span class="message">{{ i.body }}</span>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+    */
+}
+
 // send message to mail 
 document.getElementById('push_btn').onclick = async () => {
     

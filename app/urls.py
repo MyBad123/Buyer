@@ -5,7 +5,7 @@ from .views.user.view_thanks import *
 from .views.db.views_db import *
 from .views.admin.views_admin import *
 from .views.user.view_request_one import *
-from .views.user.view_chat import *
+from .views.user.chat.view_chat import *
 from .views.user.view_result import *
 
 urlpatterns = [
@@ -33,5 +33,6 @@ urlpatterns = [
     path('control-results-send-message-thanks/<int:pk>/', ResultsView.thanks_after_message),
     path('chat/', ChatViews.get_page),
     path('chat/<int:pk>/', ChatViews.get_page_with_mail),
-    path('chat-struct-for-message/', ChatViews.get_mail_struct)
+    path('chat-struct-for-message/', ChatViews.get_mail_struct),
+    path('chat-get-messages/<int:pk>/', ChatViews.message_get)
 ]

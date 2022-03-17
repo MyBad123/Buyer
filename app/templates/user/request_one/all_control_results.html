@@ -50,16 +50,18 @@
         <table class="table">
             <thead>
                 <tr>
+                    <th scope="col"></th>
                     <th scope="col">Почта</th>
                     <th scope="col">Сайт</th>
                     <th scope="col">Страницы</th>
-                    <th scope="col">Система</th>
-                    <th scope="col">Выбрать</th>
                 </tr>
             </thead>
             <tbody>
                 {% for i in results_serializer %}
                     <tr class="item">
+                        <td>
+                            <input class="form-check-input" type="checkbox">
+                        </td>
                         <td>{{ i.mail }}</td>
                         <td>{{ i.root }}</td>
                         <td>[
@@ -67,10 +69,6 @@
                                 <a class="me-md-1" href="{{ j.url }}"> {{ j.number }}  </a>
                             {% endfor %}
                             ]</td>
-                        <td>{{ i.system }}</td>
-                        <td>
-                            <input class="form-check-input" type="checkbox">
-                        </td>
                     </tr>
                 {% endfor %}
                 </tr>

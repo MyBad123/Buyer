@@ -1,3 +1,4 @@
+import pathlib
 import datetime
 
 from django.contrib.auth.models import User
@@ -10,7 +11,8 @@ from django.db.models.deletion import ProtectedError
 from django.db.utils import IntegrityError
 
 from app.models import (
-    ResultModel, RequestModel, MailForMessageModel
+    ResultModel, RequestModel, MailForMessageModel,
+    MessageModel
 )
 
 
@@ -112,6 +114,9 @@ class DbMethods:
         for i in data_list:
             index_system += 1
 
+            user = User.objects.all()[1]
+            print(user)
+
             request_object = RequestModel.objects.create(
                 name=i.get('name'),
                 words=i.get('words'),
@@ -122,7 +127,7 @@ class DbMethods:
                 datetime_yandex_finished=datetime.datetime.now(),
                 datetime_site_parsing_started=datetime.datetime.now(),
                 datetime_processing_finished=datetime.datetime.now(),
-                user=User.objects.all()[1]
+                user=user
             )
             
             if (index_system % 2):
@@ -160,6 +165,40 @@ class DbMethods:
                     mail=i.mail,
                     request=i.request
                 )
+
+    def add_letter(self):
+        """add latter to db"""
+
+        # create text for adding
+        file_name = str(pathlib.Path(__file__).resolve().parent)
+        file_name += '/example.html'
+
+        with open(file_name, 'r') as file:
+            text_for_db = file.read()
+			
+        # add to table
+        for i in RequestModel.objects.all():
+            MessageModel.objects.create(
+                user=i.user,
+                mail='genag4448@gmail.com',
+                datetime=datetime.datetime.now(),
+                route='from',
+                message=text_for_db,
+                number='10-10',
+                request=i
+            )
+
+        for i in RequestModel.objects.all():
+            MessageModel.objects.create(
+                user=i.user,
+                mail='genag4448@gmail.com',
+                datetime=datetime.datetime.now(),
+                route='to',
+                message=text_for_db,
+                number='10-10',
+                request=i
+            )
+
 
 
 class DbView:
@@ -210,6 +249,7 @@ class DbView:
         db_object.create_users()
         db_object.add_request_data()
         db_object.add_mails()
+        db_object.add_letter()
         
         return render(request, 'db/db.html', context={
             'login': False,

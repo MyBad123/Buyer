@@ -25,6 +25,7 @@ class Mail:
 
         msg['Subject'] = 'Заявка [' + subject_number + ']'
         msg['From'] = "gena.kuznetsov@internet.ru"
+        print(mail)
         msg['To'] = mail
 
         server = smtplib.SMTP('smtp.mail.ru: 25')

@@ -49,7 +49,7 @@ class MessageModel(models.Model):
     request = models.ForeignKey(RequestModel, on_delete=models.CASCADE)
 
     class Meta:
-        db_table = 'mail_from_results'
+        db_table = 'messages'
         ordering = ['user', 'datetime']
 
 

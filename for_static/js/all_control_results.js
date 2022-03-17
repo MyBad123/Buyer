@@ -43,7 +43,7 @@ document.getElementById("push_btn").onclick = async () => {
         
         // if checkbox is true, add mail to arr
         if (i.checked) {
-            mailName = i.closest(".item").querySelector("td").innerHTML;
+            mailName = i.closest(".item").querySelectorAll("td")[1].innerHTML;
             
             // if mailArr has no mail, add it
             if (!(mailArr.includes(mailName))) {
