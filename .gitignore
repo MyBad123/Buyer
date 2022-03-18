@@ -218,6 +218,3 @@ env/
 !/app/migrations/__init__.py
 
 /test
-
-# my settings 
-/Buyer/settings.pys

@@ -1,3 +1,4 @@
+from xmlrpc.client import boolean
 from app.models import MessageModel, MailForMessageModel
 
 
@@ -23,7 +24,7 @@ class ChatUtils:
 
         return False
 
-    def control_mail_from_request(self, request, pk):
+    def control_mail_from_request(self, pk):
         """get mail or no"""
 
         # get mail from db 
@@ -34,58 +35,10 @@ class ChatUtils:
 
         return mail
 
-    def context_get_page_with_mail(self, user, mail):
-        """get messages for user"""
 
-        # get all messages
-        messages = MessageModel.objects.filter(
-            user=user, mail=mail.mail, 
-            request=mail.request 
-        )
-        
-        # make data for context
-        data = []
-        for i in messages:
-            if i.route == 'from':
-                route_bool = True
-            else:
-                route_bool = False
-
-            data.append({
-                'body': i.message,
-                'route_bool': route_bool
-            })
-
-        return {
-            'mail_arr': data
-        }
-
-    def get_mail_for_message_model(self, data_dict: dict):
-        """control id of MailForMessageModel"""
-
-        # control type of data_dict
-        if type(data_dict) != dict:
-            return None
-
-        # control id of MailForMessageModel
-        model_id = data_dict.get('id', None)
-        if type(model_id) != str:
-            return None
-
-        # control type of data
-        try:
-            model_id = int(model_id)
-        except ValueError:
-            return None
-
-        # get object from MailForMessageModel
-        try:
-            mail_object = MailForMessageModel.objects.get(id=model_id)
-        except MailForMessageModel.DoesNotExist:
-            return None
-
-        return mail_object
-
+class GetMailsUtils(ChatUtils):
+    """def utils for sending message"""
+    
     def get_all_messages(self, user, mail):
         """get all messages for user by mail"""
 
@@ -109,3 +62,39 @@ class ChatUtils:
 
         return data
 
+
+class SendMessageUtils(ChatUtils):
+    """utils for sending message"""
+
+    def __init__(self, data) -> None:
+        self.data: dict = data
+        self.mail_object = None
+        super().__init__(self)
+
+    def is_valid(self) -> bool:
+        """control data"""
+
+        # control type 
+        if type(self.data) != dict:
+            return True
+
+        # control id of this chat with mail 
+        if type(self.data.get('chat_id')) != str:
+            return True
+
+        try:
+            chat_id = int(self.data.get('chat_id'))
+        except ValueError:
+            return False
+
+        mail_object = super().control_mail_from_request(chat_id)
+        if mail_object == None:
+            return False
+        else:
+            self.mail_object = mail_object
+
+        # control text
+        if type(self.data.get('text')) != str:
+            return True
+
+        return False

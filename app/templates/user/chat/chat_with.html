@@ -31,45 +31,11 @@
 
     <div class="container">
         
-        {% if see_chat %}
-            <div class="my-1 p-1 bg-body rounded shadow-sm my-messages">
-                <div class="messages-container">
-                    {% for i in mail_arr %}
-                        {% if i.route_bool%}
-                            <div class="message-container-from">
-                                <div class="message-container-from-container">
-                                    <span class="message">{{ i.body }}</span>
-                                    <span class="message-time">15:15:15</span>
-                                </div>
-                            </div>
-                        {% else %}
-                            <div class="message-container-to">
-                                <div class="message-container-to-container">
-                                    <span class="message">{{ i.body }}</span>
-                                    <span class="message-time">15:15:15</span>
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-        {% else %}
-        <div class="my-1 p-1 bg-body rounded shadow-sm my-messages display-none">
-            <div class="messages-container">
-                {% for i in mail_arr %}
-                    {% if i.route_bool%}
-                        <div class="message-container-from">
-                            <span class="message">{{ i.body }}</span>
-                        </div>
-                    {% else %}
-                        <div class="message-container-to">
-                            <span class="message">{{ i.body }}</span>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
+        
+        <div class="my-1 p-1 bg-body rounded shadow-sm my-messages">
+            <div class="messages-container"></div>
         </div>
-        {% endif %}
+        
 
         <div class="my-1 p-1 bg-body rounded shadow-sm">
             <div class="modal-header">

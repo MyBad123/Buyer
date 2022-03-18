@@ -1,5 +1,3 @@
-document.querySelector('.my-messages').scrollBy(0, 10000);
-
 // get csrf token 
 function getCookie(name) {
     let cookieValue = null;
@@ -42,56 +40,66 @@ let loadFunc = async () => {
     let responce = await request.json();
 
     // work with responce
-    
-    
-    /* 
-    {% for i in mail_arr %}
-                    {% if i.route_bool%}
-                        <div class="message-container-from">
-                            <span class="message">{{ i.body }}</span>
-                        </div>
-                    {% else %}
-                        <div class="message-container-to">
-                            <span class="message">{{ i.body }}</span>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-    */
+    for (let i of responce.messages) {
+        
+        // work with route
+        let routeStruct;
+        if (i.route_to_bool) {
+            // if company send to me message
+            routeStruct = {
+                container: 'message-container-from',
+                containerMessageTime: 'message-container-from-container'
+            }
+        } 
+        else {
+            // if we send to company message 
+            routeStruct = {
+                container: 'message-container-to',
+                containerMessageTime: 'message-container-to-container'
+            }
+        }
+
+        // work with string
+        let strDiv = `
+            <div class="${routeStruct.container}">
+                <div class="${routeStruct.containerMessageTime}">
+                    <span class="message">${i.body}</span>
+                    <span class="message-time">${i.datetime}</span>
+                </div>
+            </div>
+        `
+
+        // add this str to html 
+        document.querySelector('.messages-container').insertAdjacentHTML('beforeend', strDiv);
+
+        // scroll messages 
+        document.querySelector('.my-messages').scrollBy(0, 10000);
+    }
 }
+loadFunc();
 
 // send message to mail 
 document.getElementById('push_btn').onclick = async () => {
     
-    // get struct of data for sendins
-    let requestData = await fetch('/chat-struct-for-message/', { 
-        method: "POST", 
-        headers: {
-            "Content-Type": "application/json;charset=utf-8", 
-            "X-CSRFToken": csrftoken 
-        }, 
-        body: JSON.stringify({ 
-            id: '1'
-        })
-    });
-    let resultData = await requestData.json();
-
-    // get text from text_area
-    let textArea = document.getElementById('floatingTextarea2').value;
-
-    // send message by request
-    let requestMessage = await fetch('/control-results-send-message/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'X-CSRFToken': csrftoken
-        },
-        body: JSON.stringify({
-            text: textArea,
-            mails: [resultData.mail], 
-            request: resultData.request_id
-        })
-    });
-
-    // work with components on page 
+    // work with component 
+    let text = document.getElementById('floatingTextarea2').value;
     
+    // work with string
+    let strDiv = `
+        <div class="message-container-from">
+            <div class="message-container-from-container">
+                <span class="message">${text}</span>
+                <span class="message-time">2022-03-17T13:42:09.820Z</span>
+            </div>
+        </div>
+    `
+
+    // add this str to html 
+    document.querySelector('.messages-container').insertAdjacentHTML('beforeend', strDiv);
+
+    // scroll messages 
+    document.querySelector('.my-messages').scrollBy(0, 10000);
+
+    // clear message
+    document.getElementById('floatingTextarea2').value = '';
 }

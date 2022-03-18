@@ -78,7 +78,7 @@
 
     {% if messages_bool %}
         <div class="mt-4 my-3 p-3 bg-body rounded shadow-sm">
-            <h2>Чат</h2>
+            <h2>Переписка с поставщиками</h2>
             <div class="list-group">
                 {% for i in messages %}
                     <a href="/chat/{{ i.id }}/" class="list-group-item list-group-item-action">{{ i.mail }}</a>
