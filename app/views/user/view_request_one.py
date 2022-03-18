@@ -1,4 +1,4 @@
-from unittest import result
+from urllib import parse
 from django.shortcuts import (
     render,
     redirect
@@ -17,6 +17,17 @@ class RequestOneView:
     def no_request_redirect(request):
         return redirect('/')
 
+    @staticmethod
+    def get_site_name(mail_for_message):
+        """get site for mail"""
+        
+        result_object = ResultModel.objects.get(
+            request=mail_for_message.request,
+            mail=mail_for_message.mail
+        )
+
+        return parse.urlparse(result_object.url).netloc
+    
     @staticmethod
     def get_request(request, id):
         """get page with one request. get more information"""
@@ -63,7 +74,8 @@ class RequestOneView:
                 messages.append(i.mail)
                 messages_struct.append({
                     'id': i.id,
-                    'mail': i.mail
+                    'mail': i.mail,
+                    'site_name': RequestOneView.get_site_name(i)
                 })
     
         # update context with new_data

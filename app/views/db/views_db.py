@@ -175,31 +175,41 @@ class DbMethods:
 
         with open(file_name, 'r') as file:
             text_for_db = file.read()
+
+        # get user 
+        user = User.objects.get(
+            username='0@gmail.com'
+        )
 			
         # add to table
+        hz_index = 0
         for i in RequestModel.objects.all():
-            MessageModel.objects.create(
-                user=i.user,
-                mail='genag4448@gmail.com',
-                datetime=datetime.datetime.now(),
-                route='from',
-                message=text_for_db,
-                number='10-10',
-                request=i
-            )
+            if hz_index != 0:
+                MessageModel.objects.create(
+                    user=user,
+                    mail='genag4448@gmail.com',
+                    datetime=datetime.datetime.now(),
+                    route='from',
+                    message=text_for_db,
+                    number='10-10',
+                    request=i
+                )
+            hz_index += 1
 
+        hz_index = 0
         for i in RequestModel.objects.all():
-            MessageModel.objects.create(
-                user=i.user,
-                mail='genag4448@gmail.com',
-                datetime=datetime.datetime.now(),
-                route='to',
-                message=text_for_db,
-                number='10-10',
-                request=i
-            )
-
-
+            if hz_index != 0:
+                MessageModel.objects.create(
+                    user=user,
+                    mail='genag4448@gmail.com',
+                    datetime=datetime.datetime.now(),
+                    route='to',
+                    message=text_for_db,
+                    number='10-10',
+                    request=i
+                )
+            hz_index += 1
+        
 
 class DbView:
     @staticmethod

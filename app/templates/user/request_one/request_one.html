@@ -81,7 +81,7 @@
             <h2>Переписка с поставщиками</h2>
             <div class="list-group">
                 {% for i in messages %}
-                    <a href="/chat/{{ i.id }}/" class="list-group-item list-group-item-action">{{ i.mail }}</a>
+                    <a href="/chat/{{ i.id }}/" class="list-group-item list-group-item-action">Почта: {{ i.mail }} Сайт: {{ i.site_name }}</a>
                 {% endfor %}
             </div>
         </div>

@@ -47,15 +47,15 @@ let loadFunc = async () => {
         if (i.route_to_bool) {
             // if company send to me message
             routeStruct = {
-                container: 'message-container-from',
-                containerMessageTime: 'message-container-from-container'
+                container: 'message-container-to',
+                containerMessageTime: 'message-container-to-container'
             }
         } 
         else {
             // if we send to company message 
             routeStruct = {
-                container: 'message-container-to',
-                containerMessageTime: 'message-container-to-container'
+                container: 'message-container-from',
+                containerMessageTime: 'message-container-from-container'
             }
         }
 
@@ -81,8 +81,11 @@ loadFunc();
 // send message to mail 
 document.getElementById('push_btn').onclick = async () => {
     
-    // work with component 
+    // work with request 
     let text = document.getElementById('floatingTextarea2').value;
+
+    
+    
     
     // work with string
     let strDiv = `

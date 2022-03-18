@@ -62,7 +62,8 @@ class ChatViews:
         # get all messages for context
         context = {
             'messages': utils_object.get_all_messages(
-                request.user, chat_object.mail
+                request.user, chat_object.mail,
+                chat_object.request
             )
         }
 
@@ -82,7 +83,19 @@ class ChatViews:
         # object for use utilities
         utils_object = SendMessageUtils()
 
+        # control permissions
+        if utils_object.control_permissions_with_post(request):
+            return JsonResponse(data={
+                'error': 'error of permissions'
+            })
+
         # control data
+        if utils_object.is_valid():
+            return JsonResponse(data={
+                'error': 'bad data'
+            })
+
+        # send message
 
         """
         {'text': 'не хочу пиво', 'mails': ['genag4448@gmail.com'], 'request_id': '1', 'user': 2}

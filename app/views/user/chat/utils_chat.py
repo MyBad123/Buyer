@@ -1,4 +1,4 @@
-from xmlrpc.client import boolean
+from datetime import datetime
 from app.models import MessageModel, MailForMessageModel
 
 
@@ -39,13 +39,19 @@ class ChatUtils:
 class GetMailsUtils(ChatUtils):
     """def utils for sending message"""
     
-    def get_all_messages(self, user, mail):
+    def datetime_as_str(self, dt: datetime):
+        """convert datetime to str"""
+
+        return f'{dt.hour}:{dt.minute}:{dt.second} {dt.day}.{dt.month}.{dt.year}'
+
+    def get_all_messages(self, user, mail, request):
         """get all messages for user by mail"""
 
         # get all objects 
         all_messages = MessageModel.objects.filter(
             user=user,
-            mail=mail
+            mail=mail,
+            request=request
         )
 
         # work with data
@@ -57,7 +63,7 @@ class GetMailsUtils(ChatUtils):
             data.append({
                 'route_to_bool': route_to_bool,
                 'body': i.message,
-                'datetime': i.datetime
+                'datetime': self.datetime_as_str(i.datetime)
             })
 
         return data
@@ -98,3 +104,13 @@ class SendMessageUtils(ChatUtils):
             return True
 
         return False
+
+    def send_message(self):
+        """send message to mail"""
+
+        # to organize data structure
+        data_struct = {
+            'text': self.data.get('text'),
+            'mails': [self.mail_object.mail],
+            'request_id': 'lol'
+        }
