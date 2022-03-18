@@ -1,5 +1,7 @@
 from datetime import datetime
+
 from app.models import MessageModel, MailForMessageModel
+from request.tasks import send
 
 
 class ChatUtils:
@@ -105,12 +107,17 @@ class SendMessageUtils(ChatUtils):
 
         return False
 
-    def send_message(self):
+    def send_message(self, request):
         """send message to mail"""
 
         # to organize data structure
         data_struct = {
             'text': self.data.get('text'),
             'mails': [self.mail_object.mail],
-            'request_id': 'lol'
+            'request_id': str(self.mail_object.request.id),
+            'user': request.user.id
         }
+
+        send.delay(data_struct)
+
+        

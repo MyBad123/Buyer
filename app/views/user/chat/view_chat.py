@@ -96,8 +96,6 @@ class ChatViews:
             })
 
         # send message
+        utils_object.send_message(request)
 
-        """
-        {'text': 'не хочу пиво', 'mails': ['genag4448@gmail.com'], 'request_id': '1', 'user': 2}
-        """
         return JsonResponse(data={})

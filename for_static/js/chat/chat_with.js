@@ -85,8 +85,7 @@ document.getElementById('push_btn').onclick = async () => {
     let text = document.getElementById('floatingTextarea2').value;
 
     
-    
-    
+
     // work with string
     let strDiv = `
         <div class="message-container-from">
