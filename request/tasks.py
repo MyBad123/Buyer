@@ -1,4 +1,3 @@
-from pydoc import text
 import requests
 import datetime
 
@@ -12,6 +11,46 @@ from htmlTree.tasks import wow
 
 from .mail import Mail
 
+
+class SerpClass:
+    """class for scan google and yandex"""
+
+    def __init__(self, request_object):
+        self.request_object = request_object
+
+    def change_datetime(self, datetime_status):
+        """write time for stage"""
+
+        if datetime_status == 'datetime_google_started':
+            self.request_object.datetime_google_started = datetime.datetime.now()
+            self.request_object.save()
+        if datetime_status == 'datetime_google_finished':
+            self.request_object.datetime_google_finished = datetime.datetime.now()
+            self.request_object.save()
+        if datetime_status == 'datetime_yandex_started':
+            self.request_object.datetime_yandex_started = datetime.datetime.now()
+            self.request_object.save()
+        if datetime_status == 'datetime_yandex_finished':
+            self.request_object.datetime_yandex_finished = datetime.datetime.now()
+            self.request_object.save()
+
+    def search_google(self):
+        """get results from google search"""
+
+        for i in range(1, 11):
+            # set up the request parameters
+            params = {
+                'api_key': '69A93F783D8E4195ACA16DA1E871C21E',
+                'q': self.request_object.words,
+                'page': str(i),
+                'gl': 'ru',
+                'hl': 'ru',
+                'location': 'Russia',
+                'google_domain': 'google.ru'
+            }
+
+            # make the http GET request to SerpWow
+            api_result = requests.get('https://api.serpwow.com/search', params)
 
 class WorkWithDataForSeo:
     def __init__(self, request_object):

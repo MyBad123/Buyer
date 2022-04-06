@@ -148,7 +148,3 @@ class UserMethods:
         add.delay(new_request_object.id)
 
         return redirect('/user-thanks/')
-
-
-
-
