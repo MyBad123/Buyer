@@ -218,3 +218,4 @@ env/
 !/app/migrations/__init__.py
 
 /test
+/certbot/conf
