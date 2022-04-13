@@ -1,9 +1,9 @@
+import json
+import enum
 import requests
 import datetime
 
-from time import sleep
 from celery import shared_task
-from requests.auth import HTTPBasicAuth
 from django.contrib.auth.models import User
 
 from app.models import RequestModel, ResultModel
@@ -12,221 +12,97 @@ from htmlTree.tasks import wow
 from .mail import Mail
 
 
+class Params(enum.Enum):
+    BEFORE_GOOGLE = 1
+    AFTER_GOOGLE = 2
+    BEFORE_YANDEX = 3
+    AFTER_YANDEX = 4
+
+
 class SerpClass:
     """class for scan google and yandex"""
 
     def __init__(self, request_object):
         self.request_object = request_object
 
-    def change_datetime(self, datetime_status):
-        """write time for stage"""
+    def work_with_search_system(self):
+        """func for working with Google and Yandex"""
 
-        if datetime_status == 'datetime_google_started':
-            self.request_object.datetime_google_started = datetime.datetime.now()
-            self.request_object.save()
-        if datetime_status == 'datetime_google_finished':
-            self.request_object.datetime_google_finished = datetime.datetime.now()
-            self.request_object.save()
-        if datetime_status == 'datetime_yandex_started':
-            self.request_object.datetime_yandex_started = datetime.datetime.now()
-            self.request_object.save()
-        if datetime_status == 'datetime_yandex_finished':
-            self.request_object.datetime_yandex_finished = datetime.datetime.now()
-            self.request_object.save()
+        # part for Google
+        self.set_status(Params.BEFORE_GOOGLE)
 
-    def search_google(self):
-        """get results from google search"""
+        params = {
+            'api_key': '69A93F783D8E4195ACA16DA1E871C21E',
+            'q': self.request_object.words,
+            'gl': 'ru',
+            'hl': 'ru',
+            'location': 'Russia',
+            'google_domain': 'google.ru',
+            'num': '20'
+        }
+        api_result = requests.get('https://api.serpwow.com/search', params)
 
-        for i in range(1, 11):
-            # set up the request parameters
-            params = {
-                'api_key': '69A93F783D8E4195ACA16DA1E871C21E',
-                'q': self.request_object.words,
-                'page': str(i),
-                'gl': 'ru',
-                'hl': 'ru',
-                'location': 'Russia',
-                'google_domain': 'google.ru'
-            }
-
-            # make the http GET request to SerpWow
-            api_result = requests.get('https://api.serpwow.com/search', params)
-
-class WorkWithDataForSeo:
-    def __init__(self, request_object):
-        self.response_yandex = None
-        self.response_google = None
-        self.request_yandex_id = None
-        self.request_google_id = None
-        self.request_object = request_object
-
-    def change_datetime(self, datetime_status):
-        """write time for stage"""
-
-        if datetime_status == 'datetime_google_started':
-            self.request_object.datetime_google_started = datetime.datetime.now()
-            self.request_object.save()
-        if datetime_status == 'datetime_google_finished':
-            self.request_object.datetime_google_finished = datetime.datetime.now()
-            self.request_object.save()
-        if datetime_status == 'datetime_yandex_started':
-            self.request_object.datetime_yandex_started = datetime.datetime.now()
-            self.request_object.save()
-        if datetime_status == 'datetime_yandex_finished':
-            self.request_object.datetime_yandex_finished = datetime.datetime.now()
-            self.request_object.save()
-
-    def request_to_google(self):
-        """make request for DataForSeo(google serach)"""
-
-        self.change_datetime('datetime_google_started')
-
-        request_google = requests.post(
-            'https://api.dataforseo.com/v3/serp/google/organic/task_post',
-            auth=HTTPBasicAuth('9228793@gmail.com', 'd08dd8eaf28be140'),
-            data=("[ { \"language_code\": \"RU\", \"location_code\": 2643, \"priority\": \"2\", \"keyword\": \"" + self.request_object.words + "\" } ]").encode('utf-8')
-        )
-        if request_google.json().get('status_code') == 20000:
-            self.request_google_id = request_google.json().get('tasks')[0].get('id')
-        else:
-            return False
-
-        return True
-
-    def request_to_yandex(self):
-        """make request for DataForSeo(yandex search)"""
-
-        self.change_datetime('datetime_yandex_started')
-
-        request_yandex = requests.post(
-            "https://api.dataforseo.com/v3/serp/yandex/organic/task_post",
-            auth=HTTPBasicAuth('9228793@gmail.com', 'd08dd8eaf28be140'),
-            data=("[ { \"language_code\": \"RU\", \"location_code\": 2643, \"priority\": \"2\", \"keyword\": \"" + self.request_object.words + "\" } ]").encode('utf-8')
-        )
-        if request_yandex.json().get('status_code') == 20000:
-            self.request_yandex_id = request_yandex.json().get('tasks')[0].get('id')
-        else:
-            return False
-
-        return True
-
-    def get_google_results(self):
-        """get urls from google search"""
-
-        while True:
-            sleep(60)
-            self.response_google = requests.get(
-                'https://api.dataforseo.com/v3/serp/google/organic/task_get/regular/$id=' + self.request_google_id,
-                auth=HTTPBasicAuth('9228793@gmail.com', 'd08dd8eaf28be140')
-            )
-            if self.response_google.json().get('tasks')[0].get('status_code') == 20000:
-                break
-
-    def get_yandex_results(self):
-        """get urls from yandex search"""
-
-        while True:
-            sleep(60)
-            self.response_yandex = requests.get(
-                'https://api.dataforseo.com/v3/serp/yandex/organic/task_get/regular/$id=' + self.request_yandex_id,
-                auth=HTTPBasicAuth('9228793@gmail.com', 'd08dd8eaf28be140')
-            )
-            if self.response_yandex.json().get('tasks')[0].get('status_code') == 20000:
-                break
-
-    def write_results_to_db_google(self):
-        for_index = 0
-        for i in self.response_google.json().get('tasks')[0].get('result')[0].get('items'):
-
-            if for_index == 10:
-                break
-            else:
-                for_index += 1
-
+        # save google results
+        for i in api_result.json()['organic_results']:
             ResultModel.objects.create(
                 request=self.request_object,
                 system='google',
-                url=i.get('url')
+                url=i.get('link')
             )
+        self.set_status(Params.AFTER_GOOGLE)
 
-        self.change_datetime('datetime_google_finished')
+        # part for Yandex
+        self.set_status(Params.BEFORE_YANDEX)
+        for i in range(1, 2):
+            params = {
+                'api_key': '69A93F783D8E4195ACA16DA1E871C21E',
+                'q': self.request_object.words,
+                'engine': 'yandex',
+                'yandex_location': '225',
+                'page': i
+            }
+            api_result = requests.get('https://api.serpwow.com/search', params)
 
-    def write_results_to_db_yandex(self):
-        for_index = 0
-        for i in self.response_yandex.json().get('tasks')[0].get('result')[0].get('items'):
+            # save yandex results
+            for i in api_result.json()['organic_results']:
+                ResultModel.objects.create(
+                    request=self.request_object,
+                    system='yandex',
+                    url=i.get('link')
+                )
+        self.set_status(Params.AFTER_YANDEX)
 
-            if for_index == 10:
-                break
-            else:
-                for_index += 1
+    def set_status(self, param):
+        """set status for request_object"""
 
-            ResultModel.objects.create(
-                request=self.request_object,
-                system='yandex',
-                url=i.get('url')
-            )
-
-        self.change_datetime('datetime_yandex_finished')
+        if param == Params.BEFORE_GOOGLE:
+            self.request_object.datetime_google_started = datetime.datetime.now()
+            self.request_object.save()
+        elif param == Params.AFTER_GOOGLE:
+            self.request_object.datetime_google_finished = datetime.datetime.now()
+            self.request_object.save()
+        elif param == Params.BEFORE_YANDEX:
+            self.request_object.datetime_yandex_started = datetime.datetime.now()
+            self.request_object.save()
+        elif param == Params.AFTER_YANDEX:
+            self.request_object.datetime_yandex_finished = datetime.datetime.now()
+            self.request_object.save()
+        else:
+            pass
 
 
 @shared_task
 def add(id_object):
+
+    # get request object
     try:
         request_object = RequestModel.objects.get(id=id_object)
     except RequestModel.DoesNotExist:
         return None
 
-    # class_search = WorkWithDataForSeo(request_object)
-
-    # work with google search
-    # class_search.request_to_google()
-    # class_search.get_google_results()
-    # class_search.write_results_to_db_google()
-
-    # work with yandex search
-    # class_search.request_to_yandex()
-    # class_search.get_yandex_results()
-    # class_search.write_results_to_db_yandex()
-
-    list_refs = [
-        'https://taxibox.ru/models/reklamniy-svetovoi-korob-na-taksi-big-1000.html',
-        'https://exomenu.ru/python10/',
-        'https://www.tangleteezer.ru/all-brushes/hairspray/detangling-sprays/detangling-spray-for-kids/',
-        'https://nskshapki.ru/catalog/product/id/3851/',
-        'https://belobuv.ru/wl-1e-inblu-krossovki-zhenskie.html'
-    ]    
-    index_system = 0
-
-    for i in list_refs:
-        index_system += 1
-        
-        if (index_system % 2):
-            ResultModel.objects.create(
-                request=request_object,
-                system='yandex',
-                url=i
-            )
-        else:
-            ResultModel.objects.create(
-                request=request_object,
-                system='google',
-                url=i
-            )
-
-    request_object.datetime_google_started = datetime.datetime.now()
-    request_object.save()
-    sleep(10)
-
-    request_object.datetime_google_finished = datetime.datetime.now()
-    request_object.save()
-    sleep(10)
-
-    request_object.datetime_yandex_started = datetime.datetime.now()
-    request_object.save()
-    sleep(10)
-
-    request_object.datetime_yandex_finished = datetime.datetime.now()
-    request_object.save()
+    # get results from google(yandex) search
+    serp_object = SerpClass(request_object)
+    serp_object.work_with_search_system()
 
     wow.delay(id_object)
 

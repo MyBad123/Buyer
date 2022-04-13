@@ -99,6 +99,6 @@ STATICFILES_DIRS = [
 ]
 
 # celery settings
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "amqp://buyerrabbitmqus:AS34As4FAswd4325rAWS@rabbit:5672"),
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "amqp://myuser:mypassword@localhost:5672/myvhost"),
 
 
