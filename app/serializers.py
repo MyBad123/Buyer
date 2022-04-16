@@ -242,7 +242,8 @@ class ForResultSerialzier:
                         'urls': [{
                             'url': i.get('url'),
                             'number': str(1)
-                        }]
+                        }],
+                        'contact': parse_object.netloc + '/contact/'
                     }
                 })
 
@@ -264,7 +265,8 @@ class ForResultSerialzier:
                     parse_object.netloc: {
                         'mail': user_object_mail,
                         'system': user_object_system,
-                        'urls': user_object_urls
+                        'urls': user_object_urls,
+                        'contact': parse_object.netloc + '/contact/'
                     }
                 })
         
@@ -275,7 +277,8 @@ class ForResultSerialzier:
                 'root': i,
                 'mail': data_after_root.get(i).get('mail'),
                 'system': data_after_root.get(i).get('system'),
-                'urls': data_after_root.get(i).get('urls')
+                'urls': data_after_root.get(i).get('urls'),
+                'contact': data_after_root.get(i).get('contact')
             })
 
         return list_data

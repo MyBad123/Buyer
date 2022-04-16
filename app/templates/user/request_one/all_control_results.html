@@ -52,6 +52,7 @@
                     <th scope="col">Почта</th>
                     <th scope="col">Сайт</th>
                     <th scope="col">Страницы</th>
+                    <th scope="col">Контактная информациея</th>
                 </tr>
             </thead>
             <tbody>
@@ -67,6 +68,9 @@
                                 <a class="me-md-1" href="{{ j.url }}"> {{ j.number }}  </a>
                             {% endfor %}
                             ]</td>
+                        <td>
+                            <a class="me-md-1" href="https://{{ i.contact }}"> {{ i.contact }}  </a>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tr>
