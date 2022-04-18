@@ -2,6 +2,19 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class Company(models.Model):
+    """model for company"""
+
+    name = models.CharField(max_length=300)
+
+
+class UserForCompany(models.Model):
+    """model for link of user with company"""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+
+
 class RequestModel(models.Model):
     """Model for user's request."""
 
@@ -14,7 +27,8 @@ class RequestModel(models.Model):
     datetime_yandex_finished = models.DateTimeField(null=True, blank=True)
     datetime_site_parsing_started = models.DateTimeField(null=True, blank=True)
     datetime_processing_finished = models.DateTimeField(null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    delete_status = models.BooleanField(default=False)
+    company = models.ForeignKey(Company, on_delete=models.PROTECT)
 
     class Meta:
         db_table = 'requests'
@@ -60,13 +74,3 @@ class MailForMessageModel(models.Model):
     class Meta:
         db_table = 'mails'
         ordering = ['mail']
-
-
-class WaitingMessages(models.Model):
-    """list of waiting messages by number"""
-
-    number = models.CharField(max_length=50, null=True, blank=True)
-    datetime = models.DateTimeField()
-
-    class Meta:
-        db_table = 'waiting_messages'
