@@ -2,25 +2,30 @@ import pathlib
 import datetime
 
 from django.contrib.auth.models import User
-from django.contrib.sessions.models import Session
 from django.shortcuts import render
 from django.http import JsonResponse
 
 # for exceptions
-from django.db.models.deletion import ProtectedError
 from django.db.utils import IntegrityError
 
 from app.models import (
     ResultModel, RequestModel, MailForMessageModel,
-    MessageModel
+    MessageModel, Company, UserForCompany
 )
 
 
 class DbMethods:
     """class for using db"""
 
-    def drop_data_from_db(self):
+    @staticmethod
+    def drop_data_from_db():
         """drop data from all tables"""
+
+        for i in MailForMessageModel.objects.all():
+            i.delete()
+
+        for i in MessageModel.objects.all():
+            i.delete()
 
         for i in ResultModel.objects.all():
             i.delete()
@@ -28,86 +33,115 @@ class DbMethods:
         for i in RequestModel.objects.all():
             i.delete()
 
-        for i in Session.objects.all():
+        for i in UserForCompany.objects.all():
             i.delete()
 
-        for i in User.objects.all():
+        for i in Company.objects.all():
             i.delete()
 
-    def control_username(self, username):
-        """valid username or no"""
+    @staticmethod
+    def control_word(word):
+        """valid username(password) or no"""
 
-        if type(username) != str:
+        if type(word) != str:
             return True
 
-        if username == '':
+        if word == '':
             return True
 
         return False
 
-    def control_password(self, password):
-        """valid username or no"""
+    @staticmethod
+    def create_company(company_name):
+        """add company object with name"""
 
-        if type(password) != str:
-            return True
+        company_object = Company()
+        company_object.name = company_name
+        company_object.save()
 
-        if password == '':
-            return True
+        return company_object
 
-        return False
-    
-    def create_admin(self, username, password):
+    @staticmethod
+    def create_admin(username, password):
         """create admin and add to db"""
 
-        User.objects.create_superuser(
+        user = User.objects.create_superuser(
             username=username,
             email=username + '@gmail.com',
             password=password
         )
 
-    def create_users(self):
+        return user
+
+    @staticmethod
+    def create_users():
         """create 50 users"""
 
+        user_list = []
         for i in range(0, 50):
             try:
-                User.objects.create_user(
-                    username=str(i) + '@gmail.com',
-                    password='Pass@word1'
-                )
+                # create user object
+                user = User()
+                user.username = str(i) + '@gmail.com'
+                user.set_password('Pass@word1')
+                user.save()
+
+                # add user object to list
+                user_list.append(user)
             except IntegrityError:
                 pass
 
-    def add_request_data(self):
+        return user_list
+
+    @staticmethod
+    def link_users_with_company(company, admin, user_list):
+        """create link in db with users and company"""
+
+        # work with admin
+        UserForCompany.objects.create(
+            user=admin,
+            company=company
+        )
+
+        # work with other users
+        for i in user_list:
+            UserForCompany.objects.create(
+                user=i,
+                company=company
+            )
+
+    @staticmethod
+    def add_request_data():
         """add some request to db"""
 
         # list with data 
         data_list = [
             {
-                'name': 'шашки', 
+                'name': 'шашки',
                 'words': 'купить шашки такси желтые',
                 'page': 'https://taxibox.ru/models/reklamniy-svetovoi-korob-na-taksi-big-1000.html'
             },
             {
-                'name': 'питон', 
-                'words': 'купить питон', 
+                'name': 'питон',
+                'words': 'купить питон',
                 'page': 'https://exomenu.ru/python10/'
             },
             {
-                'name': 'спрей', 
-                'words': 'спрей для волос недорогой',  
+                'name': 'спрей',
+                'words': 'спрей для волос недорогой',
                 'page': 'https://www.tangleteezer.ru/all-brushes/hairspray/detangling-sprays/detangling-spray-for-kids/'
             },
             {
-                'name': 'шапку', 
+                'name': 'шапку',
                 'words': 'купить шапку женскую',
                 'page': 'https://nskshapki.ru/catalog/product/id/3851/'
             },
             {
-                'name': 'кроссы', 
+                'name': 'кроссы',
                 'words': 'четкие кроссы',
                 'page': 'https://belobuv.ru/wl-1e-inblu-krossovki-zhenskie.html'
             }
-        ] 
+        ]
 
         # add data
         index_system = 0
@@ -129,8 +163,8 @@ class DbMethods:
                 datetime_processing_finished=datetime.datetime.now(),
                 user=user
             )
-            
-            if (index_system % 2):
+
+            if index_system % 2:
                 ResultModel.objects.create(
                     request=request_object,
                     system='google',
@@ -147,7 +181,8 @@ class DbMethods:
                     mail='genag4448@gmail.com'
                 )
 
-    def add_mails(self):
+    @staticmethod
+    def add_mails():
         """add mails to result for chat"""
 
         # get all result objects 
@@ -166,7 +201,8 @@ class DbMethods:
                     request=i.request
                 )
 
-    def add_letter(self):
+    @staticmethod
+    def add_letter():
         """add latter to db"""
 
         # create text for adding
@@ -180,7 +216,7 @@ class DbMethods:
         user = User.objects.get(
             username='0@gmail.com'
         )
-			
+
         # add to table
         hz_index = 0
         for i in RequestModel.objects.all():
@@ -209,9 +245,11 @@ class DbMethods:
                     request=i
                 )
             hz_index += 1
-        
+
 
 class DbView:
+    """view's methods for work with db"""
+
     @staticmethod
     def get_db_page(request):
         return render(request, 'db/db.html', context={
@@ -221,51 +259,52 @@ class DbView:
 
     @staticmethod
     def delete(request):
-        db_object = DbMethods()
-        db_object.drop_data_from_db()
+        DbMethods.drop_data_from_db()
 
         return JsonResponse(data={}, status=200)
 
     @staticmethod
     def create(request):
-        if request.method != 'POST':
-            return JsonResponse(data={
-                'error': '1'
-            })
+        """create admin and 50 users"""
 
         # get data and control this
-        db_object = DbMethods()
         data = {
             'login': request.POST.get('login', None),
             'password': request.POST.get('password', None)
         }
-        if db_object.control_username(data.get('login')):
+        if DbMethods.control_word(data.get('login')):
             return render(request, 'db/db.html', context={
                 'login': True,
                 'password': False
             })
-        if db_object.control_password(data.get('password')):
+        if DbMethods.control_word(data.get('password')):
             return render(request, 'db/db.html', context={
                 'login': False,
                 'password': True
             })
 
-        # delete and create data
-        db_object.drop_data_from_db()
-        db_object.create_admin(
-            data.get('login'), 
+        # delete data from db
+        DbMethods.drop_data_from_db()
+
+        # create company, admin, users
+        company_obj = DbMethods.create_company('name')
+        admin_obj = DbMethods.create_admin(
+            data.get('login'),
             data.get('password')
         )
-        db_object.create_users()
-        db_object.add_request_data()
-        db_object.add_mails()
-        db_object.add_letter()
-        
+        user_obj_list = DbMethods.create_users()
+
+        # create link with users and company
+        DbMethods.link_users_with_company(
+            company_obj, admin_obj, user_obj_list
+        )
+
+        # create
+        # DbMethods.add_request_data()
+        # DbMethods.add_mails()
+        # DbMethods.add_letter()
+
         return render(request, 'db/db.html', context={
             'login': False,
             'password': False
         })
-
-
-
-
