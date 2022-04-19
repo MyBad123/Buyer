@@ -6,7 +6,7 @@ from django.db.utils import IntegrityError
 
 from app.models import (
     MessageModel, MailForMessageModel, RequestModel, 
-    WaitingMessages, ResultModel
+    ResultModel
 )
 
 
@@ -25,7 +25,6 @@ class Mail:
 
         msg['Subject'] = 'Заявка [' + subject_number + ']'
         msg['From'] = "gena.kuznetsov@internet.ru"
-        print(mail)
         msg['To'] = mail
 
         server = smtplib.SMTP('smtp.mail.ru: 25')
@@ -33,14 +32,6 @@ class Mail:
         server.login("gena.kuznetsov@internet.ru", "o%pdUaeIUI12")
         server.send_message(msg)
         server.quit()
-
-    def set_number_for_waiting(self, number):
-        """set number to db"""
-
-        WaitingMessages.objects.create(
-            number=number,
-            datetime=datetime.datetime.now()
-        )
 
     def send_mails(self, mails, user):
         """send text to mails"""
@@ -59,9 +50,6 @@ class Mail:
             
             message_object.number = number
             message_object.save()
-
-            # save some data to db 
-            self.set_number_for_waiting(number)
 
             # send message
             self.send_mail(i, number)

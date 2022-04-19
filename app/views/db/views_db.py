@@ -39,6 +39,9 @@ class DbMethods:
         for i in Company.objects.all():
             i.delete()
 
+        for i in User.objects.all():
+            i.delete()
+
     @staticmethod
     def control_word(word):
         """valid username(password) or no"""
@@ -111,7 +114,7 @@ class DbMethods:
             )
 
     @staticmethod
-    def add_request_data():
+    def add_request_data(company_object):
         """add some request to db"""
 
         # list with data 
@@ -148,9 +151,6 @@ class DbMethods:
         for i in data_list:
             index_system += 1
 
-            user = User.objects.all()[1]
-            print(user)
-
             request_object = RequestModel.objects.create(
                 name=i.get('name'),
                 words=i.get('words'),
@@ -161,7 +161,7 @@ class DbMethods:
                 datetime_yandex_finished=datetime.datetime.now(),
                 datetime_site_parsing_started=datetime.datetime.now(),
                 datetime_processing_finished=datetime.datetime.now(),
-                user=user
+                company=company_object
             )
 
             if index_system % 2:
@@ -299,8 +299,9 @@ class DbView:
             company_obj, admin_obj, user_obj_list
         )
 
-        # create
-        # DbMethods.add_request_data()
+        # create request
+        DbMethods.add_request_data(company_obj)
+
         # DbMethods.add_mails()
         # DbMethods.add_letter()
 

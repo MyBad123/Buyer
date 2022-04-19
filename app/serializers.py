@@ -2,7 +2,10 @@ from urllib import parse
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import RequestModel, ResultModel
+from .models import (
+    RequestModel, ResultModel, Company
+)
+
 
 class AuthSerizliser(serializers.Serializer):
     """serializer"""
@@ -29,8 +32,16 @@ class UserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = [
+            'name'
+        ]
+
+
 class RequestsSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    company = CompanySerializer()
 
     class Meta:
         model = RequestModel
@@ -38,7 +49,7 @@ class RequestsSerializer(serializers.ModelSerializer):
             'id', 'words', 'name', 'datetime_created', 'datetime_google_started',
             'datetime_google_finished', 'datetime_yandex_started',
             'datetime_yandex_finished', 'datetime_site_parsing_started',
-            'datetime_processing_finished', 'user'
+            'datetime_processing_finished', 'delete_status', 'company'
         ]
 
 
@@ -68,13 +79,14 @@ class RequestsTableSerializer(serializers.ModelSerializer):
             else:
                 status = 'окончание'
 
-            data.append({
-                'name': i.get('name'),
-                'date_creation': f'{ date[8:10] }.{ date[5:7] }.{ date[0:4] }',
-                'status': status,
-                'user': i.get('user').get('username'),
-                'id': i.get('id')
-            })
+            if i.get('delete_status') != True:
+                data.append({
+                    'name': i.get('name'),
+                    'date_creation': f'{ date[8:10] }.{ date[5:7] }.{ date[0:4] }',
+                    'status': status,
+                    'user': i.get('company').get('name'),
+                    'id': i.get('id')
+                })
 
         return data
 
@@ -171,7 +183,7 @@ class RequestsTableSerializer(serializers.ModelSerializer):
             'id': serializer.data.get('id'),
             'name': serializer.data.get('name'),
             'words': serializer.data.get('words'),
-            'user': serializer.data.get('user').get('username'),
+            'user': serializer.data.get('company').get('name'),
             'stage': stage,
             'datetime_created': datetime_created,
 

@@ -11,7 +11,7 @@ from app.serializers import (
     RequestsSerializer
 )
 from app.models import (
-    RequestModel
+    RequestModel, UserForCompany
 )
 from app.utils import (
     post_and_auth
@@ -84,29 +84,39 @@ class UserMethods:
     def get_users_page(request):
         """get user's page"""
 
+        # control permissions for user
         if not request.user.is_authenticated:
             return redirect('/')
-        elif request.user.is_superuser:
+
+        if request.user.is_superuser:
             return redirect('/admin/')
+
+        # get company for user
+        company = UserForCompany.objects.get(
+            user=request.user
+        ).company
+
+        # get all request objects
+        request_objects = RequestModel.objects.filter(
+            company=company
+        )
+        request_objects = request_objects.order_by(
+            'datetime_created'
+        )
+
+        # if request_objects is empty
+        if len(request_objects) == 0:
+            request_empty = True
         else:
-            # get all request objects
-            request_objects = RequestModel.objects.all().order_by(
-                'datetime_created'
-            )
+            request_empty = False
 
-            # if request_objects is empty
-            if len(request_objects) == 0:
-                request_empty = True
-            else:
-                request_empty = False
-
-            return render(request, 'user/main/main.html', context={
-                'user': request.user,
-                'requests': RequestsTableSerializer.get_data(
-                    RequestsSerializer(request_objects, many=True)
-                ),
-                'request_empty': request_empty
-            })
+        return render(request, 'user/main/main.html', context={
+            'user': request.user,
+            'requests': RequestsTableSerializer.get_data(
+                RequestsSerializer(request_objects, many=True)
+            ),
+            'request_empty': request_empty
+        })
 
     @staticmethod
     def new_request_page(request):
@@ -139,11 +149,17 @@ class UserMethods:
                 'error_words': True
             })
 
+        # get company
+        company = UserForCompany.objects.get(
+            user=request.user
+        ).company
+
         new_request_object = RequestModel.objects.create(
             name=new_request,
             words=words,
             datetime_created=datetime.datetime.now(),
-            user=request.user
+            creator=request.user,
+            company=company
         )
         add.delay(new_request_object.id)
 

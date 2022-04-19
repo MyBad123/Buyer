@@ -23,6 +23,7 @@ class SerpClass:
     """class for scan google and yandex"""
 
     def __init__(self, request_object):
+        self.link_list = []
         self.request_object = request_object
 
     def work_with_search_system(self):
@@ -44,11 +45,13 @@ class SerpClass:
 
         # save google results
         for i in api_result.json()['organic_results']:
-            ResultModel.objects.create(
-                request=self.request_object,
-                system='google',
-                url=i.get('link')
-            )
+            if i.get('link') not in self.link_list:
+                self.link_list.append(i.get('link'))
+                ResultModel.objects.create(
+                    request=self.request_object,
+                    system='google',
+                    url=i.get('link')
+                )
         self.set_status(Params.AFTER_GOOGLE)
 
         # part for Yandex
@@ -64,12 +67,14 @@ class SerpClass:
             api_result = requests.get('https://api.serpwow.com/search', params)
 
             # save yandex results
-            for i in api_result.json()['organic_results']:
-                ResultModel.objects.create(
-                    request=self.request_object,
-                    system='yandex',
-                    url=i.get('link')
-                )
+            for j in api_result.json()['organic_results']:
+                if j.get('link') not in self.link_list:
+                    self.link_list.append(j.get('link'))
+                    ResultModel.objects.create(
+                        request=self.request_object,
+                        system='yandex',
+                        url=j.get('link')
+                    )
         self.set_status(Params.AFTER_YANDEX)
 
     def set_status(self, param):

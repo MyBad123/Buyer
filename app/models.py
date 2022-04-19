@@ -29,6 +29,7 @@ class RequestModel(models.Model):
     datetime_processing_finished = models.DateTimeField(null=True, blank=True)
     delete_status = models.BooleanField(default=False)
     company = models.ForeignKey(Company, on_delete=models.PROTECT)
+    creator = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
 
     class Meta:
         db_table = 'requests'

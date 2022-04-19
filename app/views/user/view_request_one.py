@@ -4,7 +4,8 @@ from django.shortcuts import (
     redirect
 )
 from app.models import (
-    RequestModel, ResultModel, MailForMessageModel
+    RequestModel, ResultModel, MailForMessageModel,
+    UserForCompany
 )
 from app.serializers import (
     RequestsSerializer,
@@ -36,9 +37,19 @@ class RequestOneView:
         if request.user.is_anonymous:
             return redirect('/')
 
+        # get company for this request
+        try:
+            company = UserForCompany.objects.get(
+                user=request.user
+            ).company
+        except UserForCompany.DoesNotExist:
+            return redirect('/')
+
         # get object
         try:
-            request_object = RequestModel.objects.get(id=id)
+            request_object = RequestModel.objects.get(
+                id=id, company=company
+        )
         except RequestModel.DoesNotExist:
             return redirect('/')
 
@@ -77,6 +88,14 @@ class RequestOneView:
                     'mail': i.mail,
                     'site_name': RequestOneView.get_site_name(i)
                 })
+
+        # it is my request(or no)
+        if request.user == request_object.creator:
+            is_creator = True
+        else:
+            is_creator = False
+
+        print(is_creator)
     
         # update context with new_data
         context.update({
@@ -86,7 +105,9 @@ class RequestOneView:
             'all_results_bool': all_results_bool,
             'control_results_bool': control_results_bool,
             'messages_bool': messages_bool,
-            'messages': messages_struct
+            'messages': messages_struct,
+            'is_creator': is_creator,
+            'id_for_link': id
         })
 
         return render(
@@ -94,3 +115,20 @@ class RequestOneView:
             'user/request_one/request_one.html',
             context=context
         )
+
+    @staticmethod
+    def delete_request(request, id):
+        """delete request if user is creator"""
+
+        # control id
+        try:
+            request_object = RequestModel.objects.get(id=id)
+        except RequestModel.DoesNotExist:
+            return redirect('/')
+
+        # control user
+        if request.user == request_object.creator:
+            request_object.delete_status = True
+            request_object.save()
+
+        return redirect('/')

@@ -66,6 +66,13 @@
             <div>Дата и время окончания: {{ datetime_processing_finished }}</div>
         {% endif %}
     </div>
+
+    {% if is_creator %}
+        <div class="mt-4 my-3 p-3 bg-body rounded shadow-sm">
+            <h2> Управление </h2>
+            <div>Вы можете удалить заявку <a href="/request-page-delete/{{ id_for_link }}/">здесь</a></div>
+        </div>
+    {% endif %}
     
     {% if results_bool %}
         <div class="mt-4 my-3 p-3 bg-body rounded shadow-sm">
