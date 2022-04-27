@@ -29,7 +29,7 @@ class Mail:
 
         server = smtplib.SMTP('smtp.mail.ru: 25')
         server.starttls()
-        server.login("gena.kuznetsov@internet.ru", "o%pdUaeIUI12")
+        server.login("gena.kuznetsov@internet.ru", "N990kdJXnnY58aKjsMb7")
         server.send_message(msg)
         server.quit()
 
