@@ -14,6 +14,7 @@
         <div class="content">
             <p class="reg_word">Авторизация</p>
             <div class="container_input">
+                {% csrf_token %}
                 <input type="text" class="form-control input_login" placeholder="Логин">
                 <span class="span_login">Логин</span>
             </div>
