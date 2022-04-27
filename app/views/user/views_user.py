@@ -21,6 +21,45 @@ from request.tasks import (
 )
 
 
+class ForGetUsersPageApi:
+    """some utils for get_users_page_api method"""
+
+    def __init__(self, company) -> None:
+        self.company = company
+
+    @staticmethod
+    def time_status(req_obj: RequestModel) -> str:
+        """get status of request obj"""
+
+        # get stage
+        if req_obj.datetime_google_started is None:
+            return 'в очереди'
+        elif req_obj.datetime_google_finished is None:
+            return 'поиск в google search начался'
+        elif req_obj.datetime_google_started is None:
+            return 'поиск в google search закончился'
+        elif req_obj.datetime_yandex_finished is None:
+            return 'поиск в yandex search начался'
+        elif req_obj.datetime_site_parsing_started is None:
+            return 'поиск в yandex search закончился'
+        elif req_obj.datetime_processing_finished is None:
+            return 'ссылки в обработке'
+        else:
+            return 'окончание'
+
+    def get_status(self) -> list:
+        """get list of status for requests from db"""
+
+        status_list = []
+        for i in RequestModel.objects.filter(company=self.company):
+            status_list.append({
+                'id': i.id,
+                'status': ForGetUsersPageApi.time_status(i)
+            })
+
+        return status_list
+
+
 class AuthMethods:
     @staticmethod
     def auth_page(request):
@@ -164,3 +203,22 @@ class UserMethods:
         add.delay(new_request_object.id)
 
         return redirect('/user-thanks/')
+
+    @staticmethod
+    def get_users_page_api(request) -> JsonResponse:
+        """get data for main page"""
+
+        # get company
+        try:
+            company = UserForCompany.objects.get(
+                user=request.user
+            ).company
+        except UserForCompany.DoesNotExist:
+            return JsonResponse(data={}, status=200)
+
+        # get status for all requests from db
+        utils_obj = ForGetUsersPageApi(company)
+
+        return JsonResponse(data={
+            'status': utils_obj.get_status()
+        }, status=200)

@@ -22,6 +22,7 @@ urlpatterns = [
     path('auth/', AuthMethods.auth),
     path('exit/', AuthMethods.exit),
     path('user-page/', UserMethods.get_users_page),
+    path('user-page-api/', UserMethods.get_users_page_api),
     path('user-new-request-page/', UserMethods.new_request_page),
     path('user-new-request/', UserMethods.new_request),
     path('user-thanks/', RequestThanks.get_thanks_page),
