@@ -11,13 +11,12 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
+from htmlTree.Functions import CreationCSV
 
 from htmlTree.Class.PageElement import Elements
-from htmlTree.Functions import AnalyzingElementsFunctions as AEF
 from htmlTree.Functions import Sql
 
 ignore = ["#"]
-demand = ''
 domain = ''
 list_urls = []
 order_id = 0
@@ -34,7 +33,6 @@ def find_links(link, depth):
 
     try:
         driver.get(link)
-        print(link)
         if depth < 4:
             list_of_elements = []
             count_of_page += 1
@@ -62,7 +60,7 @@ def find_links(link, depth):
                                           res_of_el.get('class'),
                                           res_of_el.get('id'), " ".join(str(res_of_el.get('style')).split()), i,
                                           res_of_el.get('href'), " ".join(res_of_el.text.split()), path_str)
-                        AEF.analyze_text(" ".join(res_of_el.text.split()), new_el)
+                        new_el.analyze_text()
                         list_of_elements.append(new_el)
                         order_id += 1
 
@@ -80,7 +78,7 @@ def find_links(link, depth):
                     list_of_elements[i].font_family = driver_elements[j].value_of_css_property('font-family')
                     list_of_elements[i].color = driver_elements[j].value_of_css_property('color')
                     list_of_elements[i].color = driver_elements[j].value_of_css_property('background-color')
-                    AEF.convert_color(list_of_elements[i])
+                    list_of_elements[i].convert_color()
 
                     list_of_elements[i].location_x = driver_elements[j].location['x']
                     list_of_elements[i].location_y = driver_elements[j].location['y']
@@ -165,8 +163,7 @@ def find_links(link, depth):
         print("selenium.common.exceptions.WebDriverException: " + link)
 
 
-def site_parsing(url, req):
-    global demand
+def site_parsing(url):
     global domain
     global driver
 
@@ -174,16 +171,9 @@ def site_parsing(url, req):
     driver.maximize_window()
 
     list_urls.append(url)
-    demand = req
     domain = re.findall(r'([\w\-:]+)\/\/', url)[0] + '//' + re.findall(r'\/\/([\w\-.]+)', url)[0]
-    sql.create_table(
-        data=["order", "content_element", "url", "length", "class_ob", "id_element", "style", "enclosure", "href", "text",
-              "count", "location_x", "location_y", "size_width", "size_height", "path", "integer", "float", "n_digits",
-              "presence_of_ruble", "presence_of_vendor", "presence_of_link", "presence_of_at", "has_point",
-              "writing_form", "font_size", "font_family", "color",
-              "distance_btw_el_and_ruble", "distance_btw_el_and_article", "ratio_coordinate_to_height", "hue",
-              "saturation", "brightness", "background"])
+    sql.create_table()
 
     find_links(url, 1)
-
-    return count_of_page
+    CreationCSV.create_scv(count_of_page)
+    driver.close()
