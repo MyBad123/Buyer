@@ -1,3 +1,4 @@
+import numpy as np
 import pyodbc
 from datetime import datetime
 
@@ -15,12 +16,12 @@ class Sql:
 
     def create_table(self,
                      data=["order", "content_element", "url", "length", "class_ob", "id_element", "style", "enclosure",
-                           "href", "text", "count", "location_x", "location_y", "size_width", "size_height", "path",
+                           "href", "count", "location_x", "location_y", "size_width", "size_height", "path",
                            "integer", "float", "n_digits", "presence_of_ruble", "presence_of_vendor",
-                           "presence_of_link", "presence_of_at", "has_point", "check_duplicate", "writing_form",
+                           "presence_of_link", "presence_of_at", "has_point", "writing_form",
                            "font_size", "font_family", "color", "distance_btw_el_and_ruble",
                            "distance_btw_el_and_article", "ratio_coordinate_to_height", "hue", "saturation",
-                           "brightness", "background"], table="Pages"):
+                           "brightness", "background", "text"], table="Pages"):
         cursor = self.cnxn.cursor()
         cursor.fast_executemany = True
 
@@ -28,27 +29,30 @@ class Sql:
 
         query += "\t[Id] int PRIMARY KEY IDENTITY(1,1),\n"
 
-        for i in range(len(list(data))):
+        for i in range(len(list(data))-1):
             query += "\t[{}] varchar(max)".format(list(data)[i])
 
             if i != len(list(data)) - 1:
                 query += ",\n"
             else:
                 query += "\n);"
+        query += "\t[{}] nvarchar(max) ".format(list(data)[len(list(data))-1])
+        query += "\n);"
 
         cursor.execute(query)
+
         self.cnxn.commit()
 
         self.query += ("\n\n-- create table\n" + query)
 
     def insert_row(self, data,
                    df=["order", "content_element", "url", "length", "class_ob", "id_element", "style", "enclosure",
-                       "href", "text", "count",
+                       "href", "count",
                        "location_x", "location_y", "size_width", "size_height", "path", "integer", "float", "n_digits",
                        "presence_of_ruble", "presence_of_vendor", "presence_of_link", "presence_of_at", "has_point",
                        "writing_form", "font_size", "font_family", "color",
                        "distance_btw_el_and_ruble", "distance_btw_el_and_article", "ratio_coordinate_to_height", "hue",
-                       "saturation", "brightness", "background"], table="Pages"):
+                       "saturation", "brightness", "background", "text"], table="Pages"):
         cursor = self.cnxn.cursor()
         cursor.fast_executemany = True
 
@@ -86,21 +90,23 @@ class Sql:
         cursor = self.cnxn.cursor()
         return cursor.execute(f"SELECT * FROM {tables}")
 
-    def select_without_duplicates(self, group, table="Pages"):
+    def select_all_arr(self, tables="Pages"):
         cursor = self.cnxn.cursor()
-        if isinstance(group, str):
-            group = [group]
+        arr = []
+        for el in cursor.execute(f"SELECT * FROM {tables}"):
+            arr.append(el.html)
+        return arr
 
-        group_by = '[' + '], ['.join(group) + ']'
+    def select_without_duplicates(self, group=['url', 'text'], table="Pages"):
+        cursor = self.cnxn.cursor()
         query = f"""
-            SELECT * FROM {table}
-            Where [Id]  in
-            (
-                select min(id) as MinRowID
-                FROM {table}
-                group by {group_by}
-            )
+            SELECT o.*
+            FROM {table} o                   
+              LEFT JOIN {table} b             
+                  ON o.{group[0]} = b.{group[0]} AND o.{group[1]} = b.{group[1]} AND o.enclosure < b.enclosure
+            WHERE b.enclosure is NULL 
         """
+
         return cursor.execute(query)
 
     def delete_template(self, count_of_pages, table='Pages'):
@@ -110,15 +116,17 @@ class Sql:
         """
 
         for unique_value in cursor.execute(query).fetchall():
-            count_value = cursor.execute(f"SELECT COUNT(Id) FROM {table} WHERE text = '{unique_value[0]}'").fetchone()[0]
+            count_value = \
+                cursor.execute(f"SELECT COUNT(Id) FROM {table} WHERE text = '{unique_value[0]}'").fetchone()[0]
             query_1 = f"""
                 UPDATE {table} SET count = {count_value} WHERE text = '{unique_value[0]}'
             """
             cursor.execute(query_1)
-
+        count_of_pages = int(count_of_pages*0.2)
         query = f"""
-            DELETE FROM {table} WHERE count > {0.2*count_of_pages} AND n_digits != 11 AND presence_of_at = 0
+            DELETE FROM {table} WHERE count > {count_of_pages} AND n_digits != 11 AND presence_of_at = 0
         """
+
         cursor.execute(query)
         query = f"""
                     DELETE FROM {table}
@@ -127,7 +135,7 @@ class Sql:
                         select min(id) as MinRowID
                         FROM {table}
                         WHERE n_digits = 11
-                    ) AND n_digits = 11
+                    ) AND n_digits = 11 AND count > {count_of_pages}
                 """
         cursor.execute(query)
         query = f"""
@@ -137,7 +145,7 @@ class Sql:
                                 select min(id) as MinRowID
                                 FROM {table}
                                 WHERE presence_of_at = 1
-                            ) AND presence_of_at = 1
+                            ) AND presence_of_at = 1 AND count > {count_of_pages}
                         """
         cursor.execute(query)
         self.cnxn.commit()
