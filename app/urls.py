@@ -7,6 +7,7 @@ from .views.admin.views_admin import *
 from .views.user.view_request_one import *
 from .views.user.chat.view_chat import *
 from .views.user.view_result import *
+from .views.markup_doc.view_markup_doc import *
 
 urlpatterns = [
     path('admin/', AdminMethods.get_admin_page),
@@ -37,4 +38,5 @@ urlpatterns = [
     path('chat/<int:pk>/', ChatViews.get_page_with_mail),
     path('chat-get-messages/<int:pk>/', ChatViews.message_get),
     path('chat-get-send-message/', ChatViews.send_message),
+    path('create-markup-doc/', MarkupDoc.create_markup_doc),
 ]

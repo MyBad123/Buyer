@@ -98,7 +98,6 @@ class SerpClass:
 
 @shared_task
 def add(id_object):
-
     # get request object
     try:
         request_object = RequestModel.objects.get(id=id_object)
@@ -130,3 +129,8 @@ def send(data: dict):
         mails=data.get('mails'),
         user=data.get('user')
     )
+
+
+@shared_task
+def send_attach(email):
+    Mail.send_email_attach(email)

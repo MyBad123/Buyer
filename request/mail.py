@@ -2,20 +2,42 @@ import smtplib
 import datetime
 
 from email.message import EmailMessage
+from email.mime.application import MIMEApplication
+
 from django.db.utils import IntegrityError
 
 from app.models import (
-    MessageModel, MailForMessageModel, RequestModel, 
+    MessageModel, MailForMessageModel, RequestModel,
     ResultModel
 )
 
 
 class Mail:
     """class for send mail"""
-    
+
     def __init__(self, text, request_id):
         self.text = text
         self.request_id = request_id
+
+    @staticmethod
+    def send_email_attach(email: str, file=None):
+        with open('csv.csv', 'w'):
+            pass
+
+        msg = EmailMessage()
+
+        msg['Subject'] = 'Parser result'
+        msg['From'] = "gena.kuznetsov@internet.ru"
+        msg['To'] = email
+
+        with open('csv.csv', 'rb') as file:
+            msg.attach(MIMEApplication(file.read(), Name='0csv.csv'))
+
+        server = smtplib.SMTP('smtp.mail.ru: 25')
+        server.starttls()
+        server.login("gena.kuznetsov@internet.ru", "N990kdJXnnY58aKjsMb7")
+        server.send_message(msg)
+        server.quit()
 
     def send_mail(self, mail, subject_number):
         """send text to mail"""
@@ -43,11 +65,11 @@ class Mail:
                 mail=i,
                 datetime=datetime.datetime.now(),
                 route='from',
-                message=self.text, 
+                message=self.text,
                 request=RequestModel.objects.get(id=int(self.request_id))
             )
             number = str(message_object.id) + '-' + str(user.id)
-            
+
             message_object.number = number
             message_object.save()
 
