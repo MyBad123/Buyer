@@ -1,5 +1,5 @@
 # pull official base image
-FROM python:3.9.6
+FROM python:3.9.6-buster
 
 # set work directory
 WORKDIR /usr/src/app
@@ -17,8 +17,7 @@ RUN mkdir -p $APP_HOME/mediafiles
 WORKDIR $APP_HOME
 
 # install psycopg2 dependencies
-RUN apt-get update \
-    && apt-get install postgresql gcc python3 musl-dev tk
+RUN apt-get update && apt-get install postgresql gcc python3 musl-dev tk -y
 
 COPY ./requirements.txt .
 
