@@ -18,7 +18,7 @@ WORKDIR $APP_HOME
 
 # install psycopg2 dependencies
 RUN apk update \
-    && apk add postgresql-dev gcc python3-dev musl-dev tk
+    && apt add postgresql-dev gcc python3-dev musl-dev tk
 
 COPY ./requirements.txt .
 
