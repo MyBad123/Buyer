@@ -17,7 +17,7 @@ RUN mkdir -p $APP_HOME/mediafiles
 WORKDIR $APP_HOME
 
 # install psycopg2 dependencies
-RUN apt-get update && apt-get install libiodbc2-dev postgresql gcc python3 musl-dev tk -y
+RUN apt-get update && apt-get install libiodbc2-dev postgresql-dev gcc python3 musl-dev tk -y
 
 COPY ./requirements.txt .
 
