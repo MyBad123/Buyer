@@ -17,8 +17,8 @@ RUN mkdir -p $APP_HOME/mediafiles
 WORKDIR $APP_HOME
 
 # install psycopg2 dependencies
-RUN apt update \
-    && apt install postgresql-dev gcc python3-dev musl-dev tk
+RUN apt-get update \
+    && apt-get install postgresql-dev gcc python3-dev musl-dev tk
 
 COPY ./requirements.txt .
 
