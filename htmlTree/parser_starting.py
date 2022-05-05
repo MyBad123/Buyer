@@ -1,3 +1,4 @@
-from htmlTree.Functions.Parser import site_parsing
+from htmlTree.Functions.Parser import Parser
 
-site_parsing("https://allflorarium.ru/")
+parser = Parser()
+parser.site_parsing("https://allflorarium.ru/")
