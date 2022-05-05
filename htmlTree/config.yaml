@@ -1,0 +1,7 @@
+dbfilepath: project.db
+dbtableprefix: pars_
+user: postgres
+password: 1769nap
+host: 127.0.0.1
+port: 5432
+database: parser_db

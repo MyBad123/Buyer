@@ -61,7 +61,7 @@ class Elements:
         self.hue = 0
         self.saturation = 0
         self.brightness = 0
-        self.background = ""
+        self.background = None
 
     def convert_color(self):
         l_border = self.color.find("(") + 1
@@ -88,7 +88,9 @@ class Elements:
 
         text = self.text.lower()
 
-        if text.find("₽") != -1 or text.find("руб.") != -1 or text.find("р.") != -1:
+        if text.find("₽") != -1 or text.find("руб.") != -1 or len(re.findall(r' р.', text)) > 0 \
+                or len(re.findall(r' руб$', text)) > 0 or len(re.findall(r' руб ', text)) > 0 \
+                or len(re.findall(r'\dруб', text)) > 0 or len(re.findall(r'\dр', text)) > 0:
             self.presence_of_ruble = 1
 
         find1 = text.find("артикул")
