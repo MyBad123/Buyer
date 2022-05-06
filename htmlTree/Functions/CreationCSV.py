@@ -1,11 +1,15 @@
+import uuid
+
 import pandas as pd
+
+from htmlTree import parser_path
 from htmlTree.Tables.ElementTable import *
 
 
 class Csv:
     elementTable = ElementTable()
 
-    def create_scv(self, count_of_page):
+    def create_scv(self, count_of_page, uuid4):
         list_of_elements = []
         columns = list(self.elementTable.column_names())
         for el_to_add in self.elementTable.all():
@@ -100,5 +104,5 @@ class Csv:
                       "distance_btw_el_and_article": el_to_add['distance_btw_el_and_article'],
                       "id_xpath": el_to_add['id_xpath']}])
                 df = pd.concat([df, new_row])
-
-        df.to_csv('Csv.csv')
+        path = parser_path + f'/csv_results/{uuid4}.csv'
+        df.to_csv(path)

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django import forms
 
-from request.tasks import send_attach
+from request.tasks import send_marcup_csv_attach
 
 
 class LinkEmailForm(forms.Form):
@@ -22,7 +22,15 @@ class MarkupDoc:
         if request.method == 'POST':
             form = LinkEmailForm(request.POST)
             if form.is_valid():
-                send_attach.delay(form.data['email'])
+                send_marcup_csv_attach.delay(form.data['email'], form.data['link'])
+                return render(
+                    request,
+                    'markup/markup_create_doc.html',
+                    {
+                        'status': 'The application was successfully created. You will receive an email',
+                        'form': form
+                    }
+                )
         else:
             form = LinkEmailForm()
 

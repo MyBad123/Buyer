@@ -1,6 +1,7 @@
 import math
 import re
 import time
+from random import random, randint
 
 import numpy as np
 import selenium
@@ -155,7 +156,7 @@ class Parser:
                             and len(re.findall(r'\.jpg|\.jpeg|\.png|\.pdf|\.mp4|\.JPG|\.PNG|\.PDF$',
                                                str(part_link_page.get('href')))) < 1:
                         self.list_urls.append(link_page)
-                        rnd = self.random.randint(1, 4)
+                        rnd = randint(1, 4)
                         time.sleep(1 + rnd)
                         self.find_links(link_page, depth + 1)
         except selenium.common.exceptions.TimeoutException:
@@ -163,7 +164,7 @@ class Parser:
         except selenium.common.exceptions.WebDriverException:
             print("selenium.common.exceptions.WebDriverException: " + link)
 
-    def site_parsing(self, url):
+    def site_parsing(self, url, uuid4):
         self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
         self.driver.maximize_window()
 
@@ -173,5 +174,5 @@ class Parser:
 
         self.find_links(url, 1)
         csv = Csv()
-        csv.create_scv(self.count_of_page)
+        csv.create_scv(self.count_of_page, uuid4)
         self.driver.close()

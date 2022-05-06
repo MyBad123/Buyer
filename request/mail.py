@@ -2,13 +2,12 @@ import smtplib
 import datetime
 
 from email.message import EmailMessage
-from email.mime.application import MIMEApplication
 
-from django.db.utils import IntegrityError
+from django.core.mail import EmailMessage as EmailMessageDjango
 
 from app.models import (
-    MessageModel, MailForMessageModel, RequestModel,
-    ResultModel
+    MessageModel,
+    RequestModel,
 )
 
 
@@ -20,24 +19,14 @@ class Mail:
         self.request_id = request_id
 
     @staticmethod
-    def send_email_attach(email: str, file=None):
-        with open('csv.csv', 'w'):
-            pass
-
-        msg = EmailMessage()
-
-        msg['Subject'] = 'Parser result'
-        msg['From'] = "gena.kuznetsov@internet.ru"
-        msg['To'] = email
-
-        with open('csv.csv', 'rb') as file:
-            msg.attach(MIMEApplication(file.read(), Name='0csv.csv'))
-
-        server = smtplib.SMTP('smtp.mail.ru: 25')
-        server.starttls()
-        server.login("gena.kuznetsov@internet.ru", "N990kdJXnnY58aKjsMb7")
-        server.send_message(msg)
-        server.quit()
+    def send_email_attach(email: str, file_path: str):
+        email = EmailMessageDjango(
+            subject='Parsing result',
+            from_email='buyer-support@1d61.com',
+            to=[email]
+        )
+        email.attach_file(file_path)
+        email.send()
 
     def send_mail(self, mail, subject_number):
         """send text to mail"""

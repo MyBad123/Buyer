@@ -39,6 +39,12 @@ services:
     image: "rabbitmq:3-management"
     env_file:
       - ./.env
+    environment:
+      RABBITMQ_USER: myuser
+      RABBITMQ_PASSWORD: mypassword
+
+
+
   celery:
     restart: always
     build:

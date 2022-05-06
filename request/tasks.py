@@ -1,5 +1,8 @@
 import json
 import enum
+import os
+import uuid
+
 import requests
 import datetime
 
@@ -7,6 +10,8 @@ from celery import shared_task
 from django.contrib.auth.models import User
 
 from app.models import RequestModel, ResultModel
+from htmlTree import parser_path
+from htmlTree.Functions.Parser import Parser
 from htmlTree.tasks import wow
 
 from .mail import Mail
@@ -132,5 +137,15 @@ def send(data: dict):
 
 
 @shared_task
-def send_attach(email):
-    Mail.send_email_attach(email)
+def send_marcup_csv_attach(email, url):
+    uuid4 = uuid.uuid4()
+    parser = Parser()
+    parser.site_parsing(url, uuid4)
+    csv_path = parser_path + f'/csv_results/{uuid4}.csv'
+    Mail.send_email_attach(email, csv_path)
+    os.remove(csv_path)
+
+
+
+
+# parser.site_parsing("http://www.woodforhome.ru/")

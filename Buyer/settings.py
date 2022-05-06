@@ -102,3 +102,14 @@ STATICFILES_DIRS = [
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "amqp://myuser:mypassword@localhost:5672/myvhost"),
 
 CSRF_TRUSTED_ORIGINS = ["https://buyerdev.1d61.com", "https://sz1.1d61.com"]
+
+
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'm.1d61.com'
+EMAIL_HOST_USER = 'buyer-support@1d61.com'
+EMAIL_HOST_PASSWORD = 'AJds38Adj3FSDl3as4'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
