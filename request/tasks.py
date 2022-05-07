@@ -144,8 +144,3 @@ def send_marcup_csv_attach(email, url):
     csv_path = parser_path + f'/csv_results/{uuid4}.csv'
     Mail.send_email_attach(email, csv_path)
     os.remove(csv_path)
-
-
-
-
-# parser.site_parsing("http://www.woodforhome.ru/")
