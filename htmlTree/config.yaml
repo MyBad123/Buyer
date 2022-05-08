@@ -1,6 +1,6 @@
 dbfilepath: project.db
 dbtableprefix: pars_
-user: buyer_user
+user: postgres
 password: KJNjkjnkerKJNEKRF3456
 host: 127.0.0.1
 port: 5432
