@@ -7,6 +7,7 @@ from .views.admin.views_admin import *
 from .views.user.view_request_one import *
 from .views.user.chat.view_chat import *
 from .views.user.view_result import *
+from .views.user.view_csv import *
 
 urlpatterns = [
     path('admin/', AdminMethods.get_admin_page),
@@ -37,4 +38,8 @@ urlpatterns = [
     path('chat/<int:pk>/', ChatViews.get_page_with_mail),
     path('chat-get-messages/<int:pk>/', ChatViews.message_get),
     path('chat-get-send-message/', ChatViews.send_message),
+
+    # for getting csv
+    path('get-csv/', CsvView.get_page),
+    path('set-csv/', CsvView.set_csv),
 ]

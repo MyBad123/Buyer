@@ -19,4 +19,13 @@ def wow(id):
     request_object.save()
 
 
+@shared_task()
+def get_csv(data):
+    """parce site and send message to client"""
+
+    # get data for working
+    mail = data.get('mail')
+    url = data.get('url')
+
+    #
 

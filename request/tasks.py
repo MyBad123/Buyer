@@ -39,24 +39,26 @@ class SerpClass:
             'hl': 'ru',
             'location': 'Russia',
             'google_domain': 'google.ru',
-            'num': '20'
+            'num': '100'
         }
         api_result = requests.get('https://api.serpwow.com/search', params)
 
         # save google results
+        print(api_result.json())
         for i in api_result.json()['organic_results']:
             if i.get('link') not in self.link_list:
                 self.link_list.append(i.get('link'))
-                ResultModel.objects.create(
-                    request=self.request_object,
-                    system='google',
-                    url=i.get('link')
-                )
+                if 'google' not in i.get('link'):
+                    ResultModel.objects.create(
+                        request=self.request_object,
+                        system='google',
+                        url=i.get('link')
+                    )
         self.set_status(Params.AFTER_GOOGLE)
 
         # part for Yandex
         self.set_status(Params.BEFORE_YANDEX)
-        for i in range(1, 2):
+        for i in range(1, 5):
             params = {
                 'api_key': '69A93F783D8E4195ACA16DA1E871C21E',
                 'q': self.request_object.words,
@@ -69,12 +71,12 @@ class SerpClass:
             # save yandex results
             for j in api_result.json()['organic_results']:
                 if j.get('link') not in self.link_list:
-                    self.link_list.append(j.get('link'))
-                    ResultModel.objects.create(
-                        request=self.request_object,
-                        system='yandex',
-                        url=j.get('link')
-                    )
+                    if 'yandex.ru' not in j.get('link'):
+                        ResultModel.objects.create(
+                            request=self.request_object,
+                            system='yandex',
+                            url=j.get('link')
+                        )
         self.set_status(Params.AFTER_YANDEX)
 
     def set_status(self, param):
@@ -98,7 +100,6 @@ class SerpClass:
 
 @shared_task
 def add(id_object):
-
     # get request object
     try:
         request_object = RequestModel.objects.get(id=id_object)

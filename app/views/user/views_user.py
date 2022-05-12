@@ -66,7 +66,7 @@ class AuthMethods:
         """view for get auth page"""
 
         if not request.user.is_authenticated:
-            return render(request, 'user/auth/auth.html', context={})
+            return render(request, 'user/auth/auth.html')
         elif request.user.is_superuser:
             return redirect('/admin/')
         else:
