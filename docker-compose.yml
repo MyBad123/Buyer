@@ -45,7 +45,10 @@ services:
       RABBITMQ_USER: myuser
       RABBITMQ_PASSWORD: mypassword
 
-
+  selenium:
+    image: selenium/standalone-firefox
+    ports:
+      - 4444:4444
 
   celery:
     restart: always
