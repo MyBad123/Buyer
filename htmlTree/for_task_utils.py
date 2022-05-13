@@ -8,7 +8,7 @@ from email.mime.text import MIMEText
 
 class Mail:
     def __init__(self, to, path):
-        self.mail_from = os.environ.get('from', 'https://m.1d61.com/owabuyer-support@1d61.com')
+        self.mail_from = os.environ.get('from', 'buyer-support@1d61.com')
         self.mail_password = os.environ.get('password', 'AJds38Adj3FSDl3as4')
         self.to = to
         self.path = path
