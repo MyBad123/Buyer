@@ -46,7 +46,7 @@ def get_csv(data, csv_model_id):
 
     # work with lib
     from .ParseLib.parser_starting import start
-    path_obj = start(path_name)
+    path_obj = start(path_name, url)
 
     # send file to
     mail_object.send_file_mail(path_obj)
