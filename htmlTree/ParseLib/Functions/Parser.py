@@ -176,7 +176,7 @@ class Parser:
 '''
 
         self.driver = webdriver.Remote(
-            f"http://selenium:4444/wd/hub",
+            "http://selenium:4444/wd/hub",
             options=options, 
             DesiredCapabilities.CHROME
         )
