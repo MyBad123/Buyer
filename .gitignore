@@ -219,3 +219,5 @@ env/
 
 /test
 certbot/conf/
+
+/htmlTree/files

@@ -8,11 +8,11 @@ from email.mime.text import MIMEText
 
 class Mail:
     def __init__(self, to, path):
-        self.mail_from = os.environ.get('from', 'gena.kuznetsov@internet.ru')
-        self.mail_password = os.environ.get('password', 'o%pdUaeIUI12')
+        self.mail_from = os.environ.get('from', 'https://m.1d61.com/owabuyer-support@1d61.com')
+        self.mail_password = os.environ.get('password', 'AJds38Adj3FSDl3as4')
         self.to = to
         self.path = path
-        self.str_connect = os.environ.get('mail-str', 'smtp.mail.ru: 25')
+        self.str_connect = os.environ.get('mail-str', 'm.1d61.com: 587')
 
     def send_start_mail(self):
         """send mail about starting"""
@@ -21,7 +21,7 @@ class Mail:
         mailMsg['Subject'] = 'заявка'
         mailMessage = 'ваша заявка в обработке'
         mailMsg.attach(MIMEText(mailMessage, 'plain'))
-        mailServer = smtplib.SMTP('smtp.mail.ru: 25')
+        mailServer = smtplib.SMTP('m.1d61.com: 587')
         mailServer.starttls()
         mailServer.login(self.mail_from, self.mail_password)
         mailServer.sendmail(self.mail_from, self.to, mailMsg.as_string())
