@@ -52,7 +52,7 @@ services:
     environment:
         SE_SESSION_REQUEST_TIMEOUT: 5000
         SE_NODE_MAX_SESSIONS: 16
-        SE_NODE_SESSION_TIMEOUT: 1000
+        SE_NODE_SESSION_TIMEOUT: 5000
 
   celery:
     restart: always
