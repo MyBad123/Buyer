@@ -49,6 +49,9 @@ services:
     image: selenium/standalone-firefox
     ports:
       - 4444:4444
+    environment:
+        SE_SESSION_REQUEST_TIMEOUT: 500
+        SE_NODE_MAX_SESSIONS: 16
 
   celery:
     restart: always
