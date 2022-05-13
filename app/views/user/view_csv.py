@@ -1,9 +1,11 @@
+import datetime
 import validators
 
 from email_validate import validate
 from django.shortcuts import render, redirect
 
 from htmlTree.tasks import get_csv
+from app.models import CsvModel
 
 
 class CsvSerializer:
@@ -56,12 +58,16 @@ class CsvView:
         if request.method != 'POST':
             return redirect('/get-csv/')
 
+        # get id for path
+        csv_model = CsvModel.objects.create(
+            datetime=datetime.datetime.now()
+        )
+
         # control valid data
         valid_object = CsvSerializer(request)
         if valid_object.is_valid():
             get_csv.delay(
-                valid_object.get_valid_data()
+                valid_object.get_valid_data(), csv_model.id
             )
 
         return redirect('/get-csv/')
-

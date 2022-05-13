@@ -1,5 +1,5 @@
 # pull official base image
-FROM python:3.9.6-alpine
+FROM python:3.10
 
 # set work directory
 WORKDIR /usr/src/app
@@ -17,8 +17,7 @@ RUN mkdir -p $APP_HOME/mediafiles
 WORKDIR $APP_HOME
 
 # install psycopg2 dependencies
-RUN apk update \
-    && apk add postgresql-dev gcc python3-dev musl-dev tk
+RUN apt-get update && apt-get install libiodbc2-dev postgresql gcc python3 musl-dev tk -y
 
 COPY ./requirements.txt .
 

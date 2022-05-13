@@ -1,13 +1,15 @@
 from django.urls import path
 
-from .views.user.views_user import *
-from .views.user.view_thanks import *
-from .views.db.views_db import *
-from .views.admin.views_admin import *
-from .views.user.view_request_one import *
-from .views.user.chat.view_chat import *
-from .views.user.view_result import *
-from .views.user.view_csv import *
+from app.views.user.views_user import *
+from app.views.user.view_thanks import *
+from app.views.db.views_db import *
+from app.views.admin.views_admin import *
+from app.views.user.view_request_one import *
+from app.views.user.chat.view_chat import *
+from app.views.user.view_result import *
+from app.views.user.view_csv import *
+from app.views.markup_doc.view_markup_doc import *
+
 
 urlpatterns = [
     path('admin/', AdminMethods.get_admin_page),
@@ -42,4 +44,5 @@ urlpatterns = [
     # for getting csv
     path('get-csv/', CsvView.get_page),
     path('set-csv/', CsvView.set_csv),
+    path('create-markup-doc/', MarkupDoc.create_markup_doc),
 ]

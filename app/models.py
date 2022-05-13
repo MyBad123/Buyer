@@ -75,3 +75,9 @@ class MailForMessageModel(models.Model):
     class Meta:
         db_table = 'mails'
         ordering = ['mail']
+
+
+class CsvModel(models.Model):
+    """for csv id"""
+
+    datetime = models.DateTimeField()

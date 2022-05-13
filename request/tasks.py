@@ -1,5 +1,8 @@
 import json
 import enum
+import os
+import uuid
+
 import requests
 import datetime
 
@@ -131,3 +134,13 @@ def send(data: dict):
         mails=data.get('mails'),
         user=data.get('user')
     )
+
+
+@shared_task
+def send_marcup_csv_attach(email, url):
+    uuid4 = uuid.uuid4()
+    parser = Parser()
+    parser.site_parsing(url, uuid4)
+    csv_path = parser_path + f'/csv_results/{uuid4}.csv'
+    Mail.send_email_attach(email, csv_path)
+    os.remove(csv_path)

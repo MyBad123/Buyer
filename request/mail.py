@@ -2,20 +2,31 @@ import smtplib
 import datetime
 
 from email.message import EmailMessage
-from django.db.utils import IntegrityError
+
+from django.core.mail import EmailMessage as EmailMessageDjango
 
 from app.models import (
-    MessageModel, MailForMessageModel, RequestModel, 
-    ResultModel
+    MessageModel,
+    RequestModel,
 )
 
 
 class Mail:
     """class for send mail"""
-    
+
     def __init__(self, text, request_id):
         self.text = text
         self.request_id = request_id
+
+    @staticmethod
+    def send_email_attach(email: str, file_path: str):
+        email = EmailMessageDjango(
+            subject='Parsing result',
+            from_email='buyer-support@1d61.com',
+            to=[email]
+        )
+        email.attach_file(file_path)
+        email.send()
 
     def send_mail(self, mail, subject_number):
         """send text to mail"""
@@ -43,11 +54,11 @@ class Mail:
                 mail=i,
                 datetime=datetime.datetime.now(),
                 route='from',
-                message=self.text, 
+                message=self.text,
                 request=RequestModel.objects.get(id=int(self.request_id))
             )
             number = str(message_object.id) + '-' + str(user.id)
-            
+
             message_object.number = number
             message_object.save()
 
