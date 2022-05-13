@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from htmlTree.ParseLib.Functions.CreationCSV import *
 from htmlTree.ParseLib.Class.PageElement import Elements
@@ -167,11 +168,19 @@ class Parser:
         print(my_path)
         options = Options()
         options.headless = True
-
+'''
         self.driver = webdriver.Firefox(
             firefox_profile='/opt/homebrew/Cellar/geckodriver/0.31.0/bin',
             options=options
         )
+'''
+
+        self.driver = webdriver.Remote(
+            f"http://127.0.0.1:4444/wd/hub",
+            options=options, 
+            DesiredCapabilities.CHROME
+        )
+        
         self.driver.maximize_window()
 
         self.list_urls.append(url)
