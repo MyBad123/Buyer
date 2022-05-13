@@ -46,12 +46,13 @@ services:
       RABBITMQ_PASSWORD: mypassword
 
   selenium:
-    image: selenium/standalone-firefox:99.0-geckodriver-0.31-20220427
+    image: selenium/standalone-firefox
     ports:
       - 4444:4444
     environment:
         SE_SESSION_REQUEST_TIMEOUT: 5000
         SE_NODE_MAX_SESSIONS: 16
+        SE_NODE_SESSION_TIMEOUT: 1000
 
   celery:
     restart: always
