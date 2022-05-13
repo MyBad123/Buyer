@@ -176,7 +176,6 @@ class Parser:
 '''
 
         self.driver = webdriver.Remote("http://selenium:4444/wd/hub", options=options)
-        
         self.driver.maximize_window()
 
         self.list_urls.append(url)
