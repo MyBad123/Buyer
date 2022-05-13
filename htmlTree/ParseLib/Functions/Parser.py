@@ -166,7 +166,7 @@ class Parser:
 
     def site_parsing(self, url, uuid4, my_path):
         print(my_path)
-        options = webdriver.ChromeOptions()
+        options = webdriver.FirefoxOptions()
         options.add_argument('--headless')  # example
 '''
         self.driver = webdriver.Firefox(
