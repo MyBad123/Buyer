@@ -168,12 +168,7 @@ class Parser:
         print(my_path)
         options = webdriver.FirefoxOptions()
         options.add_argument('--headless')  # example
-'''
-        self.driver = webdriver.Firefox(
-            firefox_profile='/opt/homebrew/Cellar/geckodriver/0.31.0/bin',
-            options=options
-        )
-'''
+
 
         self.driver = webdriver.Remote("http://selenium:4444/wd/hub", options=options)
         self.driver.maximize_window()
