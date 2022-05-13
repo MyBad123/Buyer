@@ -2,5 +2,5 @@ user: buyer_user
 password: KJNjkjnkerKJNEKRF3456
 host: db
 port: 5432
-database: b3b
+database: b2b
 dbtableprefix: pars_
