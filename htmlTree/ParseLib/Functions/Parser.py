@@ -175,11 +175,7 @@ class Parser:
         )
 '''
 
-        self.driver = webdriver.Remote(
-            "http://selenium:4444/wd/hub",
-            options=options, 
-            DesiredCapabilities.CHROME
-        )
+        self.driver = webdriver.Remote("http://selenium:4444/wd/hub", options=options, DesiredCapabilities.CHROME)
         
         self.driver.maximize_window()
 
