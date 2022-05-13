@@ -28,7 +28,7 @@ class Parser:
 
     def find_links(self, link, depth):
         try:
-            if depth < 2:
+            if depth < 5:
                 self.driver.get(link)
                 list_of_elements = []
                 self.count_of_page += 1
