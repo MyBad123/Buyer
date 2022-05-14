@@ -169,7 +169,7 @@ class Parser:
         options = webdriver.FirefoxOptions()
         options.add_argument('--headless')  # example
 
-        self.driver = webdriver.Remote("http://selenium:4444/wd/hub", options=options)
+        self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
         self.driver.maximize_window()
 
         self.list_urls.append(url)
