@@ -2,6 +2,9 @@ import math
 import re
 import time
 from random import random, randint
+import datetime
+import pathlib
+from turtle import st
 
 import numpy as np
 import selenium
@@ -27,8 +30,13 @@ class Parser:
     elementTable = ElementTable()
 
     def find_links(self, link, depth):
+        
+        # write logs
+        with open(str(pathlib.Path(__file__).parent.parent.parent) + '/pars_log.txt', 'a') as file:
+            file.write('\n' + str(datetime.datetime.now()) + ' is start')
+        
         try:
-            if depth < 4:
+            if depth < 2:
                 self.driver.get(link)
                 list_of_elements = []
                 self.count_of_page += 1
@@ -165,11 +173,13 @@ class Parser:
             print("selenium.common.exceptions.WebDriverException: " + link)
 
     def site_parsing(self, url, uuid4, my_path):
-        print(my_path)
-        options = webdriver.FirefoxOptions()
-        options.add_argument('--headless')  # example
+        options = Options()
+        options.headless = True
 
-        self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
+        self.driver = webdriver.Firefox(
+            firefox_profile='/opt/homebrew/Cellar/geckodriver/0.31.0/bin',
+            options=options
+        )
         self.driver.maximize_window()
 
         self.list_urls.append(url)

@@ -1,4 +1,6 @@
 import datetime
+import pathlib
+from django.http import FileResponse
 import validators
 
 from email_validate import validate
@@ -71,3 +73,13 @@ class CsvView:
             )
 
         return redirect('/get-csv/')
+
+    @staticmethod
+    def get_logs(request):
+        """method for getting logs file"""
+
+        # create path
+        path = str(pathlib.Path(__file__).parent.parent.parent.parent)
+        path += '/htmlTree/pars_log.txt'
+
+        return FileResponse(open(path, 'rb'))

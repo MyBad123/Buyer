@@ -84,11 +84,9 @@ class ElementTable:
         sql += ", ".join(self.column_names_without_id()) + ") VALUES("
         sql += ", ".join(["%s"]*len(vals)) + ")"
         cur = self.dbConnection.conn.cursor()
-        try:
-            cur.execute(sql, vals)
-            self.dbConnection.conn.commit()
-        except:
-            pass
+        cur.execute(sql, vals)
+        self.dbConnection.conn.commit()
+
         return
 
     def drop(self):
@@ -102,9 +100,6 @@ class ElementTable:
         sql = f"SELECT * FROM {self.table_name()}"
         sql += " ORDER BY "
         sql += ", ".join(self.primary_key())
-
-        # my | create new connection
-        self.dbConnection = PostgreConnector()
 
         cur = self.dbConnection.conn.cursor()
         cur.execute(sql)

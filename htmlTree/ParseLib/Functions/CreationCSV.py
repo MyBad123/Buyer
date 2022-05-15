@@ -1,4 +1,6 @@
 import uuid
+import pathlib
+import datetime
 
 import pandas as pd
 
@@ -10,6 +12,10 @@ class Csv:
     elementTable = ElementTable()
 
     def create_scv(self, count_of_page, uuid4, my_path):
+        # write logs
+        with open(str(pathlib.Path(__file__).parent.parent.parent) + '/pars_log.txt', 'a') as file:
+            file.write('\n' + str(datetime.datetime.now()) + ' is start')
+        
         list_of_elements = []
         columns = list(self.elementTable.column_names())
         for el_to_add in self.elementTable.all():
