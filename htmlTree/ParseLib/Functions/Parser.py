@@ -173,13 +173,10 @@ class Parser:
             print("selenium.common.exceptions.WebDriverException: " + link)
 
     def site_parsing(self, url, uuid4, my_path):
-        options = Options()
-        options.headless = True
+        options = webdriver.FirefoxOptions()
+        options.add_argument('--headless')  # example
 
-        self.driver = webdriver.Firefox(
-            firefox_profile='/opt/homebrew/Cellar/geckodriver/0.31.0/bin',
-            options=options
-        )
+        self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
         self.driver.maximize_window()
 
         self.list_urls.append(url)
