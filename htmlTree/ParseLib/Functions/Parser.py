@@ -36,7 +36,7 @@ class Parser:
             file.write('\n' + str(datetime.datetime.now()) + ' is start')
         
         try:
-            if depth < 2:
+            if depth < 4:
                 self.driver.get(link)
                 list_of_elements = []
                 self.count_of_page += 1
