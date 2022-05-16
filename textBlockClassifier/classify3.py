@@ -28,6 +28,17 @@ def get_n_words(text):
   words = text.split()
   return len(words)
 
+def is_article(entry):
+  if not isinstance(entry, str) or len(entry)==0:
+    return 0
+  if re.fullmatch('Артикул[\s]?:.*',entry,flags=re.IGNORECASE):
+    return 1
+  if re.fullmatch('Арт\.[:]?.*',entry,flags=re.IGNORECASE):
+    return 1
+  if re.fullmatch('Артикул\s.*',entry,flags=re.IGNORECASE):
+    return 1
+  return 0
+
 def is_price(entry):
   #print ('is_price(',entry,')');
   if not isinstance(entry, str) or len(entry)==0:
@@ -65,12 +76,13 @@ old_df = pd.read_csv(str(sys.argv[1]),delimiter=',')
 print ('Reading dataset',sys.argv[1])
 
 # calculate additional ML parameters
+old_df['is_article'] = [is_article(x) for x in old_df['text']]
 old_df['is_price'] = [is_price(x) for x in old_df['text']]
-old_df['h1_or_href'] = [is_h1_or_href(x) for x in old_df['id']]
+old_df['h1_or_href'] = [is_h1_or_href(x) for x in old_df['id_xpath']]
 old_df['n_words'] = [get_n_words(x) for x in old_df['text']]
 
 # filter columns
-df = old_df.filter(['class','length','n_digits','is_price','h1_or_href'], axis=1)
+df = old_df.filter(['class','length','n_digits','presence_of_at','is_price','h1_or_href','is_article'], axis=1)
 #df['digits_length'] = df['n_digits']/df['length']
 
 #df=df[df['class']==3]
