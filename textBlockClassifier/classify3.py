@@ -22,6 +22,11 @@ import sys
 import os
 import re 
 
+def get_lc_uc_cnt(entry):
+  if not isinstance(entry, str) or len(entry)==0:
+    return 0
+  return len(re.findall('[а-я][A-ZА-Я]', entry))
+
 def get_n_words(text):
   if not isinstance(text, str) or len(text)==0:
     return 0
@@ -80,12 +85,13 @@ old_df['is_article'] = [is_article(x) for x in old_df['text']]
 old_df['is_price'] = [is_price(x) for x in old_df['text']]
 old_df['h1_or_href'] = [is_h1_or_href(x) for x in old_df['id_xpath']]
 old_df['n_words'] = [get_n_words(x) for x in old_df['text']]
+old_df['lc_uc_cnt'] = [get_lc_uc_cnt(x) for x in old_df['text']]
 
 # filter columns
-df = old_df.filter(['class','length','n_digits','presence_of_at','is_price','h1_or_href','is_article'], axis=1)
+df = old_df.filter(['class','length','n_digits','presence_of_at','is_price','h1_or_href','is_article','lc_uc_cnt'], axis=1)
 #df['digits_length'] = df['n_digits']/df['length']
 
-#df=df[df['class']==3]
+df=df[df['class']==3]
 #print (df.head(20))
 
 if sys.argv[2] == 'train':
