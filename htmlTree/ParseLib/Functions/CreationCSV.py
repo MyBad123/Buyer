@@ -6,21 +6,19 @@ import pandas as pd
 
 from htmlTree.ParseLib.parser_path import parser_path
 from htmlTree.ParseLib.Tables.ElementTable import *
+from htmlTree.ParseLib.Tables.HtmlTable import *
 
 
 class Csv:
     elementTable = ElementTable()
+    htmlTable = HtmlTable()
 
-    def create_scv(self, count_of_page, uuid4, my_path):
+    def create_scv(self, uuid4, my_path):
         # write logs
         with open(str(pathlib.Path(__file__).parent.parent.parent) + '/pars_log.txt', 'a') as file:
             file.write('\n' + str(datetime.datetime.now()) + ' is start')
-        
-        list_of_elements = []
-        columns = list(self.elementTable.column_names())
-        for el_to_add in self.elementTable.all():
-            el_dic = dict(zip(columns, el_to_add))
-            list_of_elements.append(el_dic)
+
+        list_of_elements = self.elementTable.all()
         columns = ("nn", "class", "text", "presence_of_ruble", "content_element", "url", "length",
                    "class_ob", "element_id", "style", "enclosure", "href", "count", "location_x",
                    "location_y",
@@ -42,7 +40,7 @@ class Csv:
 
                 indicator = True
                 for sub_el in list_of_elements:
-                    if int(sub_el['enclosure']) == max_en and sub_el['url'] == el['url'] \
+                    if sub_el['enclosure'] == max_en and sub_el['url'] == el['url'] \
                             and sub_el['text'] == el['text']:
                         if indicator:
                             new_row = pd.DataFrame(
@@ -73,7 +71,7 @@ class Csv:
         list_of_elements.clear()
         df = pd.DataFrame(data=None, columns=columns)
 
-        border = count_of_page * 0.5
+        border = self.htmlTable.count_rows() * 0.5
         for ind1, el_to_add in new_list.iterrows():
             count = 0
             for ind2, sub_el in new_list.iterrows():
@@ -112,5 +110,8 @@ class Csv:
                 df = pd.concat([df, new_row])
         path = f'{my_path}{uuid4}.csv'
         df.to_csv(path)
+
+        self.elementTable.drop()
+        self.htmlTable.drop()
 
         return path
