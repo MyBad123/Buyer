@@ -14,9 +14,7 @@ class Csv:
     htmlTable = HtmlTable()
 
     def create_scv(self, uuid4, my_path):
-        # write logs
-        with open(str(pathlib.Path(__file__).parent.parent.parent) + '/pars_log.txt', 'a') as file:
-            file.write('\n' + str(datetime.datetime.now()) + ' is start')
+
 
         list_of_elements = self.elementTable.all()
         columns = ("nn", "class", "text", "presence_of_ruble", "content_element", "url", "length",
