@@ -229,6 +229,8 @@ class Parser:
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern')
         arr_html = self.htmlTable.all()
         arr = np.zeros([len(arr_html), len(arr_html)])
+
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern-before-1-for')
         for i in range(len(arr_html)):
             for j in range(i, len(arr_html)):
                 if i != j:
@@ -247,6 +249,7 @@ class Parser:
                 else:
                     arr[i][j] = 5000
 
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern-before-2-for')
         for i in range(len(arr_html)):
             min_val = arr[0][i]
             position = 0
@@ -266,6 +269,7 @@ class Parser:
                 elements += re.search(r'\d+', reg)[0] + ","
             self.htmlTable.update_row({"elements": f'{elements}'}, arr_html[i]['id'])
 
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern-before-3-for')
         for i in range(len(arr_html)):
             self.get_elements(arr_html[i]['id'])
 
