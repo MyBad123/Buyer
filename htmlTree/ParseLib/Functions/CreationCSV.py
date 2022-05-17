@@ -1,6 +1,7 @@
 import uuid
 import pathlib
 import datetime
+import requests
 
 import pandas as pd
 
@@ -14,7 +15,7 @@ class Csv:
     htmlTable = HtmlTable()
 
     def create_scv(self, uuid4, my_path):
-
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv')
 
         list_of_elements = self.elementTable.all()
         columns = ("nn", "class", "text", "presence_of_ruble", "content_element", "url", "length",
@@ -112,4 +113,5 @@ class Csv:
         self.elementTable.drop()
         self.htmlTable.drop()
 
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-end')
         return path
