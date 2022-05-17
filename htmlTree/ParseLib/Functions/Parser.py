@@ -226,6 +226,7 @@ class Parser:
             print("selenium.common.exceptions.WebDriverException: " + link)
 
     def delete_pattern(self):
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern')
         arr_html = self.htmlTable.all()
         arr = np.zeros([len(arr_html), len(arr_html)])
         for i in range(len(arr_html)):
@@ -267,3 +268,5 @@ class Parser:
 
         for i in range(len(arr_html)):
             self.get_elements(arr_html[i]['id'])
+
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern-end')
