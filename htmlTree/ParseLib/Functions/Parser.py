@@ -23,6 +23,10 @@ from htmlTree.ParseLib.Tables.ElementTable import *
 from htmlTree.ParseLib.Tables.HtmlTable import *
 
 
+class MyException(Exception):
+    pass
+
+
 class Parser:
     ignore = ["#"]
     domain = ''
@@ -34,6 +38,8 @@ class Parser:
     count = 0
 
     def get_elements(self, site_id):
+        raise MyException("wow wow wow wow")
+
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements')
         try:
             site_html = self.htmlTable.one(site_id)
