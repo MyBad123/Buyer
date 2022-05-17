@@ -1,4 +1,5 @@
 import math
+import requests
 import re
 import time
 from random import random, randint
@@ -151,7 +152,14 @@ class Parser:
         options = webdriver.FirefoxOptions()
         options.add_argument('--headless')  # example
 
+        # options = Options()
+        # options.headless = True
+
         self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
+        # self.driver = webdriver.Firefox(
+        #    firefox_profile='/opt/homebrew/Cellar/geckodriver/0.31.0/bin',
+        #    options=options
+        # )
         self.driver.maximize_window()
 
         self.list_urls.append(url)
@@ -160,21 +168,21 @@ class Parser:
         self.htmlTable.create()
 
         # write logs
-        with open(str(pathlib.Path(__file__).parent.parent.parent) + '/pars_log.txt', 'a') as file:
-            file.write('\n' + str(datetime.datetime.now()) + ' is start')
+        requests.get('http://127.0.0.1:8000/set-csv-logs/?message=site-parseng-start')
 
         self.get_html_site(url, 1)
         self.delete_pattern()
 
         csv = Csv()
-        path = csv.create_scv(self.count_of_page, uuid4, my_path)
+        path = csv.create_scv(uuid4, my_path)
         self.driver.close()
 
         return path
 
     def get_html_site(self, link, depth):
+        requests.get('http://127.0.0.1:8000/set-csv-logs/?message=get-html-site')
         try:
-            if depth < 5 and self.count < 1000:
+            if depth < 3 and self.count < 1000:
                 self.count += 1
                 self.driver.get(link)
                 order_id = 0
@@ -206,9 +214,12 @@ class Parser:
                             and len(re.findall(r'\.jpg|\.jpeg|\.png|\.pdf|\.mp4|\.JPG|\.PNG|\.PDF$',
                                                str(part_link_page.get('href')))) < 1:
                         self.list_urls.append(link_page)
-                        rnd = random.randint(1, 4)
+                        rnd = randint(1, 4)
                         time.sleep(1 + rnd)
                         self.get_html_site(link_page, depth + 1)
+
+            requests.get('http://127.0.0.1:8000/set-csv-logs/?message=get-html-site-end')
+
         except selenium.common.exceptions.TimeoutException:
             print("selenium.common.exceptions.TimeoutException: " + link)
         except selenium.common.exceptions.WebDriverException:

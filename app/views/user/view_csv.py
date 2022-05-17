@@ -1,6 +1,7 @@
+import os
 import datetime
 import pathlib
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponse
 import validators
 
 from email_validate import validate
@@ -79,7 +80,29 @@ class CsvView:
         """method for getting logs file"""
 
         # create path
-        path = str(pathlib.Path(__file__).parent.parent.parent.parent)
-        path += '/htmlTree/pars_log.txt'
+        path = str(pathlib.Path(__file__).parent)
+        path += '/pars_log.txt'
 
         return FileResponse(open(path, 'rb'))
+
+    @staticmethod
+    def set_logs(request):
+        """method for settings logs"""
+
+        path = str(pathlib.Path(__file__).parent)
+        path += '/pars_log.txt'
+
+        if request.GET.get('message') == 'start':
+            with open(path, 'a') as file:
+                file.write('\n\n\n\n\n\n')
+
+        if request.GET.get('message', None) != None:
+            with open(path, 'a') as file:
+                file.write(
+                    '\n' +
+                    str(datetime.datetime.now()) +
+                    ' ' +
+                    request.GET.get('message')
+                )
+
+        return HttpResponse()

@@ -1,5 +1,6 @@
 import uuid
 import pathlib
+import requests
 import datetime
 from .Functions.Parser import Parser
 
@@ -7,8 +8,7 @@ from .Functions.Parser import Parser
 def start(path, url):
     
     # write logs
-    with open(str(pathlib.Path(__file__).parent.parent) + '/pars_log.txt', 'a') as file:
-        file.write('\n' + str(datetime.datetime.now()) + ' is start')
+    requests.get('http://127.0.0.1:8000/set-csv-logs/?message=start')
 
     parser = Parser()
     path = parser.site_parsing(url, str(uuid.uuid4()), path)
