@@ -34,6 +34,7 @@ class Parser:
     count = 0
 
     def get_elements(self, site_id):
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements')
         try:
             site_html = self.htmlTable.one(site_id)
             list_of_data_xid = list(filter(None, site_html['elements'].split(",")))
@@ -147,6 +148,8 @@ class Parser:
             print("selenium.common.exceptions.TimeoutException")
         except selenium.common.exceptions.WebDriverException:
             print("selenium.common.exceptions.WebDriverException")
+
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements-end')
 
     def site_parsing(self, url, uuid4, my_path):
         options = webdriver.FirefoxOptions()
