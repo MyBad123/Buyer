@@ -168,7 +168,7 @@ class Parser:
         self.htmlTable.create()
 
         # write logs
-        requests.get('http://127.0.0.1:8000/set-csv-logs/?message=site-parseng-start')
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=site-parsing-start')
 
         self.get_html_site(url, 1)
         self.delete_pattern()
@@ -180,7 +180,7 @@ class Parser:
         return path
 
     def get_html_site(self, link, depth):
-        requests.get('http://127.0.0.1:8000/set-csv-logs/?message=get-html-site')
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-html-site')
         try:
             if depth < 3 and self.count < 1000:
                 self.count += 1
@@ -218,7 +218,7 @@ class Parser:
                         time.sleep(1 + rnd)
                         self.get_html_site(link_page, depth + 1)
 
-            requests.get('http://127.0.0.1:8000/set-csv-logs/?message=get-html-site-end')
+            requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-html-site-end')
 
         except selenium.common.exceptions.TimeoutException:
             print("selenium.common.exceptions.TimeoutException: " + link)
