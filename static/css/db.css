@@ -1,0 +1,57 @@
+*,
+*:before,
+*:after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.btns {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    position: relative;
+}
+
+.btn-delete {
+    margin: 30px 30px 0px;
+}
+
+.btn-create {
+    margin: 30px 30px 0px;
+}
+
+.form {
+    position: absolute;
+    left: 177px;
+    top: 68px;
+
+    display: none;
+    opacity: 0;
+    transition: opacity 300ms ease-in-out;
+
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    margin-top: 1px;
+    border-radius: .25rem;
+}
+
+.form-display {
+    display: flex;
+}
+
+.form-opacity {
+    opacity: 1;
+}
+
+.input-login {
+    margin: 30px;
+
+}
+
+.input-password {
+    margin-bottom: 30px;
+}
+
