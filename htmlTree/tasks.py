@@ -23,7 +23,6 @@ def wow(id):
     request_object.save()
 
 
-@shared_task()
 def get_csv(data, csv_model_id):
     """parce site and send message to client"""
 

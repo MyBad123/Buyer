@@ -3,12 +3,25 @@ import datetime
 import pathlib
 from django.http import FileResponse, HttpResponse
 import validators
+import threading
 
 from email_validate import validate
 from django.shortcuts import render, redirect
 
 from htmlTree.tasks import get_csv
 from app.models import CsvModel
+
+
+class Bg(threading.Thread):
+    def __init__(self, function_that_downloads, argv1, argv2):
+        threading.Thread.__init__(self)
+        self.runnable = function_that_downloads
+        self.daemon = True
+        self.argv1 = argv1
+        self.argv2 = argv2
+
+    def run(self):
+        self.runnable(self.argv1, self.argv2)
 
 
 class CsvSerializer:
@@ -69,9 +82,8 @@ class CsvView:
         # control valid data
         valid_object = CsvSerializer(request)
         if valid_object.is_valid():
-            get_csv.delay(
-                valid_object.get_valid_data(), csv_model.id
-            )
+            thread = Bg(get_csv, valid_object.get_valid_data(), csv_model.id)
+            thread.start()
 
         return redirect('/get-csv/')
 
