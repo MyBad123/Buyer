@@ -7,7 +7,6 @@ from random import random, randint
 import difflib as df
 import datetime
 import pathlib
-from turtle import st
 from dotenv import load_dotenv
 
 import numpy as np
@@ -174,7 +173,7 @@ class Parser:
 
         # self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
         self.driver = webdriver.Firefox(
-           firefox_profile=os.environ.get('WEBDRIVER_PATH', '/opt/homebrew/Cellar/geckodriver/0.31.0/bin'),
+           firefox_profile=os.environ.get('WEBDRIVER_PATH'),
            options=options
         )
         self.driver.maximize_window()
@@ -199,7 +198,7 @@ class Parser:
     def get_html_site(self, link, depth):
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-html-site')
         try:
-            if depth < 3 and self.count < 1000:
+            if depth < 5 and self.count < 1000:
                 self.count += 1
                 self.driver.get(link)
                 order_id = 0
