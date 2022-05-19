@@ -1,12 +1,14 @@
 import math
 import requests
 import re
+import os
 import time
 from random import random, randint
 import difflib as df
 import datetime
 import pathlib
 from turtle import st
+from dotenv import load_dotenv
 
 import numpy as np
 import selenium
@@ -156,6 +158,14 @@ class Parser:
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements-end')
 
     def site_parsing(self, url, uuid4, my_path):
+
+        # work with env
+        path_my_my = str(pathlib.Path(__file__).parent.parent.parent.parent) + '/Buyer/'
+        dotenv_path = os.path.join(path_my_my, '.env')
+        if os.path.exists(dotenv_path):
+            load_dotenv(dotenv_path)
+
+
         # options = webdriver.FirefoxOptions()
         # options.add_argument('--headless')  # example
 
@@ -164,7 +174,7 @@ class Parser:
 
         # self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
         self.driver = webdriver.Firefox(
-           firefox_profile='/opt/homebrew/Cellar/geckodriver/0.31.0/bin',
+           firefox_profile=os.environ.get('WEBDRIVER_PATH', '/opt/homebrew/Cellar/geckodriver/0.31.0/bin'),
            options=options
         )
         self.driver.maximize_window()
