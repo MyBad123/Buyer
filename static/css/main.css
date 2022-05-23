@@ -1,0 +1,27 @@
+*,
+*:before,
+*:after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.exit {
+    cursor: pointer;
+}
+
+.item {
+    cursor: pointer;
+}
+
+.results-block {
+    max-height: 300px;
+    overflow-y: scroll;
+}
+
+
+
+
+
+
+

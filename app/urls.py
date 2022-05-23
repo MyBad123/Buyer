@@ -45,5 +45,6 @@ urlpatterns = [
     path('get-csv/', CsvView.get_page),
     path('set-csv/', CsvView.set_csv),
     path('get-csv-logs/', CsvView.get_logs),
+    path('set-csv-logs/', CsvView.set_logs),
     path('create-markup-doc/', MarkupDoc.create_markup_doc),
 ]

@@ -1,11 +1,13 @@
 import math
+import requests
 import re
+import os
 import time
 from random import random, randint
 import difflib as df
 import datetime
 import pathlib
-from turtle import st
+from dotenv import load_dotenv
 
 import numpy as np
 import selenium
@@ -22,6 +24,10 @@ from htmlTree.ParseLib.Tables.ElementTable import *
 from htmlTree.ParseLib.Tables.HtmlTable import *
 
 
+class MyException(Exception):
+    pass
+
+
 class Parser:
     def __init__(self, name):
         self.ignore = ["#"]
@@ -34,6 +40,7 @@ class Parser:
         self.count = 0
 
     def get_elements(self, site_id):
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements')
         try:
             site_html = self.htmlTable.one(site_id)
             list_of_data_xid = list(filter(None, site_html['elements'].split(",")))
@@ -148,11 +155,28 @@ class Parser:
         except selenium.common.exceptions.WebDriverException:
             print("selenium.common.exceptions.WebDriverException")
 
-    def site_parsing(self, url, uuid4, my_path):
-        options = webdriver.FirefoxOptions()
-        options.add_argument('--headless')  # example
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements-end')
 
-        self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
+    def site_parsing(self, url, uuid4, my_path):
+
+        # work with env
+        path_my_my = str(pathlib.Path(__file__).parent.parent.parent.parent) + '/Buyer/'
+        dotenv_path = os.path.join(path_my_my, '.env')
+        if os.path.exists(dotenv_path):
+            load_dotenv(dotenv_path)
+
+
+        # options = webdriver.FirefoxOptions()
+        # options.add_argument('--headless')  # example
+
+        options = Options()
+        options.headless = True
+
+        # self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
+        self.driver = webdriver.Firefox(
+           firefox_profile=os.environ.get('WEBDRIVER_PATH'),
+           options=options
+        )
         self.driver.maximize_window()
 
         self.list_urls.append(url)
@@ -161,19 +185,19 @@ class Parser:
         self.htmlTable.create()
 
         # write logs
-        with open(str(pathlib.Path(__file__).parent.parent.parent) + '/pars_log.txt', 'a') as file:
-            file.write('\n' + str(datetime.datetime.now()) + ' is start')
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=site-parsing-start')
 
         self.get_html_site(url, 1)
         self.delete_pattern()
 
         csv = Csv()
-        path = csv.create_scv(self.count_of_page, uuid4, my_path)
+        path = csv.create_scv(uuid4, my_path)
         self.driver.close()
 
         return path
 
     def get_html_site(self, link, depth):
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-html-site')
         try:
             self.count += 1
             self.driver.get(link)
@@ -207,17 +231,23 @@ class Parser:
                                            str(part_link_page.get('href')))) < 1:
                     if depth + 1 < 5 and self.count < 1000:
                         self.list_urls.append(link_page)
-                        rnd = random.randint(1, 4)
+                        rnd = randint(1, 4)
                         time.sleep(1 + rnd)
                         self.get_html_site(link_page, depth + 1)
+
+            requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-html-site-end')
+
         except selenium.common.exceptions.TimeoutException:
             print("selenium.common.exceptions.TimeoutException: " + link)
         except selenium.common.exceptions.WebDriverException:
             print("selenium.common.exceptions.WebDriverException: " + link)
 
     def delete_pattern(self):
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern')
         arr_html = self.htmlTable.all()
         arr = np.zeros([len(arr_html), len(arr_html)])
+
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern-before-1-for')
         for i in range(len(arr_html)):
             for j in range(i, len(arr_html)):
                 if i != j:
@@ -236,6 +266,7 @@ class Parser:
                 else:
                     arr[i][j] = 5000
 
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern-before-2-for')
         for i in range(len(arr_html)):
             min_val = arr[0][i]
             position = 0
@@ -255,5 +286,8 @@ class Parser:
                 elements += re.search(r'\d+', reg)[0] + ","
             self.htmlTable.update_row({"elements": f'{elements}'}, arr_html[i]['id'])
 
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern-before-3-for')
         for i in range(len(arr_html)):
             self.get_elements(arr_html[i]['id'])
+
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern-end')

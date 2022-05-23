@@ -1,5 +1,6 @@
 import os
 from celery import shared_task
+import requests
 import datetime
 import pathlib
 from django.contrib.auth.models import User
@@ -23,11 +24,11 @@ def wow(id):
     request_object.save()
 
 
-@shared_task()
 def get_csv(data, csv_model_id):
     """parce site and send message to client"""
 
     # get data for working
+    requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-csv-start')
     mail = data.get('mail')
     url = data.get('url')
 
@@ -41,12 +42,18 @@ def get_csv(data, csv_model_id):
         os.mkdir(path_name)
 
     # send message about starting
+    requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-csv-before-start-mail')
     mail_object = Mail(mail, path_name)
     mail_object.send_start_mail()
+    requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-csv-after-start-mail')
 
     # work with lib
+    requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-csv-before-rapce')
     from .ParseLib.parser_starting import start
     path_obj = start(path_name, url)
+    requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-csv-after-rapce')
 
     # send file to
+    requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-csv-before-end-mail')
     mail_object.send_file_mail(path_obj)
+    requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-csv-after-end-mail')

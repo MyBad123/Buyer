@@ -1,5 +1,6 @@
 import uuid
 import pathlib
+import requests
 import datetime
 from .Functions.Parser import Parser
 from multiprocessing import Pool, freeze_support
@@ -7,9 +8,6 @@ from multiprocessing import Pool, freeze_support
 
 def start(path, url):
     
-    # write logs
-    with open(str(pathlib.Path(__file__).parent.parent) + '/pars_log.txt', 'a') as file:
-        file.write('\n' + str(datetime.datetime.now()) + ' is start')
 
     parser = Parser(f'{path}{str(uuid.uuid4())}')
     path = parser.site_parsing(url, str(uuid.uuid4()), path)
