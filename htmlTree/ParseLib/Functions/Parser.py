@@ -23,14 +23,15 @@ from htmlTree.ParseLib.Tables.HtmlTable import *
 
 
 class Parser:
-    ignore = ["#"]
-    domain = ''
-    list_urls = []
-    order_id = 0
-    driver = webdriver
-    elementTable = ElementTable()
-    htmlTable = HtmlTable()
-    count = 0
+    def __init__(self, name):
+        self.ignore = ["#"]
+        self.domain = ''
+        self.list_urls = []
+        self.order_id = 0
+        self.driver = webdriver
+        self.elementTable = ElementTable(name)
+        self.htmlTable = HtmlTable(name)
+        self.count = 0
 
     def get_elements(self, site_id):
         try:
@@ -174,37 +175,37 @@ class Parser:
 
     def get_html_site(self, link, depth):
         try:
-            if depth < 5 and self.count < 1000:
-                self.count += 1
-                self.driver.get(link)
-                order_id = 0
-                beautiful_soup = BeautifulSoup(self.driver.page_source, 'lxml')
-                results_of_element = beautiful_soup.findAll()
-                for res_of_el in results_of_element:
-                    if res_of_el is not None and res_of_el.text is not None and res_of_el.name != "script" \
-                            and res_of_el.name != "style":
-                        if res_of_el.text is not None and len(" ".join(res_of_el.text.split())) > 1:
-                            new_element = res_of_el
-                            new_element['data-xid'] = order_id
-                            res_of_el.replaceWith(new_element)
-                            order_id += 1
+            self.count += 1
+            self.driver.get(link)
+            order_id = 0
+            beautiful_soup = BeautifulSoup(self.driver.page_source, 'lxml')
+            results_of_element = beautiful_soup.findAll()
+            for res_of_el in results_of_element:
+                if res_of_el is not None and res_of_el.text is not None and res_of_el.name != "script" \
+                        and res_of_el.name != "style":
+                    if res_of_el.text is not None and len(" ".join(res_of_el.text.split())) > 1:
+                        new_element = res_of_el
+                        new_element['data-xid'] = order_id
+                        res_of_el.replaceWith(new_element)
+                        order_id += 1
 
-                new_body = str(beautiful_soup).split("<html>")[-1].split("</html>")[0]
-                current_html = self.driver.find_element(by=By.TAG_NAME, value="html")
-                self.driver.execute_script("arguments[0].innerHTML = arguments[1]", current_html, new_body)
-                self.htmlTable.insert_one(vals=[self.driver.page_source, link, ''])
+            new_body = str(beautiful_soup).split("<html>")[-1].split("</html>")[0]
+            current_html = self.driver.find_element(by=By.TAG_NAME, value="html")
+            self.driver.execute_script("arguments[0].innerHTML = arguments[1]", current_html, new_body)
+            self.htmlTable.insert_one(vals=[self.driver.page_source, link, ''])
 
-                for part_link_page in beautiful_soup.findAll('a'):
-                    if self.domain in str(part_link_page.get('href')):
-                        link_page = str(part_link_page.get('href'))
-                    elif re.match(r'^(\/)\w+', str(part_link_page.get('href'))) is not None:
-                        link_page = self.domain + str(part_link_page.get('href'))
-                    else:
-                        continue
+            for part_link_page in beautiful_soup.findAll('a'):
+                if self.domain in str(part_link_page.get('href')):
+                    link_page = str(part_link_page.get('href'))
+                elif re.match(r'^(\/)\w+', str(part_link_page.get('href'))) is not None:
+                    link_page = self.domain + str(part_link_page.get('href'))
+                else:
+                    continue
 
-                    if link_page not in self.list_urls and str(part_link_page.get('href'))[1] not in self.ignore \
-                            and len(re.findall(r'\.jpg|\.jpeg|\.png|\.pdf|\.mp4|\.JPG|\.PNG|\.PDF$',
-                                               str(part_link_page.get('href')))) < 1:
+                if link_page not in self.list_urls and str(part_link_page.get('href'))[1] not in self.ignore \
+                        and len(re.findall(r'\.jpg|\.jpeg|\.png|\.pdf|\.mp4|\.JPG|\.PNG|\.PDF$',
+                                           str(part_link_page.get('href')))) < 1:
+                    if depth + 1 < 5 and self.count < 1000:
                         self.list_urls.append(link_page)
                         rnd = random.randint(1, 4)
                         time.sleep(1 + rnd)
