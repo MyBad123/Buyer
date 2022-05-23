@@ -29,6 +29,7 @@ class Csv:
         self.elementTable.drop()
         new_list = pd.DataFrame(data=None, columns=[*columns, "check_dup"])
 
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-2')
         for el in list_of_elements:
             check_dup = el['text'] + el['url']
             if check_dup not in new_list['check_dup'].unique():
@@ -67,9 +68,11 @@ class Csv:
                             new_list = pd.concat([new_list, new_row])
                             indicator = False
 
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-3')
         list_of_elements.clear()
         df = pd.DataFrame(data=None, columns=columns)
 
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-4')
         border = self.htmlTable.count_rows() * 0.5
         for ind1, el_to_add in new_list.iterrows():
             count = 0
@@ -110,6 +113,7 @@ class Csv:
         path = f'{my_path}{uuid4}.csv'
         df.to_csv(path)
 
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-5')
         self.elementTable.drop()
         self.htmlTable.drop()
 
