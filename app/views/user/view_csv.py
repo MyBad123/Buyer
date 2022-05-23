@@ -1,4 +1,5 @@
 import os
+import requests
 import datetime
 import pathlib
 from django.http import FileResponse, HttpResponse
@@ -70,8 +71,12 @@ class CsvView:
     def set_csv(request):
         """parce site and send mail from celery"""
 
+        # create logs
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=start')
+
         # control request
         if request.method != 'POST':
+            requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=error-sev-csv-error-control-request')
             return redirect('/get-csv/')
 
         # get id for path
@@ -84,6 +89,8 @@ class CsvView:
         if valid_object.is_valid():
             thread = Bg(get_csv, valid_object.get_valid_data(), csv_model.id)
             thread.start()
+        else:
+            requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=error-sev-csv-no-valid')
 
         return redirect('/get-csv/')
 
