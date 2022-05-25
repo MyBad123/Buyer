@@ -29,16 +29,17 @@ class MyException(Exception):
 
 
 class Parser:
-    def __init__(self, name):
+    def __init__(self, url):
         self.ignore = ["#"]
-        self.domain = ''
         self.list_urls = []
         self.order_id = 0
         self.driver = webdriver
-        self.elementTable = ElementTable(name)
-        self.htmlTable = HtmlTable(name)
         self.count = 0
-        self.name = name
+        self.url = url
+        self.domain = re.findall(r'([\w\-:]+)\/\/', self.url)[0] + '//' + re.findall(r'\/\/([\w\-.]+)', self.url)[0]
+        self.domain_without = max(self.domain.split("//")[-1].split("/")[0].split("."), key=len)
+        self.elementTable = ElementTable(self.domain_without)
+        self.htmlTable = HtmlTable(self.domain_without)
 
     def get_elements(self, site_id):
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements')
@@ -158,7 +159,7 @@ class Parser:
 
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements-end')
 
-    def site_parsing(self, url, uuid4, my_path):
+    def site_parsing(self, uuid4, my_path):
 
         # work with env
         path_my_my = str(pathlib.Path(__file__).parent.parent.parent.parent) + '/Buyer/'
@@ -180,18 +181,18 @@ class Parser:
         )
         self.driver.maximize_window()
 
-        self.list_urls.append(url)
-        self.domain = re.findall(r'([\w\-:]+)\/\/', url)[0] + '//' + re.findall(r'\/\/([\w\-.]+)', url)[0]
+        self.list_urls.append(self.url)
+        self.domain = re.findall(r'([\w\-:]+)\/\/', self.url)[0] + '//' + re.findall(r'\/\/([\w\-.]+)', self.url)[0]
         self.elementTable.create()
         self.htmlTable.create()
 
         # write logs
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=site-parsing-start')
 
-        self.get_html_site(url, 1)
+        self.get_html_site(self.url, 1)
         self.delete_pattern()
 
-        csv = Csv(self.name)
+        csv = Csv(self.domain_without)
         path = csv.create_scv(uuid4, my_path)
         self.driver.close()
 

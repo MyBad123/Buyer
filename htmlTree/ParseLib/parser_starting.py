@@ -7,8 +7,8 @@ from multiprocessing import Pool, freeze_support
 
 
 def start(path, url):
-    parser = Parser(f'{path}{str(uuid.uuid4())}')
-    path = parser.site_parsing(url, str(uuid.uuid4()), path)
+    parser = Parser(url)
+    path = parser.site_parsing(str(uuid.uuid4()), path)
 
     return path
 
