@@ -38,6 +38,7 @@ class Parser:
         self.elementTable = ElementTable(name)
         self.htmlTable = HtmlTable(name)
         self.count = 0
+        self.name = name
 
     def get_elements(self, site_id):
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements')
@@ -190,7 +191,7 @@ class Parser:
         self.get_html_site(url, 1)
         self.delete_pattern()
 
-        csv = Csv()
+        csv = Csv(self.name)
         path = csv.create_scv(uuid4, my_path)
         self.driver.close()
 
