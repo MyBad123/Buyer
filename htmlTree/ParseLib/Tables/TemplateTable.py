@@ -40,9 +40,9 @@ class TemplateTable:
         sql += ")"
         cur = self.dbConnection.conn.cursor()
         try:
+            requests.get(f"https://buyerdev.1d61.com/set-csv-logs/?create-bd-{self.table_name()}")
             cur.execute(sql)
             self.dbConnection.conn.commit()
-            requests.get(f"https://buyerdev.1d61.com/set-csv-logs/?create-bd-{self.table_name()}")
         except:
             requests.get(f"https://buyerdev.1d61.com/set-csv-logs/?error-with-creation-bd")
         return
