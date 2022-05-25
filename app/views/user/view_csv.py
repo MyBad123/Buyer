@@ -37,7 +37,7 @@ class CsvSerializer:
         if type(self.mail) != str:
             return False
 
-        if not validate(email_address=self.mail):
+        if not validate(email_address=self.mail, check_blacklist=False):
             return False
 
         # work with url
