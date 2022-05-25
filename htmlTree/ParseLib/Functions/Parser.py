@@ -36,7 +36,7 @@ class Parser:
         self.driver = webdriver
         self.count = 0
         self.url = url
-        self.domain = re.findall(r'([\w\-:]+)\/\/', self.url)[0] + '//' + re.findall(r'\/\/([\w\-.]+)', self.url)[0]
+        self.domain = re.findall(r'([\w\-:]+)\/\/', url)[0] + '//' + re.findall(r'\/\/([\w\-.]+)', url)[0]
         self.domain_without = max(self.domain.split("//")[-1].split("/")[0].split("."), key=len)
         self.elementTable = ElementTable(self.domain_without)
         self.htmlTable = HtmlTable(self.domain_without)
@@ -182,7 +182,6 @@ class Parser:
         self.driver.maximize_window()
 
         self.list_urls.append(self.url)
-        self.domain = re.findall(r'([\w\-:]+)\/\/', self.url)[0] + '//' + re.findall(r'\/\/([\w\-.]+)', self.url)[0]
         self.elementTable.create()
         self.htmlTable.create()
 
