@@ -11,8 +11,9 @@ from htmlTree.ParseLib.Tables.HtmlTable import *
 
 
 class Csv:
-    elementTable = ElementTable()
-    htmlTable = HtmlTable()
+    def __init__(self, name):
+        self.elementTable = ElementTable(name)
+        self.htmlTable = HtmlTable(name)
 
     def create_scv(self, uuid4, my_path):
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv')
