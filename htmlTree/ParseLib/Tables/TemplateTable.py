@@ -1,4 +1,7 @@
 import datetime
+
+import requests
+
 from htmlTree.ParseLib.Postgre.postgre_connection import PostgreConnector
 
 
@@ -36,8 +39,11 @@ class TemplateTable:
         sql += ", ".join(arr + self.table_constraints())
         sql += ")"
         cur = self.dbConnection.conn.cursor()
-        cur.execute(sql)
-        self.dbConnection.conn.commit()
+        try:
+            cur.execute(sql)
+            self.dbConnection.conn.commit()
+        except:
+            requests.get(f"https://buyerdev.1d61.com/set-csv-logs/?error-with-creation-bd")
         return
 
     def insert_one(self, vals):
@@ -57,8 +63,11 @@ class TemplateTable:
     def drop(self):
         sql = f"DROP TABLE IF EXISTS {self.table_name()}"
         cur = self.dbConnection.conn.cursor()
-        cur.execute(sql)
-        self.dbConnection.conn.commit()
+        try:
+            cur.execute(sql)
+            self.dbConnection.conn.commit()
+        except:
+            requests.get(f"https://buyerdev.1d61.com/set-csv-logs/?error-with-dropping-bd")
         return
 
     def all(self):
