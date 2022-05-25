@@ -125,3 +125,44 @@ class CsvView:
                 )
 
         return HttpResponse()
+
+    @staticmethod
+    def get_csv_file(request):
+        """request for getting file"""
+
+        # get number of pass
+        id_path = request.GET.get('id', None)
+        if id_path == None:
+            print(1)
+            return HttpResponse()
+        
+        # valid number or no
+        try:
+            int(id_path)
+        except ValueError:
+            print(2)
+            return HttpResponse()
+
+        # make path 
+        path = pathlib.Path(__file__).parent.parent.parent.parent
+        path = str(path)
+        path += '/htmlTree/files/'
+        path += str(id_path)
+        path += '/'
+
+        # control path
+        if not os.path.exists(path):
+            print(path)
+            print(3)
+            return HttpResponse()
+
+        # control file
+        if os.listdir(path) == []:
+            print(4)
+            return HttpResponse()
+
+        for i in os.listdir(path):
+            if i.endswith('.csv'):
+                path += i
+
+        return FileResponse(open(path, 'rb'))
