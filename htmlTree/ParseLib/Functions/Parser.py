@@ -30,6 +30,7 @@ class MyException(Exception):
 
 class Parser:
     def __init__(self, url):
+        print(f"url: {url}")
         self.ignore = ["#"]
         self.list_urls = []
         self.order_id = 0
@@ -160,7 +161,8 @@ class Parser:
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements-end')
 
     def site_parsing(self, uuid4, my_path):
-
+        print(f"uuid4: {uuid4}")
+        print(f"my_path: {my_path}")
         # work with env
         path_my_my = str(pathlib.Path(__file__).parent.parent.parent.parent) + '/Buyer/'
         dotenv_path = os.path.join(path_my_my, '.env')

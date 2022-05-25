@@ -40,7 +40,6 @@ class TemplateTable:
         sql += ")"
         cur = self.dbConnection.conn.cursor()
         try:
-            requests.get(f"https://buyerdev.1d61.com/set-csv-logs/?create-bd-{self.table_name()}")
             cur.execute(sql)
             self.dbConnection.conn.commit()
         except:
@@ -48,7 +47,7 @@ class TemplateTable:
         return
 
     def insert_one(self, vals):
-        print(datetime.datetime.now(), ' is ', vals)
+        # print(datetime.datetime.now(), ' is ', vals)
         for i in range(0, len(vals)):
             if type(vals[i]) != str:
                 vals[i] = str(vals[i])

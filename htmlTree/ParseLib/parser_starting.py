@@ -7,8 +7,6 @@ from multiprocessing import Pool, freeze_support
 
 
 def start(path, url):
-    requests.get(f'https://buyerdev.1d61.com/set-csv-logs/?path-{path}')
-    requests.get(f'https://buyerdev.1d61.com/set-csv-logs/?url-{url}')
     parser = Parser(url)
     path = parser.site_parsing(str(uuid.uuid4()), path)
 
