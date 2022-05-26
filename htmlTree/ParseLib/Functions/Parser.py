@@ -38,7 +38,7 @@ class Parser:
         self.count = 0
         self.url = url
         self.domain = re.findall(r'([\w\-:]+)\/\/', url)[0] + '//' + re.findall(r'\/\/([\w\-.]+)', url)[0]
-        self.domain_without = max(self.domain.split("//")[-1].split("/")[0].split("."), key=len)
+        self.domain_without = max(self.domain.split("//")[-1].split("/")[0].split("."), key=len).replace('-', '_')
         self.elementTable = ElementTable(self.domain_without)
         self.htmlTable = HtmlTable(self.domain_without)
 
