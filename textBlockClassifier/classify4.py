@@ -69,73 +69,66 @@ def is_h1_or_href(entry):
     return 1
   return 0
 
-if len(sys.argv) != 3:
-  print ('Usage: python classify2.py {csv file} train|predict')
-  quit()
+def prepare_dataset(path):
+  old_df = pd.read_csv(str(path),delimiter=',')
+  print ('Reading dataset',path)
 
-if sys.argv[2] != 'train' and sys.argv[2] != 'predict':
-  print ('Invalid 2nd parameter: it must be "train" or "predict"')
-  quit()
+  # calculate additional ML parameters
+  old_df['is_article'] = [is_article(x) for x in old_df['text']]
+  old_df['is_price'] = [is_price(x) for x in old_df['text']]
+  old_df['h1_or_href'] = [is_h1_or_href(x) for x in old_df['id_xpath']]
+  old_df['n_words'] = [get_n_words(x) for x in old_df['text']]
+  old_df['lc_uc_cnt'] = [get_lc_uc_cnt(x) for x in old_df['text']]
 
-old_df = pd.read_csv(str(sys.argv[1]),delimiter=',')
-print ('Reading dataset',sys.argv[1])
+  # filter columns
+  df = old_df.filter(['class','length','n_digits','presence_of_at','is_price','h1_or_href','is_article','lc_uc_cnt'], axis=1)
+  #df['digits_length'] = df['n_digits']/df['length']
+  #df=df[df['class']==3]
+  #print (df.head(20))
+  return df
 
-# calculate additional ML parameters
-old_df['is_article'] = [is_article(x) for x in old_df['text']]
-old_df['is_price'] = [is_price(x) for x in old_df['text']]
-old_df['h1_or_href'] = [is_h1_or_href(x) for x in old_df['id_xpath']]
-old_df['n_words'] = [get_n_words(x) for x in old_df['text']]
-old_df['lc_uc_cnt'] = [get_lc_uc_cnt(x) for x in old_df['text']]
-
-# filter columns
-df = old_df.filter(['class','length','n_digits','presence_of_at','is_price','h1_or_href','is_article','lc_uc_cnt'], axis=1)
-#df['digits_length'] = df['n_digits']/df['length']
-
-#df=df[df['class']==3]
-#print (df.head(20))
-
-if sys.argv[2] == 'train':
+def classifier_train(path):
+  print ('Train mode')
+  df = prepare_dataset(path)
   Y=df['class'] # what to predict
   X=df.drop ('class',axis=1) # all other data 
 
   from sklearn.model_selection import train_test_split
   X_train, X_test, Y_train, Y_test  = train_test_split(X, Y, test_size = 0.3, shuffle = True)
 
-  SVC_model = SVC()
+  #SVC_model = SVC()
 
   # В KNN-модели нужно указать параметр n_neighbors
   # Это число точек, на которое будет смотреть
   # классификатор, чтобы определить, к какому классу принадлежит новая точка
   KNN_model = KNeighborsClassifier(n_neighbors=5)
 
-  SVC_model.fit(X_train, Y_train)
+  #SVC_model.fit(X_train, Y_train)
   KNN_model.fit(X_train, Y_train)
 
   # Now we save the models
   # Its important to use binary mode 
   knnPickle = open(os.path.join(os.path.dirname(__file__),'knn.pkl'), 'wb') 
-  svcPickle = open(os.path.join(os.path.dirname(__file__),'svc.pkl'), 'wb') 
+  #svcPickle = open(os.path.join(os.path.dirname(__file__),'svc.pkl'), 'wb') 
 
   # source, destination 
   pickle.dump(KNN_model, knnPickle) 
-  pickle.dump(SVC_model, svcPickle) 
+  #pickle.dump(SVC_model, svcPickle) 
 
-  SVC_prediction = SVC_model.predict(X_test)
+  #SVC_prediction = SVC_model.predict(X_test)
   KNN_prediction = KNN_model.predict(X_test)
 
   # Оценка точности — простейший вариант оценки работы классификатора
-  print('SVC accuracy score:',accuracy_score(SVC_prediction, Y_test))
+  #print('SVC accuracy score:',accuracy_score(SVC_prediction, Y_test))
   print('KNN accuracy score:',accuracy_score(KNN_prediction, Y_test))
 
-else: # predict
-
+def classifier_predict(path):
+  print ('Predict mode')
+  df = prepare_dataset(path)
   KNN_model = pickle.load(open(os.path.join(os.path.dirname(__file__),'knn.pkl'), 'rb'))
   X=df.drop ('class',axis=1) # all other data 
   knn_res = KNN_model.predict(X)
 
-  pd.options.display.max_rows = 1000
-  print(knn_res[0:1000])
-
-  #print (Y[0:20])
-  #print (knn_res[0:20])
-  #print (svc_res[0:20])
+  #pd.options.display.max_rows = 1000
+  #print(knn_res[0:1000])
+  return knn_res
