@@ -28,64 +28,46 @@ class Csv:
                    "saturation", "brightness", "font-family", "ratio_coordinate_to_height",
                    "distance_btw_el_and_ruble", "distance_btw_el_and_article", "id_xpath")
         self.elementTable.drop()
-        new_list = pd.DataFrame(data=None, columns=[*columns, "check_dup"])
-
+        dup_list = pd.DataFrame(data=None, columns=["check_dup"])
+        new_list = []
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-2')
         for el in list_of_elements:
             check_dup = el['text'] + el['url']
-            if check_dup not in new_list['check_dup'].unique():
+            if check_dup not in dup_list['check_dup'].unique():
                 max_en = 0
+                max_en_el = ''
                 for sub_el in list_of_elements:
-                    if sub_el['url'] == el['url'] and sub_el['text'] == el['text'] and max_en < int(sub_el['enclosure']):
+                    if sub_el['url'] == el['url'] and sub_el['text'] == el['text'] and max_en < int(
+                            sub_el['enclosure']):
                         max_en = int(el['enclosure'])
-
-                indicator = True
-                for sub_el in list_of_elements:
-                    if sub_el['enclosure'] == max_en and sub_el['url'] == el['url'] \
-                            and sub_el['text'] == el['text']:
-                        if indicator:
-                            new_row = pd.DataFrame(
-                                [{"text": sub_el['text'], "presence_of_ruble": sub_el['presence_of_ruble'],
-                                  "content_element": sub_el['content_element'], "url": sub_el['url'],
-                                  "length": sub_el['length'], "check_dup": check_dup,
-                                  "class_ob": sub_el['class_ob'], "id_element": sub_el['id_element'],
-                                  "style": sub_el['style'],
-                                  "enclosure": sub_el['enclosure'], "href": sub_el['href'],
-                                  "count": sub_el['count'],
-                                  "location_x": sub_el['location_x'], "location_y": sub_el['location_y'],
-                                  "size_width": sub_el['size_width'], "size_height": sub_el['size_height'],
-                                  "integer": sub_el['integer'], "float": sub_el['float'],
-                                  "n_digits": sub_el['n_digits'], "presence_of_vendor": sub_el['presence_of_vendor'],
-                                  "presence_of_link": sub_el['presence_of_link'],
-                                  "presence_of_at": sub_el['presence_of_at'], "has_point": sub_el['has_point'],
-                                  "writing_form": sub_el['writing_form'], "font_size": sub_el['font_size'],
-                                  "hue": sub_el['hue'],
-                                  "saturation": sub_el['saturation'], "brightness": sub_el['brightness'],
-                                  "font_family": sub_el['font_family'],
-                                  "ratio_coordinate_to_height": sub_el['ratio_coordinate_to_height'],
-                                  "distance_btw_el_and_ruble": sub_el['distance_btw_el_and_ruble'],
-                                  "distance_btw_el_and_article": sub_el['distance_btw_el_and_article'],
-                                  "id_xpath": str(sub_el['content_element']) + "//" + str(sub_el['path']) + "//" + str(sub_el['url'])}])
-                            new_list = pd.concat([new_list, new_row])
-                            indicator = False
+                        max_en_el = sub_el
+                new_list.append(max_en_el)
+                new_row = pd.DataFrame([{"check_dup": check_dup}])
+                dup_list = pd.concat([dup_list, new_row], ignore_index=True)
+        list_of_elements.clear()
 
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-3')
         list_of_elements.clear()
         df = pd.DataFrame(data=None, columns=columns)
 
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-4')
-        border = self.htmlTable.count_rows() * 0.5
-        for ind1, el_to_add in new_list.iterrows():
-            count = 0
-            for ind2, sub_el in new_list.iterrows():
-                if sub_el['text'] == el_to_add['text']:
-                    count += 1
-            el_to_add['count'] = count
+        border = self.htmlTable.count_rows() * 0.9
+        for el_to_add in new_list:
+            if int(el_to_add['count']) == 0:
+                count = 0
+                ind_of_copies = []
+                for i in range(len(new_list)):
+                    if new_list[i]['text'] == el_to_add['text']:
+                        count += 1
+                        ind_of_copies.append(i)
+                for i in ind_of_copies:
+                    new_list[i]['count'] = count
             need_to_add = False
             if el_to_add['text'] not in df['text'].unique() and \
-                    (el_to_add['n_digits'] == 11 or el_to_add['presence_of_at'] == 1) and el_to_add['count'] > border:
+                    (el_to_add['n_digits'] == 11 or el_to_add['presence_of_at'] == 1) \
+                    and int(el_to_add['count']) > border:
                 need_to_add = True
-            elif el_to_add['count'] < border:
+            elif int(el_to_add['count']) < border:
                 need_to_add = True
 
             if need_to_add:

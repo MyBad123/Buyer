@@ -33,7 +33,6 @@ class Parser:
         print(f"url: {url}")
         self.ignore = ["#"]
         self.list_urls = []
-        self.order_id = 0
         self.driver = webdriver
         self.count = 0
         self.url = url
@@ -140,7 +139,7 @@ class Parser:
                 el = list_of_elements[i]
                 if el.location_x != 0:
                     self.elementTable.insert_one(
-                        vals=[el.order, str(el.content_element), str(el.url), str(el.length), str(el.class_ob),
+                        vals=[str(el.content_element), str(el.url), str(el.length), str(el.class_ob),
                               str(el.id_element), str(el.style), str(el.enclosure), str(el.href),
                               str(el.count), str(el.location_x), str(el.location_y), str(el.size_width),
                               str(el.size_height), str(el.path),
@@ -161,8 +160,6 @@ class Parser:
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements-end')
 
     def site_parsing(self, uuid4, my_path):
-        print(f"uuid4: {uuid4}")
-        print(f"my_path: {my_path}")
         # work with env
         path_my_my = str(pathlib.Path(__file__).parent.parent.parent.parent) + '/Buyer/'
         dotenv_path = os.path.join(path_my_my, '.env')
@@ -248,6 +245,7 @@ class Parser:
     def delete_pattern(self):
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern')
         arr_html = self.htmlTable.all()
+        print(f"Count of html pages = {len(arr_html)} for site: {self.domain}")
         arr = np.zeros([len(arr_html), len(arr_html)])
 
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern-before-1-for')
