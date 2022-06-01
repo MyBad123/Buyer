@@ -30,7 +30,7 @@ class MyException(Exception):
 
 class Parser:
     def __init__(self, url):
-        print(f"url: {url}")
+        print(f"Start site parsing with url: {url}")
         self.ignore = ["#"]
         self.list_urls = []
         self.driver = webdriver
