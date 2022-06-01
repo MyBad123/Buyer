@@ -19,6 +19,7 @@ class Csv:
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv')
 
         list_of_elements = self.elementTable.all()
+        print(f"Count of elements for site with url: {len(list_of_elements)}")
         columns = ("nn", "class", "text", "presence_of_ruble", "content_element", "url", "length",
                    "class_ob", "element_id", "style", "enclosure", "href", "count", "location_x",
                    "location_y",
@@ -45,6 +46,8 @@ class Csv:
                 new_row = pd.DataFrame([{"check_dup": check_dup}])
                 dup_list = pd.concat([dup_list, new_row], ignore_index=True)
         list_of_elements.clear()
+
+        print(f"Count of elements after removal duplicate for site with url: {len(new_list)}")
 
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-3')
         list_of_elements.clear()
@@ -94,6 +97,7 @@ class Csv:
                       "id_xpath": el_to_add['id_xpath']}])
                 df = pd.concat([df, new_row])
         path = f'{my_path}{uuid4}.csv'
+        print(f"Count of elements after removal along the border for site with url: {df.shape[0]}")
         df.to_csv(path)
 
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-5')
