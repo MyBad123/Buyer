@@ -13,7 +13,7 @@ class TemplateTable:
         return
 
     def table_name(self):
-        return self.dbConnection.prefix + "common_table"
+        return "common_table"
 
     def columns(self):
         return {"id": ["SERIAL", "PRIMARY KEY"]}

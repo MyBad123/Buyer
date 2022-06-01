@@ -10,6 +10,7 @@ class PostgreConnector:
     def __init__(self):
         with open(parser_path + '/config.yaml') as f:
             config = yaml.safe_load(f)
+            print(config['host'])
             self.conn = psycopg2.connect(user=config['user'],
                                          password=config['password'],
                                          host=config['host'],
