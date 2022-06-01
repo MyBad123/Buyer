@@ -15,7 +15,6 @@ class ElementTable(TemplateTable):
 
     def columns(self):
         return {"id": ["SERIAL", "PRIMARY KEY"],
-                "el_order": ["integer"],
                 "content_element": ["text"],
                 "url": ["text"],
                 "length": ["integer"],

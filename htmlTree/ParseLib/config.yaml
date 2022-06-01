@@ -1,6 +1,6 @@
 user: buyer_user
 password: KJNjkjnkerKJNEKRF3456
-host: 127.0.0.1
+host: localhost
 port: 5432
 database: b2b
 dbtableprefix: pars_
