@@ -14,7 +14,10 @@ def start(path, url):
     dotenv_path = os.path.join(path_my_my, '.env')
     if os.path.exists(dotenv_path):
         load_dotenv(dotenv_path)
+    print("???????????????")
     print(os.environ.get('DATABASES'))
+    print(os.environ.get('WEBDRIVER_PATH'))
+    print("???????????????")
     parser = Parser(url)
     path = parser.site_parsing(str(uuid.uuid4()), path)
 
