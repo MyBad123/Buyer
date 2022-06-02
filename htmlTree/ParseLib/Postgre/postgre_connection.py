@@ -8,11 +8,11 @@ from htmlTree.ParseLib.parser_path import parser_path
 
 class PostgreConnector:
     def __init__(self):
-        self.conn = psycopg2.connect(user=os.environ['SQL_USER'],
-                                     password=os.environ['SQL_PASSWORD'],
-                                     host=os.environ['SQL_HOST'],
-                                     port=os.environ['SQL_PORT'],
-                                     database=os.environ['SQL_DATABASE'])
+        self.conn = psycopg2.connect(user=os.environ.get('SQL_USER'),
+                                     password=os.environ.get('SQL_PASSWORD'),
+                                     host=os.environ.get('SQL_HOST'),
+                                     port=os.environ.get('SQL_PORT'),
+                                     database=os.environ.get('SQL_DATABASE'))
 
     def __del__(self):
         if self.conn:
