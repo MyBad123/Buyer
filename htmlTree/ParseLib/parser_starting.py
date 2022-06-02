@@ -1,4 +1,5 @@
 import uuid
+import os
 import pathlib
 import requests
 import datetime
@@ -7,6 +8,7 @@ from multiprocessing import Pool, freeze_support
 
 
 def start(path, url):
+    print(os.environ.get('DATABASES'))
     parser = Parser(url)
     path = parser.site_parsing(str(uuid.uuid4()), path)
 
