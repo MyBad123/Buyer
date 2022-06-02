@@ -1,10 +1,10 @@
-import json
 import enum
 import os
 import uuid
 
 import requests
 import datetime
+import dramatiq
 
 from celery import shared_task
 from django.contrib.auth.models import User
@@ -28,6 +28,27 @@ class SerpClass:
     def __init__(self, request_object):
         self.link_list = []
         self.request_object = request_object
+
+    def test_work_with_search_system(self):
+        """without serpwow"""
+
+        self.set_status(Params.BEFORE_GOOGLE)
+
+        for i in range(1, 20):
+            ResultModel.objects.create(
+                request=self.request_object,
+                system='google',
+                url='vk.com'
+            )
+            ResultModel.objects.create(
+                request=self.request_object,
+                system='yandex',
+                url='vk.com'
+            )
+
+        self.set_status(Params.AFTER_GOOGLE)
+        self.set_status(Params.BEFORE_YANDEX)
+        self.set_status(Params.AFTER_YANDEX)
 
     def work_with_search_system(self):
         """func for working with Google and Yandex"""
@@ -114,6 +135,28 @@ def add(id_object):
     serp_object.work_with_search_system()
 
     wow.delay(id_object)
+
+
+@dramatiq.actor
+def new_add(id_object):
+    # get request object
+    try:
+        request_object = RequestModel.objects.get(id=id_object)
+    except RequestModel.DoesNotExist:
+        return None
+
+    serp_object = SerpClass(request_object)
+    serp_object.test_work_with_search_system()
+
+    request_object.datetime_site_parsing_started = datetime.datetime.now()
+
+    for i in ResultModel.objects.filter(request=request_object):
+        i.status = True
+        i.mail = 'genag4448@gmail.com'
+        i.save()
+
+    request_object.datetime_processing_finished = datetime.datetime.now()
+    request_object.save()
 
 
 @shared_task
