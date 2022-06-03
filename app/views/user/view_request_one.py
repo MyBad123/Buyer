@@ -13,6 +13,26 @@ from app.serializers import (
 )
 
 
+class ForRequestOneView:
+    def __init__(self, data):
+        self.data = data
+
+    def get_items_without_duplicate(self):
+        """get urls without duplicate"""
+
+        same_urls = []
+        urls_for_getting = []
+        for i in self.data:
+            if parse.urlparse(i.url).netloc not in same_urls:
+                same_urls.append(parse.urlparse(i.url).netloc)
+                urls_for_getting.append(i.url)
+
+        return {
+            'count': len(urls_for_getting),
+            'urls': urls_for_getting
+        }
+
+
 class RequestOneView:
     @staticmethod
     def no_request_redirect(request):
@@ -59,13 +79,18 @@ class RequestOneView:
         )
 
         # get number of results
-        results = len(ResultModel.objects.filter(
-            request=request_object
-        ))
+        for_results_obj = ForRequestOneView(
+            ResultModel.objects.filter(request=request_object)
+        )
+        results = for_results_obj.get_items_without_duplicate().get('count')
+
+
         control_results = len(ResultModel.objects.filter(
             request=request_object,
             status=True
         ))
+        if control_results > results:
+            control_results = results
         
         # get data for modificate template
         results_bool = True if results else False
@@ -94,8 +119,6 @@ class RequestOneView:
             is_creator = True
         else:
             is_creator = False
-
-        print(is_creator)
     
         # update context with new_data
         context.update({

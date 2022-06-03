@@ -57,19 +57,19 @@ class SerpClass:
         self.set_status(Params.BEFORE_GOOGLE)
 
         params = {
-            'api_key': '69A93F783D8E4195ACA16DA1E871C21E',
+            'api_key': '9315F7DE02AC45209E4E6EAA5DB201E0',
             'q': self.request_object.words,
             'gl': 'ru',
             'hl': 'ru',
             'location': 'Russia',
             'google_domain': 'google.ru',
-            'num': '100'
+            'num': '1000'
         }
         api_result = requests.get('https://api.serpwow.com/search', params)
 
         # save google results
-        print(api_result.json())
-        for i in api_result.json()['organic_results']:
+        google_results = api_result.json()
+        for i in google_results['organic_results']:
             if i.get('link') not in self.link_list:
                 self.link_list.append(i.get('link'))
                 if 'google' not in i.get('link'):
@@ -82,9 +82,9 @@ class SerpClass:
 
         # part for Yandex
         self.set_status(Params.BEFORE_YANDEX)
-        for i in range(1, 5):
+        for i in range(1, 25):
             params = {
-                'api_key': '69A93F783D8E4195ACA16DA1E871C21E',
+                'api_key': '9315F7DE02AC45209E4E6EAA5DB201E0',
                 'q': self.request_object.words,
                 'engine': 'yandex',
                 'yandex_location': '225',
@@ -145,8 +145,9 @@ def new_add(id_object):
     except RequestModel.DoesNotExist:
         return None
 
+    # get results from google(yandex) search
     serp_object = SerpClass(request_object)
-    serp_object.test_work_with_search_system()
+    serp_object.work_with_search_system()
 
     request_object.datetime_site_parsing_started = datetime.datetime.now()
 
