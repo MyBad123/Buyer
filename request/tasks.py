@@ -56,28 +56,30 @@ class SerpClass:
         # part for Google
         self.set_status(Params.BEFORE_GOOGLE)
 
-        params = {
-            'api_key': '9315F7DE02AC45209E4E6EAA5DB201E0',
-            'q': self.request_object.words,
-            'gl': 'ru',
-            'hl': 'ru',
-            'location': 'Russia',
-            'google_domain': 'google.ru',
-            'num': '1000'
-        }
-        api_result = requests.get('https://api.serpwow.com/search', params)
+        for num in range(1, 10):
+            params = {
+                'api_key': '9315F7DE02AC45209E4E6EAA5DB201E0',
+                'q': self.request_object.words,
+                'gl': 'ru',
+                'hl': 'ru',
+                'location': 'Russia',
+                'google_domain': 'google.ru',
+                'num': '100',
+                'page': str(num)
+            }
+            api_result = requests.get('https://api.serpwow.com/search', params)
 
-        # save google results
-        google_results = api_result.json()
-        for i in google_results['organic_results']:
-            if i.get('link') not in self.link_list:
-                self.link_list.append(i.get('link'))
-                if 'google' not in i.get('link'):
-                    ResultModel.objects.create(
-                        request=self.request_object,
-                        system='google',
-                        url=i.get('link')
-                    )
+            # save google results
+            google_results = api_result.json()
+            for i in google_results['organic_results']:
+                if i.get('link') not in self.link_list:
+                    self.link_list.append(i.get('link'))
+                    if 'google' not in i.get('link'):
+                        ResultModel.objects.create(
+                            request=self.request_object,
+                            system='google',
+                            url=i.get('link')
+                        )
         self.set_status(Params.AFTER_GOOGLE)
 
         # part for Yandex
