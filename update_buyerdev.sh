@@ -3,7 +3,7 @@
 #перейти в каталог с проектом
 cd /
 cd /home/itsuppus/svetorezerv/buyer/
-git pull
+git pull -f
 #Удалить лишние миграции
 sudo rm -f /home/itsuppus/svetorezerv/buyer/app/migrations/0001_initial.py
 
