@@ -94,7 +94,7 @@ class Csv:
                       "ratio_coordinate_to_height": el_to_add['ratio_coordinate_to_height'],
                       "distance_btw_el_and_ruble": el_to_add['distance_btw_el_and_ruble'],
                       "distance_btw_el_and_article": el_to_add['distance_btw_el_and_article'],
-                      "id_xpath": el_to_add['id_xpath']}])
+                      "id_xpath": str(el_to_add['content_element']) + "//" + str(el_to_add['path']) + "//" + str(el_to_add['url'])}])
                 df = pd.concat([df, new_row])
         path = f'{my_path}{uuid4}.csv'
         print(f"Count of elements after removal along the border for site with url: {df.shape[0]}")
