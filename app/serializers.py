@@ -223,13 +223,13 @@ class ForResultSerialzier:
         list_data = []
         black_list = []
         for i in self.serializer.data:
-            if parse.urlparse(i.url).netloc not in black_list:
+            if parse.urlparse(i.get('url')).netloc not in black_list:
                 list_data.append({
                     'id': index,
                     'system': i.get('system'),
                     'url': i.get('url')
                 })
-                black_list.append(parse.urlparse(i.url).netloc)
+                black_list.append(parse.urlparse(i.get('url')).netloc)
                 index += 1
 
         return list_data
