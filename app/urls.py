@@ -9,6 +9,7 @@ from app.views.user.chat.view_chat import *
 from app.views.user.view_result import *
 from app.views.user.view_csv import *
 from app.views.markup_doc.view_markup_doc import *
+from app.views.admin.views_company_admin import *
 
 
 urlpatterns = [
@@ -18,6 +19,9 @@ urlpatterns = [
     path('update-user-page/', AdminMethods.update_user_page),
     path('update-user/', AdminMethods.update_user),
     path('delete-user/', AdminMethods.delete_user),
+    path('admin-get-all-companies/', AdminCompaniesView.as_view()),
+    path('admin-create-company/', AdminCompanyCreate.as_view()),
+    path('admin-update-company/', AdminUpdateCompanyView.as_view()),
     path('db/', DbView.get_db_page),
     path('delete-db/', DbView.delete),
     path('create-db/', DbView.create),

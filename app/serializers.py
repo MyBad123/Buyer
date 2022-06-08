@@ -19,6 +19,7 @@ class UpdateSerialize(serializers.Serializer):
     old_name = serializers.CharField()
     new_name = serializers.CharField()
     password = serializers.CharField()
+    company = serializers.CharField()
 
 
 class DeleteSerializer(serializers.Serializer):

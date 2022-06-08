@@ -39,24 +39,16 @@
 <div class="container">
     <div class="mt-4 my-3 p-3 bg-body rounded shadow-sm">
         <div class="auth_form">
-            <div class="content-form">
+            <form method="post" action="/admin-update-company/" class="content-form">
                 <p class="reg_word">Обновление</p>
+                {% csrf_token %}
                 <div class="container_input">
-                    <input type="text" class="form-control input_login" placeholder="Логин" value="{{ login }}">
-                    <span class="span_login">Почта</span>
+                    <input name="id" type="hidden" class="form-control input_login"  value="{{ id }}">
+                    <input name="name" type="text" class="form-control input_login" placeholder="Компания" value="{{ name }}">
                 </div>
-                <div class="container_input">
-                    <input type="password" class="form-control input_password" placeholder="Пароль">
-                    <span class="span_password">Пароль</span>
-                </div>
-                <select class="form-select" aria-label="Default select example">
-                    <option selected>{{ user_company }}</option>
-                    {% for i in companies %}
-                          <option value="1">{{ i }}</option>
-                    {% endfor %}
-                </select>
-                <p class="btn btn-primary auth_btn">Создать</p>
-            </div>
+
+                <button type="submit" class="btn btn-primary auth_btn">Создать</button>
+            </form>
         </div>
     </div>
 </div>
