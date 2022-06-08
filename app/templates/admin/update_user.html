@@ -52,7 +52,7 @@
                 <select class="form-select" aria-label="Default select example">
                     <option selected>{{ user_company }}</option>
                     {% for i in companies %}
-                          <option value="1">{{ i }}</option>
+                          <option value="{{ i }}">{{ i }}</option>
                     {% endfor %}
                 </select>
                 <p class="btn btn-primary auth_btn">Создать</p>

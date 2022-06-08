@@ -33,7 +33,9 @@ class AdminMethods:
     @staticmethod
     def get_new_user_page(request):
         if request.user.is_superuser:
-            return render(request, 'admin/new_user.html')
+            return render(request, 'admin/new_user.html', context={
+                'companies': Company.objects.all()
+            })
         else:
             return redirect("/app/user-page/")
 
@@ -52,6 +54,20 @@ class AdminMethods:
         except:
             data = {}
 
+        # work with company
+        company_name_str = data.get('company', None)
+        if type(company_name_str) != str:
+            return JsonResponse(data={
+                "error": "3"
+            }, status=400)
+
+        if len(Company.objects.filter(name=company_name_str)) == 0:
+            return JsonResponse(data={
+                "error": "3"
+            }, status=400)
+
+        company = Company.objects.filter(name=company_name_str)[0]
+
         # control validation for data
         if not AuthSerizliser(data=data).is_valid():
             return JsonResponse(data={
@@ -67,10 +83,15 @@ class AdminMethods:
                 "error": "4"
             }, status=400)
 
-        User.objects.create_user(
+        user = User.objects.create_user(
             username=data.get('login'),
             password=data.get('password')
         )
+        UserForCompany.objects.create(
+            user=user,
+            company=company
+        )
+
         return JsonResponse(data={}, status=200)
 
     @staticmethod
