@@ -16,6 +16,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
+from urllib.parse import urljoin
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from htmlTree.ParseLib.Functions.CreationCSV import *
@@ -221,12 +222,15 @@ class Parser:
             for part_link_page in beautiful_soup.findAll('a'):
                 if self.domain in str(part_link_page.get('href')):
                     link_page = str(part_link_page.get('href'))
-                elif re.match(r'^(\/)\w+', str(part_link_page.get('href'))) is not None:
+                elif re.match(r'^(\/)[\w|\=|\?|\&]+', str(part_link_page.get('href'))) is not None:
                     link_page = self.domain + str(part_link_page.get('href'))
+                elif re.match(r'^\.{1,2}', str(part_link_page.get('href'))) is not None \
+                        or not any(el not in str(part_link_page.get('href')) for el in self.ignore):
+                    link_page = urljoin(self.domain, str(part_link_page.get('href')))
                 else:
                     continue
 
-                if link_page not in self.list_urls and str(part_link_page.get('href'))[1] not in self.ignore \
+                if link_page not in self.list_urls \
                         and len(re.findall(r'\.jpg|\.jpeg|\.png|\.pdf|\.mp4|\.JPG|\.PNG|\.PDF$',
                                            str(part_link_page.get('href')))) < 1:
                     if depth + 1 < 5 and self.count < 1000:
