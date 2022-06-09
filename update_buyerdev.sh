@@ -12,7 +12,7 @@ sudo rm -f /home/itsuppus/svetorezerv/buyerdev/app/migrations/0001_initial.py
 #создаём базу
 sudo -u postgres psql -f init.sql
 #восстанавливаем зависимости
-/home/itsuppus/svetorezerv/buyerdev/venv/bin/python /home/itsuppus/svetorezerv/buyer/venv/bin/pip install -r ./requirements.txt
+/home/itsuppus/svetorezerv/buyerdev/venv/bin/python /home/itsuppus/svetorezerv/buyerdev/venv/bin/pip install -r ./requirements.txt
 #обновить миграции
 /home/itsuppus/svetorezerv/buyerdev/venv/bin/python manage.py makemigrations
 /home/itsuppus/svetorezerv/buyerdev/venv/bin/python manage.py migrate
