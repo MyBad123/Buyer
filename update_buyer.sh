@@ -10,7 +10,7 @@ git pull
 sudo rm -f /home/itsuppus/svetorezerv/buyer/app/migrations/0001_initial.py
 
 #создаём базу
-sudo -u postgres psql -f init.sql
+#sudo -u postgres psql -f init.sql
 #восстанавливаем зависимости
 /home/itsuppus/svetorezerv/buyer/venv/bin/python /home/itsuppus/svetorezerv/buyer/venv/bin/pip3 install -r ./requirements.txt
 #обновить миграции
