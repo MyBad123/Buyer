@@ -17,7 +17,7 @@ from app.utils import (
     post_and_auth
 )
 from request.tasks import (
-    add, new_add
+    add
 )
 
 
@@ -200,7 +200,7 @@ class UserMethods:
             creator=request.user,
             company=company
         )
-        new_add.send(new_request_object.id)
+        add.delay(new_request_object.id)
 
         return redirect('/user-thanks/')
 

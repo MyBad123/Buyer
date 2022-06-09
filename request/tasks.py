@@ -4,7 +4,6 @@ import uuid
 
 import requests
 import datetime
-import dramatiq
 
 from celery import shared_task
 from django.contrib.auth.models import User
@@ -56,7 +55,7 @@ class SerpClass:
         # part for Google
         self.set_status(Params.BEFORE_GOOGLE)
 
-        for num in range(1, 10):
+        for num in range(1, 2):
             params = {
                 'api_key': '9315F7DE02AC45209E4E6EAA5DB201E0',
                 'q': self.request_object.words,
@@ -71,20 +70,24 @@ class SerpClass:
 
             # save google results
             google_results = api_result.json()
-            for i in google_results['organic_results']:
-                if i.get('link') not in self.link_list:
-                    self.link_list.append(i.get('link'))
-                    if 'google' not in i.get('link'):
-                        ResultModel.objects.create(
-                            request=self.request_object,
-                            system='google',
-                            url=i.get('link')
-                        )
+            print(google_results)
+            try:
+                for i in google_results['organic_results']:
+                    if i.get('link') not in self.link_list:
+                        self.link_list.append(i.get('link'))
+                        if 'google' not in i.get('link'):
+                            ResultModel.objects.create(
+                                request=self.request_object,
+                                system='google',
+                                url=i.get('link')
+                            )
+            except:
+                pass
         self.set_status(Params.AFTER_GOOGLE)
 
         # part for Yandex
         self.set_status(Params.BEFORE_YANDEX)
-        for i in range(1, 25):
+        for i in range(1, 2):
             params = {
                 'api_key': '9315F7DE02AC45209E4E6EAA5DB201E0',
                 'q': self.request_object.words,
@@ -95,14 +98,17 @@ class SerpClass:
             api_result = requests.get('https://api.serpwow.com/search', params)
 
             # save yandex results
-            for j in api_result.json()['organic_results']:
-                if j.get('link') not in self.link_list:
-                    if 'yandex.ru' not in j.get('link'):
-                        ResultModel.objects.create(
-                            request=self.request_object,
-                            system='yandex',
-                            url=j.get('link')
-                        )
+            try:
+                for j in api_result.json()['organic_results']:
+                    if j.get('link') not in self.link_list:
+                        if 'yandex.ru' not in j.get('link'):
+                            ResultModel.objects.create(
+                                request=self.request_object,
+                                system='yandex',
+                                url=j.get('link')
+                            )
+            except:
+                pass
         self.set_status(Params.AFTER_YANDEX)
 
     def set_status(self, param):
@@ -137,29 +143,6 @@ def add(id_object):
     serp_object.work_with_search_system()
 
     wow.delay(id_object)
-
-
-@dramatiq.actor
-def new_add(id_object):
-    # get request object
-    try:
-        request_object = RequestModel.objects.get(id=id_object)
-    except RequestModel.DoesNotExist:
-        return None
-
-    # get results from google(yandex) search
-    serp_object = SerpClass(request_object)
-    serp_object.work_with_search_system()
-
-    request_object.datetime_site_parsing_started = datetime.datetime.now()
-
-    for i in ResultModel.objects.filter(request=request_object):
-        i.status = True
-        i.mail = 'genag4448@gmail.com'
-        i.save()
-
-    request_object.datetime_processing_finished = datetime.datetime.now()
-    request_object.save()
 
 
 @shared_task
