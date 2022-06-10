@@ -55,7 +55,7 @@ class SerpClass:
         # part for Google
         self.set_status(Params.BEFORE_GOOGLE)
 
-        for num in range(1, 2):
+        for num in range(1, 10):
             params = {
                 'api_key': '9315F7DE02AC45209E4E6EAA5DB201E0',
                 'q': self.request_object.words,
@@ -82,12 +82,12 @@ class SerpClass:
                                 url=i.get('link')
                             )
             except:
-                pass
+                break
         self.set_status(Params.AFTER_GOOGLE)
 
         # part for Yandex
         self.set_status(Params.BEFORE_YANDEX)
-        for i in range(1, 2):
+        for i in range(1, 7):
             params = {
                 'api_key': '9315F7DE02AC45209E4E6EAA5DB201E0',
                 'q': self.request_object.words,
@@ -108,7 +108,7 @@ class SerpClass:
                                 url=j.get('link')
                             )
             except:
-                pass
+                break
         self.set_status(Params.AFTER_YANDEX)
 
     def set_status(self, param):
