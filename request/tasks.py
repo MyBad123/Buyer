@@ -87,7 +87,7 @@ class SerpClass:
 
         # part for Yandex
         self.set_status(Params.BEFORE_YANDEX)
-        for i in range(1, 7):
+        for i in range(1, 5):
             params = {
                 'api_key': '9315F7DE02AC45209E4E6EAA5DB201E0',
                 'q': self.request_object.words,
