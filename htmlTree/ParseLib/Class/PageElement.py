@@ -17,8 +17,7 @@ def rgba2rgb(rgba, background=(255, 255, 255)):
 
 
 class Elements:
-    def __init__(self, order, content_element, url, length, class_ob, element_id, style, enclosure, href, text, path):
-        self.order = order
+    def __init__(self, content_element, url, length, class_ob, element_id, style, enclosure, href, text, path):
         self.content_element = content_element
         self.url = url
         self.length = length
@@ -37,6 +36,7 @@ class Elements:
         else:
             self.href = href
         self.text = text
+        self.order = None
         self.count = 0
         self.location_x = 0
         self.location_y = 0
@@ -62,6 +62,7 @@ class Elements:
         self.saturation = 0
         self.brightness = 0
         self.background = None
+        self.source = None
 
     def convert_color(self):
         l_border = self.color.find("(") + 1
@@ -90,13 +91,13 @@ class Elements:
 
         if text.find("₽") != -1 or text.find("руб.") != -1 or len(re.findall(r' р.', text)) > 0 \
                 or len(re.findall(r' руб$', text)) > 0 or len(re.findall(r' руб ', text)) > 0 \
-                or len(re.findall(r'\dруб', text)) > 0 or len(re.findall(r'\dр', text)) > 0:
+                or len(re.findall(r'\dруб', text)) > 0 or len(re.findall(r'\dр', text)) > 0\
+                or len(re.findall(r' р ', text)) > 0 or len(re.findall(r' р$', text)) > 0:
             self.presence_of_ruble = 1
 
         find1 = text.find("артикул")
-        find2 = text.find("арт.")
-        find3 = text.find("арт:")
-        if find1 != -1 or find2 != -1 or find3 != -1:
+        if find1 != -1 or len(re.findall(r'^арт.', text)) > 0 or len(re.findall(r'^арт:', text)) > 0 \
+                or len(re.findall(r'^арт ', text)) > 0:
             self.presence_of_vendor = 1
 
         if re.search(r'[A-Za-z]', text) is not None and re.search(r'[А-Яа-я]', text) is not None:

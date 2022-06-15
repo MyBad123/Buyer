@@ -7,6 +7,9 @@ class HtmlTable(TemplateTable):
 
     def columns(self):
         return {"id": ["SERIAL", "PRIMARY KEY"],
-                "html": ["text"],
+                "html_bs": ["text"],
+                "html_bs_new": ["text"],
                 "url": ["text"],
-                "elements": ["text"]}
+                "elements": ["text"],
+                "images": ["text"]}
+

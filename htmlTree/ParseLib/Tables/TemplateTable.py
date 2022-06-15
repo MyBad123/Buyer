@@ -14,10 +14,46 @@ class TemplateTable:
         return
 
     def table_name(self):
-        return "common_table"
+        return "elements"
 
     def columns(self):
-        return {"id": ["SERIAL", "PRIMARY KEY"]}
+        return {"id": ["SERIAL", "PRIMARY KEY"],
+                "content_element": ["text"],
+                "url": ["text"],
+                "length": ["integer"],
+                "class_ob": ["text"],
+                "id_element": ["text"],
+                "style": ["text"],
+                "enclosure": ["integer"],
+                "href": ["text"],
+                "count": ["integer"],
+                "location_x": ["float"],
+                "location_y": ["float"],
+                "size_width": ["float"],
+                "size_height": ["float"],
+                "path": ["text"],
+                "integer": ["integer"],
+                "float": ["integer"],
+                "n_digits": ["integer"],
+                "presence_of_ruble": ["integer"],
+                "presence_of_vendor": ["integer"],
+                "presence_of_link": ["integer"],
+                "presence_of_at": ["integer"],
+                "has_point": ["integer"],
+                "writing_form": ["integer"],
+                "font_size": ["text"],
+                "font_family": ["text"],
+                "color": ["text"],
+                "distance_btw_el_and_ruble": ["float"],
+                "distance_btw_el_and_article": ["float"],
+                "ratio_coordinate_to_height": ["float"],
+                "hue": ["float"],
+                "saturation": ["float"],
+                "brightness": ["float"],
+                "background": ["text"],
+                "text": ["text"],
+                "source": ["text"],
+                "site_id": ["integer"]}
 
     def primary_key(self):
         return ['id']
@@ -47,16 +83,14 @@ class TemplateTable:
             requests.get(f"https://buyerdev.1d61.com/set-csv-logs/?error-with-creation-bd")
         return
 
-    def insert_one(self, vals):
-        # print(datetime.datetime.now(), ' is ', vals)
-        for i in range(0, len(vals)):
-            if type(vals[i]) != str:
-                vals[i] = str(vals[i])
-        sql = f"INSERT INTO {self.table_name()}("
-        sql += ", ".join(self.column_names_without_id()) + ") VALUES("
-        sql += ", ".join(["%s"]*len(vals)) + ")"
-        cur = self.dbConnection.conn.cursor()
-        cur.execute(sql, vals)
+    def insert_row(self, data, columns):
+        cursor = self.dbConnection.conn.cursor()
+        for i in range(0, len(data)):
+            if type(data[i]) != str:
+                data[i] = str(data[i])
+        query = "INSERT INTO {} ({})\n".format(self.table_name(), ', '.join(list(columns))) + " VALUES("
+        query += ", ".join(["%s"] * len(data)) + ")"
+        cursor.execute(query, data)
         self.dbConnection.conn.commit()
 
         return
@@ -70,6 +104,12 @@ class TemplateTable:
         except:
             requests.get(f"https://buyerdev.1d61.com/set-csv-logs/?error-with-dropping-bd")
         return
+
+    def truncate(self):
+        sql = f"TRUNCATE {self.table_name()}"
+        cur = self.dbConnection.conn.cursor()
+        cur.execute(sql)
+        self.dbConnection.conn.commit()
 
     def all(self):
         sql = f"SELECT * FROM {self.table_name()}"
@@ -94,6 +134,20 @@ class TemplateTable:
         cur = self.dbConnection.conn.cursor()
         cur.execute(sql, list(vals.values()))
         return dict(zip(self.column_names(), cur.fetchone()))
+
+    def select(self, param):
+        for i, j in param.items():
+            if type(j) != str:
+                param[i] = str(j)
+        arr = [f"{k} = '{v}'" for k, v in param.items()]
+        query = f'SELECT * FROM {self.table_name()} WHERE '
+        query += " AND ".join(arr + self.table_constraints())
+        cur = self.dbConnection.conn.cursor()
+        cur.execute(query)
+        arr = []
+        for el in cur.fetchall():
+            arr.append(dict(zip(self.column_names(), el)))
+        return arr
 
     def count_rows(self):
         sql = f"SELECT COUNT(*) FROM {self.table_name()}"
