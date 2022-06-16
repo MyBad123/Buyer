@@ -2,6 +2,10 @@ import enum
 import os
 import pathlib
 import uuid
+import time
+import zipfile
+import json
+import shutil
 
 import requests
 import datetime
@@ -22,101 +26,231 @@ class Params(enum.Enum):
     AFTER_YANDEX = 4
 
 
-class SerpClass:
+class BatchesApiClass:
+    """methods for work with batches in SerpWow"""
+
+    def create_batch_google(self):
+        body = {
+            "name": "My First Batch",
+            "searches_type": "google_web"
+        }
+
+        api_result = requests.post(
+            'https://api.serpwow.com/live/batches?api_key=9315F7DE02AC45209E4E6EAA5DB201E0',
+            json=body
+        )
+        return api_result.json().get('batch').get('id')
+
+    def create_batch_yandex(self):
+        body = {
+            "name": "My First Batch",
+            "searches_type": "yandex_web"
+        }
+
+        api_result = requests.post(
+            'https://api.serpwow.com/live/batches?api_key=9315F7DE02AC45209E4E6EAA5DB201E0',
+            json=body
+        )
+        return api_result.json().get('batch').get('id')
+
+    def create_request_google(self, words, batch_id):
+        # for google
+        body = {
+            "searches": [
+                {
+                    "q": words,
+                    "custom_id": "for_google",
+                    "max_page": 100,
+                    'gl': 'ru',
+                    'hl': 'ru',
+                    'location': 'Russia',
+                    'google_domain': 'google.ru',
+                    'custom_id': 'this-19'
+                }
+            ]
+        }
+        requests.put(
+            'https://api.serpwow.com/live/batches/' + batch_id + '?api_key=9315F7DE02AC45209E4E6EAA5DB201E0',
+            json=body
+        )
+
+    def create_request_yandex(self, words, batch_id):
+        body = {
+            "searches": [
+                {
+                    "q": words,
+                    "custom_id": "for_google",
+                    "max_page": 100,
+                    'location': 'Russia',
+                    'engine': 'yandex'
+                }
+            ]
+        }
+        requests.put(
+            'https://api.serpwow.com/live/batches/' + batch_id + '?api_key=9315F7DE02AC45209E4E6EAA5DB201E0',
+            json=body
+        )
+
+    def start_search(self, batch_id):
+        params = {
+            'api_key': '9315F7DE02AC45209E4E6EAA5DB201E0'
+        }
+        requests.get('https://api.serpwow.com/live/batches/' + batch_id + '/start', params)
+
+    def stop_search(self, batch_id):
+        params = {
+            'api_key': '9315F7DE02AC45209E4E6EAA5DB201E0'
+        }
+        requests.get('https://api.serpwow.com/live/batches/' + batch_id + '/stop', params)
+
+    def check_status(self, batch_id):
+        params = {
+            'api_key': '9315F7DE02AC45209E4E6EAA5DB201E0'
+        }
+        api_result = requests.get(
+            'https://api.serpwow.com/live/batches/' + batch_id + '/results',
+            params
+        )
+
+        return api_result.json()
+
+    def get_url_for_download(self, batch_id, request_id):
+        """get url for download from request for results"""
+
+        params = {
+            'api_key': '9315F7DE02AC45209E4E6EAA5DB201E0'
+        }
+        api_result = requests.get(
+            'https://api.serpwow.com/live/batches/' + batch_id + '/results/' + str(request_id),
+            params
+        )
+
+        return api_result.json().get('result').get('download_links').get('all_pages')
+
+
+    def get_info_from_file(self, id_request, zip_url):
+        """get info from download file"""
+
+        # control folders
+        path = str(pathlib.Path(__file__).parent)
+        if not os.path.isdir(path + '/files'):
+            os.mkdir(path + '/files')
+
+        path += '/files/'
+
+        # work with env for file
+        path += str(id_request)
+        path += '/'
+        os.mkdir(path)
+
+        # work with download file
+        with open(path + '1.zip', 'wb') as file:
+            download_request = requests.get(zip_url)
+            file.write(download_request.content)
+
+        data = None
+        with zipfile.ZipFile(path + '1.zip') as myzip:
+            for i in myzip.namelist():
+                with myzip.open(i) as myfile:
+                    data = myfile.read()
+
+        # delete folders
+        path = str(pathlib.Path(__file__).parent) + '/files/' + str(id_request)
+        try:
+            os.rmdir(path)
+        except OSError:
+            shutil.rmtree(path)
+
+        return json.loads(data.decode('utf-8'))[0].get('result').get('organic_results')
+
+
+class SerpClass(BatchesApiClass):
     """class for scan google and yandex"""
 
     def __init__(self, request_object):
         self.link_list = []
         self.request_object = request_object
 
-    def test_work_with_search_system(self):
-        """without serpwow"""
-
-        self.set_status(Params.BEFORE_GOOGLE)
-
-        for i in range(1, 20):
-            ResultModel.objects.create(
-                request=self.request_object,
-                system='google',
-                url='vk.com'
-            )
-            ResultModel.objects.create(
-                request=self.request_object,
-                system='yandex',
-                url='vk.com'
-            )
-
-        self.set_status(Params.AFTER_GOOGLE)
-        self.set_status(Params.BEFORE_YANDEX)
-        self.set_status(Params.AFTER_YANDEX)
-
     def work_with_search_system(self):
         """func for working with Google and Yandex"""
 
-        # part for Google
+        # new batches in SerpWow
+        batch_google = super().create_batch_google()
+        batch_yandex = super().create_batch_yandex()
+
+        print(1)
+
+        # new requests in new batches
+        super().create_request_yandex(self.request_object.words, batch_yandex)
+        super().create_request_google(self.request_object.words, batch_google)
+
+        print(2)
+
+        # start work in batches
+        super().start_search(batch_yandex)
+        super().start_search(batch_google)
+
+        # get results from searching(google)
         self.set_status(Params.BEFORE_GOOGLE)
 
-        for num in range(1, 10):
-            params = {
-                'api_key': '9315F7DE02AC45209E4E6EAA5DB201E0',
-                'q': self.request_object.words,
-                'gl': 'ru',
-                'hl': 'ru',
-                'location': 'Russia',
-                'google_domain': 'google.ru',
-                'num': '100',
-                'page': str(num)
-            }
-            api_result = requests.get('https://api.serpwow.com/search', params)
-
-            # save google results
-            google_results = api_result.json()
+        for_while = True
+        while for_while:
             try:
-                with open(str(pathlib.Path(__file__).parent) + '/for_logs.txt', 'a') as file:
-                    file.write('\n\n' + str(google_results['organic_results']))
+                for_results = super().check_status(batch_google)
+                if len(for_results.get('results')) != 0:
+                    results_id = for_results.get('results')[0].get('id')
+                    for_while = False
+                else:
+                    time.sleep(150)
 
-                for i in google_results['organic_results']:
-                    if i.get('link') not in self.link_list:
-                        self.link_list.append(i.get('link'))
-                        if 'google' not in i.get('link'):
-                            ResultModel.objects.create(
-                                request=self.request_object,
-                                system='google',
-                                url=i.get('link')
-                            )
-            except:
-                break
+                print(4)
+            except KeyError:
+                pass
+
+        url_file = super().get_url_for_download(batch_google, results_id)
+        for i in super().get_info_from_file(self.request_object.id, url_file):
+            ResultModel.objects.create(
+                request=self.request_object,
+                system='google',
+                url=i.get('link')
+            )
+
+        print(5)
+
         self.set_status(Params.AFTER_GOOGLE)
 
-        # part for Yandex
+        # get results from searching(yandex)
         self.set_status(Params.BEFORE_YANDEX)
-        for i in range(1, 7):
-            params = {
-                'api_key': '9315F7DE02AC45209E4E6EAA5DB201E0',
-                'q': self.request_object.words,
-                'engine': 'yandex',
-                'yandex_location': '225',
-                'page': i
-            }
-            api_result = requests.get('https://api.serpwow.com/search', params)
+        time.sleep(600)
 
-            # save yandex results
+        for_while = True
+        while for_while:
             try:
-                yandex_search = api_result.json()
-                with open(str(pathlib.Path(__file__).parent) + '/for_logs.txt', 'a') as file:
-                    file.write('\n\n' + str(yandex_search['organic_results']))
+                for_results = super().check_status(batch_yandex)
+                if len(for_results.get('results')) != 0:
+                    results_id = for_results.get('results')[0].get('id')
+                    for_while = False
+                else:
+                    time.sleep(300)
+            except KeyError:
+                pass
 
-                for j in yandex_search['organic_results']:
-                    if j.get('link') not in self.link_list:
-                        if 'yandex.ru' not in j.get('link'):
-                            ResultModel.objects.create(
-                                request=self.request_object,
-                                system='yandex',
-                                url=j.get('link')
-                            )
-            except:
-                break
+        url_file = super().get_url_for_download(batch_google, results_id)
+        for i in super().get_info_from_file(self.request_object.id, url_file):
+            ResultModel.objects.create(
+                request=self.request_object,
+                system='yandex',
+                url=i.get('link')
+            )
         self.set_status(Params.AFTER_YANDEX)
+
+        # delete batches
+        requests.delete(
+            'https://api.serpwow.com/live/batches/' + batch_google + '?api_key=9315F7DE02AC45209E4E6EAA5DB201E0'
+        )
+        requests.delete(
+            'https://api.serpwow.com/live/batches/' + batch_yandex + '?api_key=9315F7DE02AC45209E4E6EAA5DB201E0'
+        )
 
     def set_status(self, param):
         """set status for request_object"""
