@@ -23,6 +23,9 @@ from htmlTree.ParseLib.Functions.CreationCSV import *
 from htmlTree.ParseLib.Class.PageElement import Elements
 from htmlTree.ParseLib.Tables.ElementTable import *
 from htmlTree.ParseLib.Tables.HtmlTable import *
+from htmlTree.ParseLib.Tables.ImageTable import *
+from htmlTree.ParseLib.Tables.TemplateTable import *
+from htmlTree.ParseLib.Tables.SiteTable import *
 
 
 class MyException(Exception):
@@ -32,7 +35,7 @@ class MyException(Exception):
 class Parser:
     def __init__(self, url):
         print(f"Start site parsing with url: {url}")
-        self.ignore = ["#"]
+        self.ignore = ["#", ":", "+", "/"]
         self.list_urls = []
         self.driver = webdriver
         self.count = 0
@@ -41,15 +44,20 @@ class Parser:
         self.domain_without = max(self.domain.split("//")[-1].split("/")[0].split("."), key=len).replace('-', '_')
         self.elementTable = ElementTable(self.domain_without)
         self.htmlTable = HtmlTable(self.domain_without)
+        self.imageTable = ImageTable(self.domain_without)
+        self.templateTable = TemplateTable()
+        self.siteTable = SiteTable()
 
     def get_elements(self, site_id):
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements')
         try:
             site_html = self.htmlTable.one(site_id)
+            print(f"{site_html['id']}: {site_html['url']}")
             list_of_data_xid = list(filter(None, site_html['elements'].split(",")))
+            list_of_img_xid = list(filter(None, site_html['images'].split(",")))
             self.driver.get(site_html['url'])
             list_of_elements = []
-            beautiful_soup = BeautifulSoup(site_html['html'], 'lxml')
+            beautiful_soup = BeautifulSoup(site_html['html_bs_new'], 'lxml')
             results_of_element = beautiful_soup.findAll()
             for res_of_el in results_of_element:
                 if res_of_el.get('data-xid') in list_of_data_xid:
@@ -62,85 +70,136 @@ class Parser:
                         i += 1
 
                     if res_of_el.text is not None and len(" ".join(res_of_el.text.split())) > 1:
-                        new_el = Elements(0, res_of_el.name, site_html['url'], len(" ".join(res_of_el.text.split())),
+                        new_el = Elements(res_of_el.name, site_html['url'], len(" ".join(res_of_el.text.split())),
                                           res_of_el.get('class'),
                                           res_of_el.get('id'), " ".join(str(res_of_el.get('style')).split()), i,
                                           res_of_el.get('href'), " ".join(res_of_el.text.split()), path_str)
                         new_el.analyze_text()
+                        new_el.order = res_of_el.get('data-xid')
                         list_of_elements.append(new_el)
 
             new_body = str(beautiful_soup).split("<html>")[-1].split("</html>")[0]
             current_html = self.driver.find_element(by=By.TAG_NAME, value="html")
             self.driver.execute_script("arguments[0].innerHTML = arguments[1]", current_html, new_body)
             driver_elements = self.driver.find_elements(by=By.XPATH, value='//*[@data-xid]')
+            img_elements = self.driver.find_elements(by=By.XPATH, value='//*[@img-xid]')
             height = self.driver.execute_script("return document.body.scrollHeight")
+
+            list_of_images = []
+            for img in img_elements:
+                if img.get_attribute('img-xid') in list_of_img_xid:
+                    new_img = Elements("img", site_html['url'], None, None, None, None, None, None, None, None)
+                    new_img.source = str(img.get_attribute('src'))
+                    new_img.location_x = img.location['x']
+                    new_img.location_y = img.location['y']
+                    new_img.size_width = str(img.size['width'])
+                    new_img.size_height = str(img.size['height'])
+
+                    if new_img.size_height != 0 and new_img.size_width != 0:
+                        if re.match(r'^(\/)', new_img.source) is not None:
+                            new_img.source = self.domain + new_img.source
+                        elif re.match(r'^\.{1,2}', new_img.source) is not None:
+                            new_img.source = urljoin(self.domain, new_img.source)
+                        list_of_images.append(new_img)
+
             j = 0
             arr_of_el_with_ruble = []
             arr_of_el_with_article = []
-            for i in range(0, len(list_of_elements)):
-                if int(driver_elements[j].get_attribute('data-xid')) == i and j < len(driver_elements) - 1:
-                    list_of_elements[i].font_size = driver_elements[j].value_of_css_property('font-size')[:-2]
-                    list_of_elements[i].font_family = driver_elements[j].value_of_css_property('font-family')
-                    list_of_elements[i].color = driver_elements[j].value_of_css_property('color')
-                    list_of_elements[i].color = driver_elements[j].value_of_css_property('background-color')
-                    list_of_elements[i].convert_color()
+            print(f"count of driver elements: {len(driver_elements)}")
+            print(f"count of elements after delete pattern: {len(list_of_elements)}")
+            for el in driver_elements:
+                if j >= len(list_of_elements):
+                    break
+                if int(el.get_attribute('data-xid')) == int(list_of_elements[j].order):
+                    list_of_elements[j].font_size = el.value_of_css_property('font-size')[:-2]
+                    list_of_elements[j].font_family = el.value_of_css_property('font-family')
+                    list_of_elements[j].color = el.value_of_css_property('color')
+                    list_of_elements[j].color = el.value_of_css_property('background-color')
+                    list_of_elements[j].convert_color()
 
-                    list_of_elements[i].location_x = driver_elements[j].location['x']
-                    list_of_elements[i].location_y = driver_elements[j].location['y']
-                    list_of_elements[i].size_width = driver_elements[j].size['width']
-                    list_of_elements[i].size_height = driver_elements[j].size['height']
+                    list_of_elements[j].location_x = el.location['x']
+                    list_of_elements[j].location_y = el.location['y']
+                    list_of_elements[j].size_width = el.size['width']
+                    list_of_elements[j].size_height = el.size['height']
                     if height != 0:
-                        list_of_elements[i].ratio_coordinate_to_height = \
-                            np.around(list_of_elements[i].location_y / height, decimals=6)
+                        list_of_elements[j].ratio_coordinate_to_height = \
+                            np.around(list_of_elements[j].location_y / height, decimals=6)
+
+                    if list_of_elements[j].presence_of_ruble == 1:
+                        arr_of_el_with_ruble.append(list_of_elements[j])
+
+                    if list_of_elements[j].presence_of_vendor == 1:
+                        arr_of_el_with_article.append(list_of_elements[j])
                     j += 1
 
-                if list_of_elements[i].presence_of_ruble == 1:
-                    arr_of_el_with_ruble.append(list_of_elements[i])
-
-                if list_of_elements[i].presence_of_vendor == 1:
-                    arr_of_el_with_article.append(list_of_elements[i])
-
             if len(arr_of_el_with_ruble) != 0 or len(arr_of_el_with_article) != 0:
-                for i in range(0, len(list_of_elements)):
-                    if list_of_elements[i].location_x != 0:
+                for el in list_of_elements:
+                    if el.location_x != 0:
                         if len(arr_of_el_with_ruble) > 0:
-                            delta_x = abs(arr_of_el_with_ruble[0].location_x - list_of_elements[i].location_x)
-                            delta_y = abs(arr_of_el_with_ruble[0].location_y - list_of_elements[i].location_y)
-                            list_of_elements[i].distance_btw_el_and_ruble = \
-                                math.sqrt(delta_x * delta_x + delta_y * delta_y)
+                            delta_x = abs(arr_of_el_with_ruble[0].location_x - el.location_x)
+                            delta_y = abs(arr_of_el_with_ruble[0].location_y - el.location_y)
+                            el.distance_btw_el_and_ruble = math.sqrt(np.square(delta_x) + np.square(delta_y))
                             for el_with_ruble in arr_of_el_with_ruble:
-                                delta_x = abs(el_with_ruble.location_x - list_of_elements[i].location_x)
-                                delta_y = abs(el_with_ruble.location_y - list_of_elements[i].location_y)
-                                if list_of_elements[i].distance_btw_el_and_ruble > \
-                                        math.sqrt(delta_x * delta_x + delta_y * delta_y):
-                                    list_of_elements[i].distance_btw_el_and_ruble = \
-                                        math.sqrt(delta_x * delta_x + delta_y * delta_y)
+                                delta_x = abs(el_with_ruble.location_x - el.location_x)
+                                delta_y = abs(el_with_ruble.location_y - el.location_y)
+                                distance = math.sqrt(np.square(delta_x) + np.square(delta_y))
+                                if el.distance_btw_el_and_ruble > distance:
+                                    el.distance_btw_el_and_ruble = distance
 
                         if len(arr_of_el_with_article) > 0:
-                            delta_x = abs(arr_of_el_with_article[0].location_x - list_of_elements[i].location_x)
-                            delta_y = abs(arr_of_el_with_article[0].location_y - list_of_elements[i].location_y)
-                            list_of_elements[i].distance_btw_el_and_article = \
-                                math.sqrt(delta_x * delta_x + delta_y * delta_y)
+                            delta_x = abs(arr_of_el_with_article[0].location_x - el.location_x)
+                            delta_y = abs(arr_of_el_with_article[0].location_y - el.location_y)
+                            el.distance_btw_el_and_article = math.sqrt(np.square(delta_x) + np.square(delta_y))
                             for el_with_article in arr_of_el_with_article:
-                                delta_x = abs(el_with_article.location_x - list_of_elements[i].location_x)
-                                delta_y = abs(el_with_article.location_y - list_of_elements[i].location_y)
-                                if list_of_elements[i].distance_btw_el_and_article > \
-                                        math.sqrt(delta_x * delta_x + delta_y * delta_y):
-                                    list_of_elements[i].distance_btw_el_and_article = \
-                                        math.sqrt(delta_x * delta_x + delta_y * delta_y)
+                                delta_x = abs(el_with_article.location_x - el.location_x)
+                                delta_y = abs(el_with_article.location_y - el.location_y)
+                                distance = math.sqrt(np.square(delta_x) + np.square(delta_y))
+                                if el.distance_btw_el_and_article > distance:
+                                    el.distance_btw_el_and_article = distance
 
-                        list_of_elements[i].distance_btw_el_and_article = \
-                            np.around(list_of_elements[i].distance_btw_el_and_article, decimals=3)
-                        list_of_elements[i].distance_btw_el_and_ruble = \
-                            np.around(list_of_elements[i].distance_btw_el_and_ruble, decimals=3)
+                        el.distance_btw_el_and_article = np.around(el.distance_btw_el_and_article, decimals=3)
+                        el.distance_btw_el_and_ruble = np.around(el.distance_btw_el_and_ruble, decimals=3)
+
+                for img in list_of_images:
+                    if len(arr_of_el_with_ruble) > 0:
+                        delta_x = abs(arr_of_el_with_ruble[0].location_x - img.location_x)
+                        delta_y = abs(arr_of_el_with_ruble[0].location_y - img.location_y)
+                        img.distance_btw_el_and_ruble = math.sqrt(np.square(delta_x) + np.square(delta_y))
+                        for el_with_ruble in arr_of_el_with_ruble:
+                            delta_x = abs(el_with_ruble.location_x - img.location_x)
+                            delta_y = abs(el_with_ruble.location_y - img.location_y)
+                            distance = math.sqrt(np.square(delta_x) + np.square(delta_y))
+                            if img.distance_btw_el_and_ruble > distance:
+                                img.distance_btw_el_and_ruble = distance
+
+                    if len(arr_of_el_with_article) > 0:
+                        delta_x = abs(arr_of_el_with_article[0].location_x - img.location_x)
+                        delta_y = abs(arr_of_el_with_article[0].location_y - img.location_y)
+                        img.distance_btw_el_and_article = math.sqrt(np.square(delta_x) + np.square(delta_y))
+                        for el_with_article in arr_of_el_with_article:
+                            delta_x = abs(el_with_article.location_x - img.location_x)
+                            delta_y = abs(el_with_article.location_y - img.location_y)
+                            distance = math.sqrt(np.square(delta_x) + np.square(delta_y))
+                            if img.distance_btw_el_and_article > distance:
+                                img.distance_btw_el_and_article = distance
+
+                    img.distance_btw_el_and_article = np.around(img.distance_btw_el_and_article, decimals=3)
+                    img.distance_btw_el_and_ruble = np.around(img.distance_btw_el_and_ruble, decimals=3)
+                    self.imageTable.insert_row(data=[img.source, site_html['url'], img.size_width, img.size_height,
+                                                     img.location_x, img.location_y,
+                                                     str(img.distance_btw_el_and_ruble),
+                                                     str(img.distance_btw_el_and_article)],
+                                               columns=['source', 'url', 'width', 'height', 'x', 'y',
+                                                        'distance_btw_el_and_ruble', 'distance_btw_el_and_article'])
+
             arr_of_el_with_ruble.clear()
             arr_of_el_with_article.clear()
 
             for i in range(0, len(list_of_elements)):
                 el = list_of_elements[i]
                 if el.location_x != 0:
-                    self.elementTable.insert_one(
-                        vals=[str(el.content_element), str(el.url), str(el.length), str(el.class_ob),
+                    self.elementTable.insert_row(
+                        data=[str(el.content_element), str(el.url), str(el.length), str(el.class_ob),
                               str(el.id_element), str(el.style), str(el.enclosure), str(el.href),
                               str(el.count), str(el.location_x), str(el.location_y), str(el.size_width),
                               str(el.size_height), str(el.path),
@@ -151,7 +210,8 @@ class Parser:
                               str(el.distance_btw_el_and_ruble), str(el.distance_btw_el_and_article),
                               str(el.ratio_coordinate_to_height), str(el.hue), str(el.saturation),
                               str(el.brightness),
-                              str(el.background), el.text.replace("'", "''")])
+                              str(el.background), el.text.replace("'", "''"), "", 0],
+                        columns=self.elementTable.column_names_without_id())
 
         except selenium.common.exceptions.TimeoutException:
             print("selenium.common.exceptions.TimeoutException")
@@ -171,39 +231,48 @@ class Parser:
         # options = webdriver.FirefoxOptions()
         # options.add_argument('--headless')  # example
 
-        options = Options()
-        options.headless = True
-
-        # self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
-        self.driver = webdriver.Firefox(
-           firefox_profile=os.environ.get('WEBDRIVER_PATH'),
-           options=options
-        )
-        self.driver.maximize_window()
-
-        self.list_urls.append(self.url)
-        self.elementTable.create()
-        self.htmlTable.create()
-
-        # write logs
-        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=site-parsing-start')
-
-        self.get_html_site(self.url, 1)
-        self.delete_pattern()
-
+        row = self.siteTable.select(param={"url": self.url})
         csv = Csv(self.domain_without)
-        path = csv.create_scv(uuid4, my_path)
-        self.driver.close()
+        if not row:
+            options = Options()
+            options.headless = True
 
+            # self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
+            self.driver = webdriver.Firefox(
+               firefox_profile=os.environ.get('WEBDRIVER_PATH'),
+               options=options
+            )
+            self.driver.maximize_window()
+
+            self.list_urls.append(self.url)
+            self.elementTable.create()
+            self.htmlTable.create()
+            self.imageTable.create()
+
+            # write logs
+            requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=site-parsing-start')
+
+            self.get_html_site(self.url, 1)
+            self.delete_pattern()
+            self.siteTable.insert_row(data=[str(self.url)], columns=["url"])
+            row = self.siteTable.select(param={"url": self.url})
+            site_id = row[0]['id']
+            path = csv.create_scv(uuid4=uuid4, my_path=my_path, site_id=site_id)
+            self.driver.close()
+        else:
+            site_id = row[0]['id']
+            path = csv.create_ex_csv(uuid4=uuid4, my_path=my_path, site_id=site_id)
         return path
 
     def get_html_site(self, link, depth):
-        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-html-site')
         try:
+            print(f"{self.domain_without}: {link}")
             self.count += 1
             self.driver.get(link)
             order_id = 0
+            img_id = 0
             beautiful_soup = BeautifulSoup(self.driver.page_source, 'lxml')
+            html_bs = str(beautiful_soup)
             results_of_element = beautiful_soup.findAll()
             for res_of_el in results_of_element:
                 if res_of_el is not None and res_of_el.text is not None and res_of_el.name != "script" \
@@ -213,11 +282,15 @@ class Parser:
                         new_element['data-xid'] = order_id
                         res_of_el.replaceWith(new_element)
                         order_id += 1
-
-            new_body = str(beautiful_soup).split("<html>")[-1].split("</html>")[0]
-            current_html = self.driver.find_element(by=By.TAG_NAME, value="html")
-            self.driver.execute_script("arguments[0].innerHTML = arguments[1]", current_html, new_body)
-            self.htmlTable.insert_one(vals=[self.driver.page_source, link, ''])
+                    elif res_of_el.name == "img":
+                        new_element = res_of_el
+                        new_element['img-xid'] = img_id
+                        res_of_el.replaceWith(new_element)
+                        img_id += 1
+            print(f"insert into HTML table with len of pages {len(html_bs.splitlines())}, "
+                  f"{len(str(beautiful_soup).splitlines())} and url = {link}")
+            self.htmlTable.insert_row(data=[html_bs, str(beautiful_soup), link],
+                                      columns=['html_bs', 'html_bs_new', 'url'])
 
             for part_link_page in beautiful_soup.findAll('a'):
                 if self.domain in str(part_link_page.get('href')):
@@ -235,11 +308,9 @@ class Parser:
                                            str(part_link_page.get('href')))) < 1:
                     if depth + 1 < 5 and self.count < 1000:
                         self.list_urls.append(link_page)
-                        rnd = randint(1, 4)
+                        rnd = random.randint(1, 4)
                         time.sleep(1 + rnd)
                         self.get_html_site(link_page, depth + 1)
-
-            requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-html-site-end')
 
         except selenium.common.exceptions.TimeoutException:
             print("selenium.common.exceptions.TimeoutException: " + link)
@@ -254,42 +325,56 @@ class Parser:
 
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern-before-1-for')
         for i in range(len(arr_html)):
-            for j in range(i, len(arr_html)):
+            for j in range(len(arr_html)):
                 if i != j:
-                    str1 = arr_html[i]['html'].splitlines()
-                    str2 = arr_html[j]['html'].splitlines()
+                    str1 = arr_html[i]['html_bs'].splitlines()
+                    str2 = arr_html[j]['html_bs'].splitlines()
                     diff = df.unified_diff(str1, str2, lineterm='')
-                    count_plus = 0
                     count_minus = 0
                     for el in diff:
-                        if el[0] == '+':
-                            count_plus += 1
                         if el[0] == '-':
                             count_minus += 1
                     arr[i][j] = count_minus
-                    arr[j][i] = count_plus
                 else:
-                    arr[i][j] = 5000
+                    arr[i][j] = 10000
 
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern-before-2-for')
         for i in range(len(arr_html)):
-            min_val = arr[0][i]
+            min_val = arr[i][0]
             position = 0
             for j in range(len(arr_html)):
-                if arr[j][i] < min_val:
-                    min_val = arr[j][i]
+                if arr[i][j] < min_val:
+                    min_val = arr[i][j]
                     position = j
-            str1 = arr_html[i]['html'].splitlines()
-            str2 = arr_html[position]['html'].splitlines()
-            diff = df.unified_diff(str1, str2, lineterm='')
-            unique_str = ''
+            print(f"{arr_html[i]['url']} where min = {min_val} and position = {position}")
+            str1 = arr_html[i]['html_bs'].splitlines()
+            str2 = arr_html[position]['html_bs'].splitlines()
+            str3 = arr_html[i]['html_bs_new'].splitlines()
+            diff = df.context_diff(str1, str2, lineterm='')
+            unique_str = ""
             for el in diff:
-                if el[0] == '-':
-                    unique_str += el
+                if el[0] == "!":
+                    for k in range(len(str1)):
+                        if str1[k] == el[2:]:
+                            if re.match(r'^<.+>', str1[k]) is not None:
+                                unique_str += str3[k]
+                            else:
+                                j = k
+                                while True:
+                                    if len(re.findall(r'<[^/<>]+>', str1[j])) > len(re.findall(r'</[^/<>]+>', str1[j])):
+                                        unique_str += str3[j]
+                                        break
+                                    unique_str += str3[j]
+                                    j -= 1
+                            break
             elements = ""
+            images = ""
             for reg in re.findall(r'data-xid="\d*"', unique_str):
                 elements += re.search(r'\d+', reg)[0] + ","
-            self.htmlTable.update_row({"elements": f'{elements}'}, arr_html[i]['id'])
+            for reg in re.findall(r'img-xid="\d*"', unique_str):
+                images += re.search(r'\d+', reg)[0] + ","
+            self.htmlTable.update_row({"elements": elements}, arr_html[i]['id'])
+            self.htmlTable.update_row({"images": images}, arr_html[i]['id'])
 
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern-before-3-for')
         for i in range(len(arr_html)):
