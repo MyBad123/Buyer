@@ -1,5 +1,6 @@
 import enum
 import os
+import pathlib
 import uuid
 
 import requests
@@ -70,8 +71,10 @@ class SerpClass:
 
             # save google results
             google_results = api_result.json()
-            print(google_results)
             try:
+                with open(str(pathlib.Path(__file__).parent) + '/for_logs.txt', 'a') as file:
+                    file.write('\n\n' + str(google_results['organic_results']))
+
                 for i in google_results['organic_results']:
                     if i.get('link') not in self.link_list:
                         self.link_list.append(i.get('link'))
@@ -87,7 +90,7 @@ class SerpClass:
 
         # part for Yandex
         self.set_status(Params.BEFORE_YANDEX)
-        for i in range(1, 5):
+        for i in range(1, 7):
             params = {
                 'api_key': '9315F7DE02AC45209E4E6EAA5DB201E0',
                 'q': self.request_object.words,
@@ -99,7 +102,11 @@ class SerpClass:
 
             # save yandex results
             try:
-                for j in api_result.json()['organic_results']:
+                yandex_search = api_result.json()
+                with open(str(pathlib.Path(__file__).parent) + '/for_logs.txt', 'a') as file:
+                    file.write('\n\n' + str(yandex_search['organic_results']))
+
+                for j in yandex_search['organic_results']:
                     if j.get('link') not in self.link_list:
                         if 'yandex.ru' not in j.get('link'):
                             ResultModel.objects.create(
