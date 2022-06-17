@@ -144,7 +144,7 @@ class Csv:
 
     def create_ex_csv(self, uuid4, my_path, site_id):
         df = pd.DataFrame(data=None, columns=["nn", "class"])
-        for elDic in self.elementTable.select(param={"site_id": site_id}):
+        for elDic in self.templateTable.select(param={"site_id": site_id}):
             new_row = pd.DataFrame(
                 [{"text": elDic['text'], "presence_of_ruble": elDic['presence_of_ruble'],
                   "content_element": elDic['content_element'], "url": elDic['url'],
