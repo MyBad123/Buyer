@@ -366,6 +366,8 @@ class Parser:
                                     if len(re.findall(r'<[^/<>]+>', str1[j])) > len(re.findall(r'</[^/<>]+>', str1[j])):
                                         unique_str += str3[j]
                                         break
+                                    if j == 1:
+                                        break
                                     unique_str += str3[j]
                                     j -= 1
                             break
