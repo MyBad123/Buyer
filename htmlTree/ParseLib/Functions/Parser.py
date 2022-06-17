@@ -47,6 +47,8 @@ class Parser:
         self.imageTable = ImageTable(self.domain_without)
         self.templateTable = TemplateTable()
         self.siteTable = SiteTable()
+        self.siteTable.create()
+        self.templateTable.create()
 
     def get_elements(self, site_id):
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements')
