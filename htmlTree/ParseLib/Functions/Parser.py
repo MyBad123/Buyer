@@ -310,7 +310,7 @@ class Parser:
                                            str(part_link_page.get('href')))) < 1:
                     if depth + 1 < 5 and self.count < 1000:
                         self.list_urls.append(link_page)
-                        rnd = random.randint(1, 4)
+                        rnd = randint(1, 4)
                         time.sleep(1 + rnd)
                         self.get_html_site(link_page, depth + 1)
 
