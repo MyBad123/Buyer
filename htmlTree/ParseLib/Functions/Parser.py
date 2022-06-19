@@ -47,6 +47,8 @@ class Parser:
         self.imageTable = ImageTable(self.domain_without)
         self.templateTable = TemplateTable()
         self.siteTable = SiteTable()
+        self.siteTable.create()
+        self.templateTable.create()
 
     def get_elements(self, site_id):
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements')
@@ -308,7 +310,7 @@ class Parser:
                                            str(part_link_page.get('href')))) < 1:
                     if depth + 1 < 5 and self.count < 1000:
                         self.list_urls.append(link_page)
-                        rnd = random.randint(1, 4)
+                        rnd = randint(1, 4)
                         time.sleep(1 + rnd)
                         self.get_html_site(link_page, depth + 1)
 
@@ -363,6 +365,8 @@ class Parser:
                                 while True:
                                     if len(re.findall(r'<[^/<>]+>', str1[j])) > len(re.findall(r'</[^/<>]+>', str1[j])):
                                         unique_str += str3[j]
+                                        break
+                                    if j == 1 or j == 0:
                                         break
                                     unique_str += str3[j]
                                     j -= 1
