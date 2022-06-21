@@ -71,6 +71,8 @@ class MailForMessageModel(models.Model):
 
     mail = models.EmailField()
     request = models.ForeignKey(RequestModel, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    site = models.TextField()
     
     class Meta:
         db_table = 'mails'
