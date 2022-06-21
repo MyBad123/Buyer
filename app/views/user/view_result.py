@@ -4,7 +4,7 @@ from email.utils import parseaddr
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
-from app.models import RequestModel, ResultModel
+from app.models import RequestModel, ResultModel, MailForMessageModel
 from app.serializers import ResultSerialzier, ForResultSerialzier
 
 from request.tasks import send
@@ -19,6 +19,7 @@ class MessageControlData:
 
     def __init__(self, data):
         self.data = data
+        self.request_model = None
 
     def control_data_type(self):
         """data is dict or no"""
@@ -39,11 +40,25 @@ class MessageControlData:
 
         # work with model
         try: 
-            RequestModel.objects.get(id=request_id)
+            self.request_model = RequestModel.objects.get(id=request_id)
         except RequestModel.DoesNotExist:
             return True
 
-        return False        
+        return False
+
+    def control_mail_site(self):
+        """control mail and site in requests"""
+
+        for i in self.data.get('mails'):
+            query = ResultModel.objects.filter(
+                request=self.request_model,
+                mail=i.get('mail'),
+                url__contains=i.get('site')
+            )
+            if len(query) == 0:
+                return True
+
+        return False
 
     def control_type_fields(self):
         """control mails and text"""
@@ -66,7 +81,12 @@ class MessageControlData:
             return True
 
         for i in self.data.get('mails'):
-            if type(i) != str:
+            # control mail
+            if type(i.get('mail')) is not str or (i.get('mail') == ''):
+                return True
+
+            # control site for this mail
+            if type(i.get('site')) is not str or (i.get('site') == ''):
                 return True
 
         if type(self.data.get('request_id')) != str:
@@ -249,6 +269,23 @@ class ResultsView:
             return JsonResponse(data={
                 'erorr': 'bad data'
             }, status=400)
+
+        # add mail and site to db
+        for i in utils_object.data.get('mails'):
+            try:
+                MailForMessageModel.objects.get(
+                    mail=i.get('mail'),
+                    request=utils_object.request_model,
+                    user=request.user,
+                    site=i.get('site')
+                )
+            except MailForMessageModel.DoesNotExist:
+                MailForMessageModel.objects.create(
+                    mail=i.get('mail'),
+                    request=utils_object.request_model,
+                    user=request.user,
+                    site=i.get('site')
+                )
 
         # send message
         utils_object.send_message(request.user)

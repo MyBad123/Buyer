@@ -51,7 +51,7 @@ class Mail:
             # work with message models and get number
             message_object = MessageModel.objects.create(
                 user=user,
-                mail=i,
+                mail=i.get('mail'),
                 datetime=datetime.datetime.now(),
                 route='from',
                 message=self.text,
