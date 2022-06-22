@@ -107,13 +107,11 @@ class RequestOneView:
         messages = []
         messages_struct = []
         for i in for_messages_bool:
-            if i.mail not in messages:
-                messages.append(i.mail)
-                messages_struct.append({
-                    'id': i.id,
-                    'mail': i.mail,
-                    'site_name': RequestOneView.get_site_name(i)
-                })
+            messages_struct.append({
+                'id': i.id,
+                'mail': i.mail,
+                'site_name': i.site
+            })
 
         # it is my request(or no)
         if request.user == request_object.creator:
