@@ -16,7 +16,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from htmlTree.ParseLib.Functions.CreationCSV import *
@@ -32,16 +32,22 @@ class MyException(Exception):
     pass
 
 
+def is_valid(url):
+    parsed = urlparse(url)
+    return bool(parsed.netloc) and bool(parsed.scheme)
+
+
 class Parser:
     def __init__(self, url):
         print(f"Start site parsing with url: {url}")
-        self.ignore = ["#", ":", "+", "/"]
+        self.ignore = ["#"]
         self.list_urls = []
         self.driver = webdriver
         self.count = 0
         self.url = url
         self.domain = re.findall(r'([\w\-:]+)\/\/', url)[0] + '//' + re.findall(r'\/\/([\w\-.]+)', url)[0]
         self.domain_without = max(self.domain.split("//")[-1].split("/")[0].split("."), key=len).replace('-', '_')
+        self.domain_name = urlparse(self.url).scheme + "://" + urlparse(self.url).netloc
         self.elementTable = ElementTable(self.domain_without)
         self.htmlTable = HtmlTable(self.domain_without)
         self.imageTable = ImageTable(self.domain_without)
@@ -54,7 +60,6 @@ class Parser:
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements')
         try:
             site_html = self.htmlTable.one(site_id)
-            print(f"{site_html['id']}: {site_html['url']}")
             list_of_data_xid = list(filter(None, site_html['elements'].split(",")))
             list_of_img_xid = list(filter(None, site_html['images'].split(",")))
             self.driver.get(site_html['url'])
@@ -107,8 +112,8 @@ class Parser:
             j = 0
             arr_of_el_with_ruble = []
             arr_of_el_with_article = []
-            print(f"count of driver elements: {len(driver_elements)}")
-            print(f"count of elements after delete pattern: {len(list_of_elements)}")
+            print(f"{site_html['id']}: {site_html['url']} all el: {len(driver_elements)}, "
+                  f"after del: {len(list_of_elements)}")
             for el in driver_elements:
                 if j >= len(list_of_elements):
                     break
@@ -216,9 +221,9 @@ class Parser:
                         columns=self.elementTable.column_names_without_id())
 
         except selenium.common.exceptions.TimeoutException:
-            print("selenium.common.exceptions.TimeoutException")
+            print(f"selenium.common.exceptions.TimeoutException link: {site_html['url']}")
         except selenium.common.exceptions.WebDriverException:
-            print("selenium.common.exceptions.WebDriverException")
+            print(f"selenium.common.exceptions.WebDriverException link: {site_html['url']}")
 
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements-end')
 
@@ -255,6 +260,7 @@ class Parser:
             requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=site-parsing-start')
 
             self.get_html_site(self.url, 1)
+            print(f"count of html pages after parsing: {self.htmlTable.count_rows()}")
             self.delete_pattern()
             self.siteTable.insert_row(data=[str(self.url)], columns=["url"])
             row = self.siteTable.select(param={"url": self.url})
@@ -268,7 +274,6 @@ class Parser:
 
     def get_html_site(self, link, depth):
         try:
-            print(f"{self.domain_without}: {link}")
             self.count += 1
             self.driver.get(link)
             order_id = 0
@@ -293,26 +298,21 @@ class Parser:
                   f"{len(str(beautiful_soup).splitlines())} and url = {link}")
             self.htmlTable.insert_row(data=[html_bs, str(beautiful_soup), link],
                                       columns=['html_bs', 'html_bs_new', 'url'])
-
             for part_link_page in beautiful_soup.findAll('a'):
-                if self.domain in str(part_link_page.get('href')):
-                    link_page = str(part_link_page.get('href'))
-                elif re.match(r'^(\/)[\w|\=|\?|\&]+', str(part_link_page.get('href'))) is not None:
-                    link_page = self.domain + str(part_link_page.get('href'))
-                elif re.match(r'^\.{1,2}', str(part_link_page.get('href'))) is not None \
-                        or not any(el not in str(part_link_page.get('href')) for el in self.ignore):
-                    link_page = urljoin(self.domain, str(part_link_page.get('href')))
-                else:
+                href = str(part_link_page.get('href'))
+                if href == "" or href is None:
+                    continue
+                href = urljoin(self.url, href)
+                if not is_valid(href) or href in self.list_urls or self.domain_name not in href or \
+                        len(re.findall(r'\.jpg|\.jpeg|\.png|\.pdf|\.mp4|\.JPG|\.PNG|\.PDF$', href)) > 0 or \
+                        not any(el not in href for el in self.ignore):
                     continue
 
-                if link_page not in self.list_urls \
-                        and len(re.findall(r'\.jpg|\.jpeg|\.png|\.pdf|\.mp4|\.JPG|\.PNG|\.PDF$',
-                                           str(part_link_page.get('href')))) < 1:
-                    if depth + 1 < 5 and self.count < 1000:
-                        self.list_urls.append(link_page)
-                        rnd = randint(1, 4)
-                        time.sleep(1 + rnd)
-                        self.get_html_site(link_page, depth + 1)
+                if depth < 6 and self.count < 1000:
+                    self.list_urls.append(href)
+                    rnd = randint(1, 4)
+                    time.sleep(1 + rnd)
+                    self.get_html_site(href, depth + 1)
 
         except selenium.common.exceptions.TimeoutException:
             print("selenium.common.exceptions.TimeoutException: " + link)
@@ -322,7 +322,7 @@ class Parser:
     def delete_pattern(self):
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern')
         arr_html = self.htmlTable.all()
-        print(f"Count of html pages = {len(arr_html)} for site: {self.domain}")
+        print(f"count of html pages before delete pattern: {len(arr_html)} for site {self.domain}")
         arr = np.zeros([len(arr_html), len(arr_html)])
 
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern-before-1-for')

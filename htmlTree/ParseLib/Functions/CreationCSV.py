@@ -43,7 +43,7 @@ class Csv:
         arr_dict = {}
         img_dict = {}
         for img in list_of_img:
-            size = math.sqrt(np.square(float(img["width"])) + np.square(float(img["height"])))
+            size = float(img["width"]) * float(img["height"])
             if size > arr_dict.get(img["url"], 0):
                 arr_dict[img["url"]] = size
                 img_dict[img["url"]] = img
