@@ -55,6 +55,7 @@ class Parser:
         self.siteTable = SiteTable()
         self.siteTable.create()
         self.templateTable.create()
+        self.log_file = None
 
     def get_elements(self, site_id):
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements')
@@ -112,8 +113,10 @@ class Parser:
             j = 0
             arr_of_el_with_ruble = []
             arr_of_el_with_article = []
-            print(f"{site_html['id']}: {site_html['url']} all el: {len(driver_elements)}, "
-                  f"after del: {len(list_of_elements)}")
+            log = f"{site_html['id']}: {site_html['url']} all el: {len(driver_elements)}, " \
+                  f"after del: {len(list_of_elements)}"
+            print(log)
+            self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
             for el in driver_elements:
                 if j >= len(list_of_elements):
                     break
@@ -221,9 +224,13 @@ class Parser:
                         columns=self.elementTable.column_names_without_id())
 
         except selenium.common.exceptions.TimeoutException:
-            print(f"selenium.common.exceptions.TimeoutException link: {site_html['url']}")
+            log = f"selenium.common.exceptions.TimeoutException link: {site_html['url']}"
+            print(log)
+            self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
         except selenium.common.exceptions.WebDriverException:
-            print(f"selenium.common.exceptions.WebDriverException link: {site_html['url']}")
+            log = f"selenium.common.exceptions.WebDriverException link: {site_html['url']}"
+            print(log)
+            self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
 
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements-end')
 
@@ -233,44 +240,58 @@ class Parser:
         dotenv_path = os.path.join(path_my_my, '.env')
         if os.path.exists(dotenv_path):
             load_dotenv(dotenv_path)
-
-
+        txt_path = f'{my_path}{uuid4}.txt'
+        log_file = open(txt_path, "w+", encoding="UTF-8")
+        log_file.close()
+        self.log_file = open(txt_path, "a+", encoding="UTF-8")
+        self.log_file.write(f"{datetime.datetime.now()} - Start site parsing with url: {self.url}")
         # options = webdriver.FirefoxOptions()
         # options.add_argument('--headless')  # example
-
-        row = self.siteTable.select(param={"url": self.url})
-        csv = Csv(self.domain_without)
-        if not row:
-            options = Options()
-            options.headless = True
-
-            # self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
-            self.driver = webdriver.Firefox(
-               firefox_profile=os.environ.get('WEBDRIVER_PATH'),
-               options=options
-            )
-            self.driver.maximize_window()
-
-            self.list_urls.append(self.url)
-            self.elementTable.create()
-            self.htmlTable.create()
-            self.imageTable.create()
-
-            # write logs
-            requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=site-parsing-start')
-
-            self.get_html_site(self.url, 1)
-            print(f"count of html pages after parsing: {self.htmlTable.count_rows()}")
-            self.delete_pattern()
-            self.siteTable.insert_row(data=[str(self.url)], columns=["url"])
+        try:
             row = self.siteTable.select(param={"url": self.url})
-            site_id = row[0]['id']
-            path = csv.create_scv(uuid4=uuid4, my_path=my_path, site_id=site_id)
-            self.driver.close()
-        else:
-            site_id = row[0]['id']
-            path = csv.create_ex_csv(uuid4=uuid4, my_path=my_path, site_id=site_id)
-        return path
+            csv = Csv(self.domain_without, txt_path)
+            if not row:
+                options = Options()
+                options.headless = True
+
+                # self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
+                self.driver = webdriver.Firefox(
+                   firefox_profile=os.environ.get('WEBDRIVER_PATH'),
+                   options=options
+                )
+                self.driver.maximize_window()
+
+                self.list_urls.append(self.url)
+                self.elementTable.create()
+                self.htmlTable.create()
+                self.imageTable.create()
+                self.elementTable.log_path = txt_path
+                self.htmlTable.log_path = txt_path
+                self.imageTable.log_path = txt_path
+
+                # write logs
+                requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=site-parsing-start')
+
+                self.get_html_site(self.url, 1)
+                log = f"count of html pages after parsing: {self.htmlTable.count_rows()}"
+                print(log)
+                self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
+                self.delete_pattern()
+                self.siteTable.insert_row(data=[str(self.url)], columns=["url"])
+                row = self.siteTable.select(param={"url": self.url})
+                site_id = row[0]['id']
+                path = csv.create_scv(uuid4=uuid4, my_path=my_path, site_id=site_id)
+                self.driver.close()
+            else:
+                site_id = row[0]['id']
+                path = csv.create_ex_csv(uuid4=uuid4, my_path=my_path, site_id=site_id)
+            self.log_file.close()
+            os.remove(txt_path)
+            return path
+        except Exception as ex:
+            self.log_file.write(f"{datetime.datetime.now()} - {ex}\n")
+            self.log_file.close()
+            return txt_path
 
     def get_html_site(self, link, depth):
         try:
@@ -294,8 +315,10 @@ class Parser:
                         new_element['img-xid'] = img_id
                         res_of_el.replaceWith(new_element)
                         img_id += 1
-            print(f"insert into HTML table with len of pages {len(html_bs.splitlines())}, "
-                  f"{len(str(beautiful_soup).splitlines())} and url = {link}")
+            log = f"insert into HTML table with len of pages {len(html_bs.splitlines())}, " \
+                  f"{len(str(beautiful_soup).splitlines())} and url = {link}"
+            print(log)
+            self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
             self.htmlTable.insert_row(data=[html_bs, str(beautiful_soup), link],
                                       columns=['html_bs', 'html_bs_new', 'url'])
             for part_link_page in beautiful_soup.findAll('a'):
@@ -315,14 +338,20 @@ class Parser:
                     self.get_html_site(href, depth + 1)
 
         except selenium.common.exceptions.TimeoutException:
-            print("selenium.common.exceptions.TimeoutException: " + link)
+            log = "selenium.common.exceptions.TimeoutException: " + link
+            print(log)
+            self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
         except selenium.common.exceptions.WebDriverException:
-            print("selenium.common.exceptions.WebDriverException: " + link)
+            log = "selenium.common.exceptions.WebDriverException: " + link
+            print(log)
+            self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
 
     def delete_pattern(self):
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern')
         arr_html = self.htmlTable.all()
-        print(f"count of html pages before delete pattern: {len(arr_html)} for site {self.domain}")
+        log = f"count of html pages before delete pattern: {len(arr_html)} for site {self.domain}"
+        print(log)
+        self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
         arr = np.zeros([len(arr_html), len(arr_html)])
 
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern-before-1-for')
@@ -348,7 +377,9 @@ class Parser:
                 if arr[i][j] < min_val:
                     min_val = arr[i][j]
                     position = j
-            print(f"{arr_html[i]['url']} where min = {min_val} and position = {position}")
+            log = f"{arr_html[i]['url']} where min = {min_val} and position = {position}"
+            print(log)
+            self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
             str1 = arr_html[i]['html_bs'].splitlines()
             str2 = arr_html[position]['html_bs'].splitlines()
             str3 = arr_html[i]['html_bs_new'].splitlines()

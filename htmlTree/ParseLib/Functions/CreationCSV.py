@@ -16,21 +16,26 @@ from htmlTree.ParseLib.Tables.SiteTable import *
 
 
 class Csv:
-    def __init__(self, name):
+    def __init__(self, name, log_path):
         self.elementTable = ElementTable(name)
         self.htmlTable = HtmlTable(name)
         self.domain_without = name
         self.templateTable = TemplateTable()
         self.siteTable = SiteTable()
         self.imageTable = ImageTable(name)
+        self.log_path = log_path
 
     def create_scv(self, uuid4, my_path, site_id):
+        log_file = open(self.log_path, "a+", encoding="UTF-8")
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv')
 
         list_of_elements = self.elementTable.all()
         list_of_img = self.imageTable.all()
-        print(f"Count of elements for site with url: {len(list_of_elements)}")
-        print(f"Count of images for site with url: {len(list_of_img)}")
+        log = f"Count of elements for site with url: {len(list_of_elements)} and Count of images for site with url: " \
+              f"{len(list_of_img)}"
+        print(log)
+        log_file.write(f"{datetime.datetime.now()} - {log}\n")
+
         columns = ("nn", "class", "text", "presence_of_ruble", "content_element", "url", "length",
                    "class_ob", "element_id", "style", "enclosure", "href", "count", "location_x",
                    "location_y",
@@ -51,7 +56,9 @@ class Csv:
         dup_list = pd.DataFrame(data=None, columns=["check_dup"])
         new_list = []
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-2')
-        print("Start delete duplicate")
+        log = "Start delete duplicate"
+        print(log)
+        log_file.write(f"{datetime.datetime.now()} - {log}\n")
         for el in list_of_elements:
             check_dup = el['text'] + el['url']
             if check_dup not in dup_list['check_dup'].unique():
@@ -66,7 +73,9 @@ class Csv:
                 new_row = pd.DataFrame([{"check_dup": check_dup}])
                 dup_list = pd.concat([dup_list, new_row], ignore_index=True)
 
-        print(f"Count of elements after removal duplicate for site with url: {len(new_list)}")
+        log = f"Count of elements after removal duplicate for site with url: {len(new_list)}"
+        print(log)
+        log_file.write(f"{datetime.datetime.now()} - {log}\n")
 
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-3')
         list_of_elements.clear()
@@ -131,7 +140,10 @@ class Csv:
             new_row = pd.DataFrame([row])
             df = pd.concat([df, new_row])
         path = f'{my_path}{uuid4}.csv'
-        print(f"Count of elements after removal along the border for site with url: {df.shape[0]}")
+        log = f"Count of elements after removal along the border for site with url: {df.shape[0]}"
+        print(log)
+        log_file.write(f"{datetime.datetime.now()} - {log}\n")
+        log_file.close()
         df.to_csv(path)
 
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-5')
