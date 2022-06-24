@@ -7,6 +7,7 @@ from htmlTree.ParseLib.Postgre.postgre_connection import PostgreConnector
 
 class TemplateTable:
     connection = PostgreConnector()
+    log_path = 'log.txt'
 
     def __init__(self, name=""):
         self.dbConnection = self.connection
@@ -79,7 +80,10 @@ class TemplateTable:
         try:
             cur.execute(sql)
             self.dbConnection.conn.commit()
-        except:
+        except Exception as ex:
+            log_file = open(self.log_path, "a+", encoding="UTF-8")
+            log_file.write(f"{datetime.datetime.now()} - {ex}\n")
+            log_file.close()
             requests.get(f"https://buyerdev.1d61.com/set-csv-logs/?error-with-creation-bd")
         return
 
@@ -101,7 +105,10 @@ class TemplateTable:
         try:
             cur.execute(sql)
             self.dbConnection.conn.commit()
-        except:
+        except Exception as ex:
+            log_file = open(self.log_path, "a+", encoding="UTF-8")
+            log_file.write(f"{datetime.datetime.now()} - {ex}\n")
+            log_file.close()
             requests.get(f"https://buyerdev.1d61.com/set-csv-logs/?error-with-dropping-bd")
         return
 
