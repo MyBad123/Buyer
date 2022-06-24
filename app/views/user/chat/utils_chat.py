@@ -49,11 +49,11 @@ class GetMailsUtils(ChatUtils):
     def get_all_messages(self, user, mail, request):
         """get all messages for user by mail"""
 
-        # get all objects 
+        # get all objects
         all_messages = MessageModel.objects.filter(
-            user=user,
-            mail=mail,
-            request=request
+            mail__user=user,
+            mail__mail=mail,
+            mail__request=request
         )
 
         # work with data

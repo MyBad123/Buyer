@@ -59,6 +59,12 @@ class ChatViews:
                 'error': 'bad data'
             }, status=400)
 
+        # control permission for user(new)
+        if chat_object.user != request.user:
+            return JsonResponse(data={
+                'error': 'error of permissions'
+            }, status=400)
+
         # get all messages for context
         context = {
             'messages': utils_object.get_all_messages(

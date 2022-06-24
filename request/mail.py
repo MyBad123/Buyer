@@ -68,12 +68,10 @@ class Mail:
         for i in mails:
             # work with message models and get number
             message_object = MessageModel.objects.create(
-                user=user,
-                mail=i.get('mail'),
                 datetime=datetime.datetime.now(),
                 route='from',
                 message=self.text,
-                request=RequestModel.objects.get(id=int(self.request_id))
+                mail=i
             )
             number = str(message_object.id) + '-' + str(user.id)
 
@@ -81,4 +79,4 @@ class Mail:
             message_object.save()
 
             # send message
-            self.send_mail(i['mail'], number)
+            self.send_mail(i.mail, number)

@@ -48,24 +48,6 @@ class ResultModel(models.Model):
         db_table = 'search_engine_results'
 
 
-class MessageModel(models.Model):
-    """Model for email message with company"""
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    mail = models.EmailField()
-    datetime = models.DateTimeField()
-    route = models.CharField(max_length=20)
-    message = models.TextField()
-    number = models.CharField(max_length=50, null=True, blank=True)
-
-    # for chats
-    request = models.ForeignKey(RequestModel, on_delete=models.CASCADE)
-
-    class Meta:
-        db_table = 'messages'
-        ordering = ['user', 'datetime']
-
-
 class MailForMessageModel(models.Model):
     """for message id"""
 
@@ -77,6 +59,22 @@ class MailForMessageModel(models.Model):
     class Meta:
         db_table = 'mails'
         ordering = ['mail']
+
+
+class MessageModel(models.Model):
+    """Model for email message with company"""
+
+    datetime = models.DateTimeField()
+    route = models.CharField(max_length=20)
+    message = models.TextField()
+    number = models.CharField(max_length=50, null=True, blank=True)
+
+    # for chats
+    mail = models.ForeignKey(MailForMessageModel, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'messages'
+        ordering = ['datetime']
 
 
 class CsvModel(models.Model):

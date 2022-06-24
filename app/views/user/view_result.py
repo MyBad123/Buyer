@@ -146,12 +146,13 @@ class MessageUtils(MessageControlData):
 
         return False
 
-    def send_message(self, user):
+    def send_message(self, user, chats_id):
         """send message to all mails"""
 
         # update data
         self.data.update({
-            'user': user.id
+            'user': user.id,
+            'chats': chats_id
         })
         
         send.delay(self.data)
@@ -271,24 +272,27 @@ class ResultsView:
             }, status=400)
 
         # add mail and site to db
+        chats_id = []
         for i in utils_object.data.get('mails'):
             try:
-                MailForMessageModel.objects.get(
+                mail_for_message_obj = MailForMessageModel.objects.get(
                     mail=i.get('mail'),
                     request=utils_object.request_model,
                     user=request.user,
                     site=i.get('site')
                 )
+                chats_id.append(mail_for_message_obj.id)
             except MailForMessageModel.DoesNotExist:
-                MailForMessageModel.objects.create(
+                mail_for_message_obj = MailForMessageModel.objects.create(
                     mail=i.get('mail'),
                     request=utils_object.request_model,
                     user=request.user,
                     site=i.get('site')
                 )
+                chats_id.append(mail_for_message_obj.id)
 
         # send message
-        utils_object.send_message(request.user)
+        utils_object.send_message(request.user, chats_id)
 
         return JsonResponse(data={})
 

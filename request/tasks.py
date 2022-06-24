@@ -13,7 +13,7 @@ import datetime
 from celery import shared_task
 from django.contrib.auth.models import User
 
-from app.models import RequestModel, ResultModel
+from app.models import RequestModel, ResultModel, MailForMessageModel
 from htmlTree.tasks import wow
 
 from .mail import Mail
@@ -290,18 +290,28 @@ def add(id_object):
 def send(data: dict):
     """func for sending mails"""
 
+    print(data)
+
     # update user in date
     user_object = User.objects.get(id=data.get('user'))
     data.update({
         'user': user_object
     })
 
+    mails_list = []
+    for i in data.get('chats'):
+        try:
+            mail_obj = MailForMessageModel.objects.get(id=i)
+            mails_list.append(mail_obj)
+        except MailForMessageModel.DoesNotExist:
+            pass
+
     mail_object = Mail(
         text=data.get('text'),
         request_id=data.get('request_id')
     )
     mail_object.send_mails(
-        mails=data.get('mails'),
+        mails=mails_list,
         user=data.get('user')
     )
 
