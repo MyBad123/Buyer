@@ -38,7 +38,6 @@ document.getElementById("push_btn").onclick = async () => {
     }
 
     // get mails for sending
-    let mailArr = [];
     let mailArrWithSite = [];
     for (let i of document.querySelectorAll('.form-check-input')) {
         
@@ -48,17 +47,14 @@ document.getElementById("push_btn").onclick = async () => {
             siteName = i.closest(".item").querySelectorAll("td")[2].innerHTML;
             
             // if mailArr has no mail, add it
-            if (!(mailArr.includes(mailName))) {
-                mailArr.push(mailName);
-                mailArrWithSite.push({
-                    'mail': mailName,
-                    'site': siteName
-                })
-            }
+            mailArrWithSite.push({
+                'mail': mailName,
+                'site': siteName
+            })
         }
     }
     // control mailArr 
-    if (mailArr.length === 0) {
+    if (mailArrWithSite.length === 0) {
         return
     }
 

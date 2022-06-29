@@ -46,14 +46,15 @@ class GetMailsUtils(ChatUtils):
 
         return f'{dt.hour}:{dt.minute}:{dt.second} {dt.day}.{dt.month}.{dt.year}'
 
-    def get_all_messages(self, user, mail, request):
+    def get_all_messages(self, user, mail, request, id_for_control):
         """get all messages for user by mail"""
 
         # get all objects
         all_messages = MessageModel.objects.filter(
             mail__user=user,
             mail__mail=mail,
-            mail__request=request
+            mail__request=request,
+            mail__id=id_for_control
         )
 
         # work with data

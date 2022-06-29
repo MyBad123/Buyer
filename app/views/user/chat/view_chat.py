@@ -36,7 +36,10 @@ class ChatViews:
 
         return render(
             request, 
-            'user/chat/chat_with.html'
+            'user/chat/chat_with.html',
+            context={
+                'id_request': mail.request.id
+            }
         )
 
     def message_get(request, pk):
@@ -69,7 +72,7 @@ class ChatViews:
         context = {
             'messages': utils_object.get_all_messages(
                 request.user, chat_object.mail,
-                chat_object.request
+                chat_object.request, pk
             )
         }
 

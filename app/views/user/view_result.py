@@ -256,7 +256,7 @@ class ResultsView:
     @staticmethod
     def send_messages(request):
         """method for send to mail"""
-        
+
         # to initialize control object for this func
         try:
             utils_object = MessageUtils(request)
