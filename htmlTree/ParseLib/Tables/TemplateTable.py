@@ -14,6 +14,12 @@ class TemplateTable:
         self.name = name
         return
 
+    def change_settings(self):
+        sql = 'SET lc_monetary TO "en_US.UTF-8";'
+        cur = self.dbConnection.conn.cursor()
+        cur.execute(sql)
+        self.dbConnection.conn.commit()
+
     def table_name(self):
         return "elements"
 
