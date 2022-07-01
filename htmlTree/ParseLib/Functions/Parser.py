@@ -52,6 +52,7 @@ class Parser:
         self.htmlTable = HtmlTable(self.domain_without)
         self.imageTable = ImageTable(self.domain_without)
         self.templateTable = TemplateTable()
+        self.templateTable.change_settings()
         self.siteTable = SiteTable()
         self.siteTable.create()
         self.templateTable.create()
@@ -148,22 +149,22 @@ class Parser:
                         if len(arr_of_el_with_ruble) > 0:
                             delta_x = abs(arr_of_el_with_ruble[0].location_x - el.location_x)
                             delta_y = abs(arr_of_el_with_ruble[0].location_y - el.location_y)
-                            el.distance_btw_el_and_ruble = math.sqrt(np.square(delta_x) + np.square(delta_y))
+                            el.distance_btw_el_and_ruble = math.sqrt(abs(np.square(delta_x) + np.square(delta_y)))
                             for el_with_ruble in arr_of_el_with_ruble:
                                 delta_x = abs(el_with_ruble.location_x - el.location_x)
                                 delta_y = abs(el_with_ruble.location_y - el.location_y)
-                                distance = math.sqrt(np.square(delta_x) + np.square(delta_y))
+                                distance = math.sqrt(abs(np.square(delta_x) + np.square(delta_y)))
                                 if el.distance_btw_el_and_ruble > distance:
                                     el.distance_btw_el_and_ruble = distance
 
                         if len(arr_of_el_with_article) > 0:
                             delta_x = abs(arr_of_el_with_article[0].location_x - el.location_x)
                             delta_y = abs(arr_of_el_with_article[0].location_y - el.location_y)
-                            el.distance_btw_el_and_article = math.sqrt(np.square(delta_x) + np.square(delta_y))
+                            el.distance_btw_el_and_article = math.sqrt(abs(np.square(delta_x) + np.square(delta_y)))
                             for el_with_article in arr_of_el_with_article:
                                 delta_x = abs(el_with_article.location_x - el.location_x)
                                 delta_y = abs(el_with_article.location_y - el.location_y)
-                                distance = math.sqrt(np.square(delta_x) + np.square(delta_y))
+                                distance = math.sqrt(abs(np.square(delta_x) + np.square(delta_y)))
                                 if el.distance_btw_el_and_article > distance:
                                     el.distance_btw_el_and_article = distance
 
@@ -174,22 +175,22 @@ class Parser:
                     if len(arr_of_el_with_ruble) > 0:
                         delta_x = abs(arr_of_el_with_ruble[0].location_x - img.location_x)
                         delta_y = abs(arr_of_el_with_ruble[0].location_y - img.location_y)
-                        img.distance_btw_el_and_ruble = math.sqrt(np.square(delta_x) + np.square(delta_y))
+                        img.distance_btw_el_and_ruble = math.sqrt(abs(np.square(delta_x) + np.square(delta_y)))
                         for el_with_ruble in arr_of_el_with_ruble:
                             delta_x = abs(el_with_ruble.location_x - img.location_x)
                             delta_y = abs(el_with_ruble.location_y - img.location_y)
-                            distance = math.sqrt(np.square(delta_x) + np.square(delta_y))
+                            distance = math.sqrt(abs(np.square(delta_x) + np.square(delta_y)))
                             if img.distance_btw_el_and_ruble > distance:
                                 img.distance_btw_el_and_ruble = distance
 
                     if len(arr_of_el_with_article) > 0:
                         delta_x = abs(arr_of_el_with_article[0].location_x - img.location_x)
                         delta_y = abs(arr_of_el_with_article[0].location_y - img.location_y)
-                        img.distance_btw_el_and_article = math.sqrt(np.square(delta_x) + np.square(delta_y))
+                        img.distance_btw_el_and_article = math.sqrt(abs(np.square(delta_x) + np.square(delta_y)))
                         for el_with_article in arr_of_el_with_article:
                             delta_x = abs(el_with_article.location_x - img.location_x)
                             delta_y = abs(el_with_article.location_y - img.location_y)
-                            distance = math.sqrt(np.square(delta_x) + np.square(delta_y))
+                            distance = math.sqrt(abs(np.square(delta_x) + np.square(delta_y)))
                             if img.distance_btw_el_and_article > distance:
                                 img.distance_btw_el_and_article = distance
 

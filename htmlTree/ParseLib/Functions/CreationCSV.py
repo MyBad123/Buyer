@@ -45,12 +45,35 @@ class Csv:
                    "saturation", "brightness", "font-family", "ratio_coordinate_to_height",
                    "distance_btw_el_and_ruble", "distance_btw_el_and_article", "id_xpath")
 
-        arr_dict = {}
-        img_dict = {}
+        filter_img = pd.DataFrame(data=None, columns=["url", "size", "ruble", "article"])
+        urls = self.imageTable.select_unique("url")
+        for url in urls:
+            new_row = pd.DataFrame([{"url": url[0], "size": 0, "ruble": 0, "article": 0}])
+            filter_img = pd.concat([filter_img, new_row])
         for img in list_of_img:
-            size = float(img["width"]) * float(img["height"])
-            if size > arr_dict.get(img["url"], 0):
-                arr_dict[img["url"]] = size
+            size = math.sqrt(np.square(float(img["width"])) + np.square(float(img["height"])))
+            if size > list(filter_img.loc[filter_img["url"] == img["url"], "size"])[0]:
+                filter_img.loc[filter_img["url"] == img["url"], "size"] = size
+            if img['distance_btw_el_and_ruble'] > list(filter_img.loc[filter_img["url"] == img["url"], "ruble"])[0]:
+                filter_img.loc[filter_img["url"] == img["url"], "ruble"] = img['distance_btw_el_and_ruble']
+            if img['distance_btw_el_and_article'] > list(filter_img.loc[filter_img["url"] == img["url"], "article"])[0]:
+                filter_img.loc[filter_img["url"] == img["url"], "article"] = img['distance_btw_el_and_article']
+
+        img_dict = {}
+        arr_dict = {}
+        for img in list_of_img:
+            size = math.sqrt(np.square(float(img["width"])) + np.square(float(img["height"])))
+            max_size = list(filter_img.loc[filter_img["url"] == img["url"], "size"])[0]
+            max_ruble = list(filter_img.loc[filter_img["url"] == img["url"], "ruble"])[0]
+            if max_ruble == 0:
+                max_ruble = 1
+            max_article = list(filter_img.loc[filter_img["url"] == img["url"], "article"])[0]
+            if max_article == 0:
+                max_article = 1
+            indicator = 0.3 * size / max_size + 0.3 * (1 - img['distance_btw_el_and_ruble'] / max_ruble) \
+                        + 0.3 * (1 - img['distance_btw_el_and_article'] / max_article)
+            if indicator > arr_dict.get(img["url"], 0):
+                arr_dict[img["url"]] = indicator
                 img_dict[img["url"]] = img
 
         dup_list = pd.DataFrame(data=None, columns=["check_dup"])
