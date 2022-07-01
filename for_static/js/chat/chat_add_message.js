@@ -77,31 +77,3 @@ let loadFunc = async () => {
     }
 }
 loadFunc();
-
-// send message to mail 
-document.getElementById('push_btn').onclick = async () => {
-    
-    // work with request 
-    let text = document.getElementById('floatingTextarea2').value;
-
-    
-
-    // work with string
-    let strDiv = `
-        <div class="message-container-from">
-            <div class="message-container-from-container">
-                <span class="message">${text}</span>
-                <span class="message-time">2022-03-17T13:42:09.820Z</span>
-            </div>
-        </div>
-    `
-
-    // add this str to html 
-    document.querySelector('.messages-container').insertAdjacentHTML('beforeend', strDiv);
-
-    // scroll messages 
-    document.querySelector('.my-messages').scrollBy(0, 10000);
-
-    // clear message
-    document.getElementById('floatingTextarea2').value = '';
-}

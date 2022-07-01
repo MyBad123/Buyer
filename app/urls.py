@@ -40,10 +40,13 @@ urlpatterns = [
     path('control-results/<int:pk>/', ResultsView.get_correct_result_page),
     path('control-results-send-message/', ResultsView.send_messages),
     path('control-results-send-message-thanks/<int:pk>/', ResultsView.thanks_after_message),
+
+    # requests for chat
     path('chat/', ChatViews.get_page),
     path('chat/<int:pk>/', ChatViews.get_page_with_mail),
-    path('chat-get-messages/<int:pk>/', ChatViews.message_get),
-    path('chat-get-send-message/', ChatViews.send_message),
+    path('get-page-send-mesage/<int:pk>/', ChatViews.get_page_send_mesage),
+    path('chat-get-send-message/<int:pk>/', ChatViews.send_message),
+    path('chat-thanks/<int:pk>/', ChatViews.send_thank),
 
     # for getting csv
     path('get-csv/', CsvView.get_page),

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.postgres.fields import ArrayField
 
 
 class Company(models.Model):
@@ -75,6 +76,13 @@ class MessageModel(models.Model):
     class Meta:
         db_table = 'messages'
         ordering = ['datetime']
+
+
+class ParsingAttributes(models.Model):
+    """model for save data from mail"""
+
+    name = models.CharField(max_length=200)
+    value = models.CharField(max_length=200)
 
 
 class CsvModel(models.Model):
