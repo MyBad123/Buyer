@@ -84,6 +84,8 @@ class ParsingAttributes(models.Model):
     name = models.CharField(max_length=200)
     value = models.CharField(max_length=200)
 
+    message = models.ForeignKey(MessageModel, on_delete=models.CASCADE)
+
 
 class CsvModel(models.Model):
     """for csv id"""

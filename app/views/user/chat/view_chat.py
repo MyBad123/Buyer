@@ -4,9 +4,11 @@ import datetime
 from django.shortcuts import render, redirect
 from django.http.response import JsonResponse
 
-from app.models import MessageModel, MailForMessageModel
+from app.models import (
+    MailForMessageModel, MessageModel, ParsingAttributes
+)
 from .utils_chat import (
-    ChatUtils, GetMailsUtils, SendMessageUtils
+    ChatUtils, GetMailsUtils, ForGetPageWithMail
 )
 from request.tasks import send
 
@@ -31,6 +33,7 @@ class ChatViews:
 
         return render(request, 'user/chat/chat_thanks.html', context={
             'id_request': mail_obj.request.id,
+            'id_mail': mail_obj.id,
             'mails': mail_obj.mail
         })
 
@@ -55,20 +58,16 @@ class ChatViews:
             return redirect('/chat/')
 
         # get data for table in /chat/<pk:int>/
-        get_mails_obj = GetMailsUtils()
-        get_mails = get_mails_obj.get_all_messages(
-            mail.user,
-            mail.mail,
-            mail.request,
-            mail.id
-        )
+        for_get_mails = ForGetPageWithMail()
+        for_get_mails.set_chat_obj(pk)
 
         return render(
-            request, 
+            request,
             'user/chat/chat_with.html',
             context={
                 'id_request': mail.request.id,
-                'mails': get_mails
+                'id_chat': mail.id,
+                'mails': for_get_mails.get_messages_serializer()
             }
         )
 
@@ -130,6 +129,51 @@ class ChatViews:
             )
 
         return render(request, 'user/chat/chat_send.html', context={
+            'id_request': mail_for_obj.request.id,
             'id_mail_for_message_model': pk,
             'mail': mail_for_obj.mail
+        })
+
+    @staticmethod
+    def get_page_after_parsing(request, pk):
+        """get some info after parsing mail_hendler"""
+
+        # control id(pk)
+        try:
+            mail_obj = MessageModel.objects.get(id=pk)
+        except MessageModel.DoesNotExist:
+            return redirect(f'/chat/{ str(pk) }/')
+
+        # control permission
+        if mail_obj.mail.user != request.user:
+            return redirect(f'/chat/{ str(pk) }/')
+
+        # control parameter from user
+        params_arr = [
+            'people', 'emails', 'phones', 'sites',
+            'companies', 'addresses', 'positions',
+            'text'
+        ]
+        user_param = request.GET.get('parameter', None)
+
+        if not user_param in params_arr:
+            return redirect(f'/chat/{str(pk)}/')
+
+        # send data to contex for work with template
+        is_text = True if user_param == 'text' else False
+
+        if is_text:
+            content = mail_obj.message
+        else:
+            content = ParsingAttributes.objects.filter(
+                name=user_param,
+                message=mail_obj
+            )
+
+        return render(request, 'user/chat/chat_after_parsing.html', context={
+            'id_request': mail_obj.mail.request.id,
+            'id_chat': mail_obj.mail.id,
+            'is_text': is_text,
+            'content': content,
+            'type': user_param
         })

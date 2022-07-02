@@ -33,24 +33,28 @@
         <div class="my-1 p-1 bg-body rounded shadow-sm">
             <ol class="breadcrumb m-3">
                 <li class="breadcrumb-item"><a href="/request-page/{{ id_request }}/">Заявка</a></li>
-                <li class="breadcrumb-item active" aria-current="page">
-                    <a href="/chat/{{ id_mail }}/">Переписка</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">
-                    <a href="/get-page-send-mesage/{{ id_mail }}"> Отправка сообщения на {{ mails }} </a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">Сообщение отправлено</li>
+                <li class="breadcrumb-item"><a href="/chat/{{ id_chat }}/">Переписка</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Атрибут</li>
             </ol>
         </div>
 
-        <div class="container">
-            <div class="mt-4 my-3 p-3 bg-body rounded shadow-sm">
-                <h2>Сообщение отправлено!</h2>
 
-                <div>ваше сообщение отправлено в на почту</div>
-            </div>
+        <div class="my-1 p-1 bg-body rounded shadow-sm">
+            {% if is_text %}
+                <div class="breadcrumb m-3 main-content"></div>
+            {% else %}
+                <div class="breadcrumb m-3">
+                    {% if type == 'people' %}
+                        <h1>hello!!!</h1>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
-    </div>
 
+    {% if is_text %}
+        <script>
+            document.querySelector('.main-content').innerHTML = "{{ content }}";
+        </script>
+    {% endif %}
 </body>
 </html>

@@ -47,6 +47,7 @@ urlpatterns = [
     path('get-page-send-mesage/<int:pk>/', ChatViews.get_page_send_mesage),
     path('chat-get-send-message/<int:pk>/', ChatViews.send_message),
     path('chat-thanks/<int:pk>/', ChatViews.send_thank),
+    path('chat-after-parsing/<int:pk>/', ChatViews.get_page_after_parsing),
 
     # for getting csv
     path('get-csv/', CsvView.get_page),
