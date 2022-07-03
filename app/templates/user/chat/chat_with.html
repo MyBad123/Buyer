@@ -55,15 +55,31 @@
                 <tbody>
                     {% for i in mails %}
                         <tr>
-                            <td><a>Otto</a></td>
-                            <td>Otto</td>
-                            <td>Otto</td>
-                            <td>Otto</td>
-                            <td>Otto</td>
-                            <td>Otto</td>
-                            <td>Otto</td>
-                            <td>Otto</td>
-                            <td>Otto</td>
+                            <td>
+                                <a href="/chat-after-parsing/{{ i.id_message }}/?parameter=people">{{ i.people }} людей</a>
+                            </td>
+                            <td>
+                                <a href="/chat-after-parsing/{{ i.id_message }}/?parameter=emails">{{ i.emails }} адресов электронной почты</a>
+                            </td>
+                            <td>
+                                <a href="/chat-after-parsing/{{ i.id_message }}/?parameter=phones">{{ i.phones }} телефонов</a>
+                            </td>
+                            <td>
+                                <a href="/chat-after-parsing/{{ i.id_message }}/?parameter=sites">{{ i.sites }} сайтов</a>
+                            </td>
+                            <td>
+                                <a href="/chat-after-parsing/{{ i.id_message }}/?parameter=companies">{{ i.companies }} компаний</a>
+                            </td>
+                            <td>
+                                <a href="/chat-after-parsing/{{ i.id_message }}/?parameter=addresses">{{ i.addresses }} адресов</a>
+                            </td>
+                            <td>
+                                <a href="/chat-after-parsing/{{ i.id_message }}/?parameter=positions">{{ i.positions }} позиций</a>
+                            </td>
+                            <td>{{ i.datetime }}</td>
+                            <td>
+                                <a href="/chat-after-parsing/{{ i.id_message }}/?parameter=text">текст</a>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>

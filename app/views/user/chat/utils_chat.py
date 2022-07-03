@@ -130,6 +130,12 @@ class ForGetPageWithMail:
     def __init__(self):
         self.chat_obj = None
 
+    @staticmethod
+    def get_correct_datetime(dt: datetime) -> str:
+        """get correct str with datetime"""
+
+        return f'{dt.hour}:{dt.minute}:{dt.second} {dt.day}.{dt.month}.{dt.year}'
+
     def set_chat_obj(self, id_obj) -> bool:
         """get MailForMessageModel object"""
 
@@ -168,7 +174,9 @@ class ForGetPageWithMail:
                 'companies': companies,
                 'addresses': addresses,
                 'positions': positions,
-                'id': self.chat_obj.id
+                'id': self.chat_obj.id,
+                'id_message': i.id,
+                'datetime': ForGetPageWithMail.get_correct_datetime(i.datetime)
             })
 
         return struct
