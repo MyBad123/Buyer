@@ -165,10 +165,20 @@ class ChatViews:
         if is_text:
             content = mail_obj.message
         else:
-            content = ParsingAttributes.objects.filter(
+            for_content = ParsingAttributes.objects.filter(
                 name=user_param,
                 message=mail_obj
             )
+
+            for_index = 0
+            content = ''
+
+            for i in for_content:
+                if for_index != 0:
+                    content += ', '
+
+                content += i.value
+                for_index += 1
 
         return render(request, 'user/chat/chat_after_parsing.html', context={
             'id_request': mail_obj.mail.request.id,

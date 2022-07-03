@@ -45,7 +45,19 @@
             {% else %}
                 <div class="breadcrumb m-3">
                     {% if type == 'people' %}
-                        <h1>hello!!!</h1>
+                        <h4>Люди в письме: {{ content }}</h4>
+                    {% elif type == 'emails' %}
+                        <h4>Адреса электронной почты в письме: {{ content }}</h4>
+                    {% elif type == 'phones' %}
+                        <h4>Телефоны в письме: {{ content }}</h4>
+                    {% elif type == 'sites' %}
+                        <h4>Сайты в письме: {{ content }}</h4>
+                    {% elif type == 'companies' %}
+                        <h4>Компании в письме: {{ content }}</h4>
+                    {% elif type == 'addresses' %}
+                        <h4>Адреса в письме: {{ content }}</h4>
+                    {% elif type == 'positions' %}
+                        <h4>Позиции в письме: {{ content }}</h4>
                     {% endif %}
                 </div>
             {% endif %}
