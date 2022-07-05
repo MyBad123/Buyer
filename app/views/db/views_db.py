@@ -182,26 +182,6 @@ class DbMethods:
                 )
 
     @staticmethod
-    def add_mails():
-        """add mails to result for chat"""
-
-        # get all result objects 
-        all_results = ResultModel.objects.all()
-
-        # set mails for chat
-        for i in all_results:
-            try:
-                MailForMessageModel.objects.get(
-                    mail=i.mail,
-                    request=i.request
-                )
-            except MailForMessageModel.DoesNotExist:
-                MailForMessageModel.objects.create(
-                    mail=i.mail,
-                    request=i.request
-                )
-
-    @staticmethod
     def add_letter():
         """add latter to db"""
 
@@ -302,7 +282,6 @@ class DbView:
         # create request
         DbMethods.add_request_data(company_obj)
 
-        # DbMethods.add_mails()
         # DbMethods.add_letter()
 
         return render(request, 'db/db.html', context={

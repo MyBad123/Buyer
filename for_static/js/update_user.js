@@ -63,7 +63,8 @@ document.querySelector(".auth_btn").addEventListener('click', async () => {
         body: JSON.stringify({
             "old_name": lastName,
             "new_name": document.querySelector(".input_login").value,
-            "password": document.querySelector(".input_password").value
+            "password": document.querySelector(".input_password").value,
+            "company": document.querySelector(".form-select").value
         })
     })
 

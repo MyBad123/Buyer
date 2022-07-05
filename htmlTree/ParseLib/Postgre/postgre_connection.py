@@ -1,21 +1,24 @@
 import os
+import pathlib
+from dotenv import load_dotenv
 
 import psycopg2
-import yaml
 
 from htmlTree.ParseLib.parser_path import parser_path
 
 
 class PostgreConnector:
     def __init__(self):
-        with open(parser_path + '/config.yaml') as f:
-            config = yaml.safe_load(f)
-            self.prefix = config['dbtableprefix']
-            self.conn = psycopg2.connect(user=config['user'],
-                                         password=config['password'],
-                                         host=config['host'],
-                                         port=config['port'],
-                                         database=config['database'])
+        # work with env
+        path_my_my = str(pathlib.Path(__file__).parent.parent.parent.parent) + '/Buyer/'
+        dotenv_path = os.path.join(path_my_my, '.env')
+        if os.path.exists(dotenv_path):
+            load_dotenv(dotenv_path)
+        self.conn = psycopg2.connect(user=os.environ.get('SQL_USER'),
+                                     password=os.environ.get('SQL_PASSWORD'),
+                                     host=os.environ.get('SQL_HOST'),
+                                     port=os.environ.get('SQL_PORT'),
+                                     database=os.environ.get('SQL_DATABASE'))
 
     def __del__(self):
         if self.conn:

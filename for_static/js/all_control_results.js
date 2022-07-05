@@ -38,21 +38,23 @@ document.getElementById("push_btn").onclick = async () => {
     }
 
     // get mails for sending
-    let mailArr = []
+    let mailArrWithSite = [];
     for (let i of document.querySelectorAll('.form-check-input')) {
         
         // if checkbox is true, add mail to arr
         if (i.checked) {
             mailName = i.closest(".item").querySelectorAll("td")[1].innerHTML;
+            siteName = i.closest(".item").querySelectorAll("td")[2].innerHTML;
             
             // if mailArr has no mail, add it
-            if (!(mailArr.includes(mailName))) {
-                mailArr.push(mailName);
-            }
+            mailArrWithSite.push({
+                'mail': mailName,
+                'site': siteName
+            })
         }
     }
     // control mailArr 
-    if (mailArr.length === 0) {
+    if (mailArrWithSite.length === 0) {
         return
     }
 
@@ -65,7 +67,7 @@ document.getElementById("push_btn").onclick = async () => {
         },
         body: JSON.stringify({
             text: textMessage,
-            mails: mailArr, 
+            mails: mailArrWithSite,
             request: thisPk
         })
     })

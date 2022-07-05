@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="{% static 'css/chat/chat_with.css' %}" rel="stylesheet">
+</head>
+<body>
+    <nav b-3agnm270m7="" class="navbar navbar-expand-lg navbar-dark bg-dark bg-gradient my-nav">
+        <div b-3agnm270m7="" class="container">
+            <a class="navbar-brand pt-0 pb-1" href="/">Buyer</a>
+            <div b-3agnm270m7="" class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
+                <ul b-3agnm270m7="" class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li b-3agnm270m7="" class="nav-item">
+                        <a class="nav-link active" href="/user-new-request-page/">Новая заявка</a>
+                    </li>
+                    <li b-3agnm270m7="" class="nav-item">
+                        <a class="nav-link active" href="/db/">База данных</a>
+                    </li>
+                    <li b-3agnm270m7="" class="nav-item">
+                        <a class="nav-link active" href="/exit/">Выйти</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="my-1 p-1 bg-body rounded shadow-sm">
+            <ol class="breadcrumb m-3">
+                <li class="breadcrumb-item"><a href="/request-page/{{ id_request }}/">Заявка</a></li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <a href="/chat/{{ id_mail_for_message_model }}/">Переписка</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Отправка сообщения на {{ mail }}</li>
+            </ol>
+        </div>
+
+        <form method="post" action="/chat-get-send-message/{{ id_mail_for_message_model }}/" class="my-1 p-1 bg-body rounded shadow-sm">
+            {% csrf_token %}
+            <div class="modal-header">
+                <h2 class="modal-title">Написать письмо</h2>
+            </div>
+            <div class="modal-body">
+                <div class="form-floating">
+                    <textarea name="text" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
+                    <label for="floatingTextarea2">Тело письма</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" id="push_btn">Отправить</button>
+            </div>
+        </form>
+    </div>
+
+
+
+</body>
+</html>

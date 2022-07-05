@@ -1,0 +1,6 @@
+1=title
+2=price
+3=description
+4=article
+5=phone
+6=e-mail

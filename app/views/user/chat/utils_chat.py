@@ -1,6 +1,8 @@
 from datetime import datetime
 
-from app.models import MessageModel, MailForMessageModel
+from app.models import (
+    MessageModel, MailForMessageModel, ParsingAttributes
+)
 from request.tasks import send
 
 
@@ -46,14 +48,15 @@ class GetMailsUtils(ChatUtils):
 
         return f'{dt.hour}:{dt.minute}:{dt.second} {dt.day}.{dt.month}.{dt.year}'
 
-    def get_all_messages(self, user, mail, request):
+    def get_all_messages(self, user, mail, request, id_for_control):
         """get all messages for user by mail"""
 
-        # get all objects 
+        # get all objects
         all_messages = MessageModel.objects.filter(
-            user=user,
-            mail=mail,
-            request=request
+            mail__user=user,
+            mail__mail=mail,
+            mail__request=request,
+            mail__id=id_for_control
         )
 
         # work with data
@@ -96,7 +99,7 @@ class SendMessageUtils(ChatUtils):
             return False
 
         mail_object = super().control_mail_from_request(chat_id)
-        if mail_object == None:
+        if mail_object is None:
             return False
         else:
             self.mail_object = mail_object
@@ -120,4 +123,60 @@ class SendMessageUtils(ChatUtils):
 
         send.delay(data_struct)
 
-        
+
+class ForGetPageWithMail:
+    """different utils for /chat/ request"""
+
+    def __init__(self):
+        self.chat_obj = None
+
+    @staticmethod
+    def get_correct_datetime(dt: datetime) -> str:
+        """get correct str with datetime"""
+
+        return f'{dt.hour}:{dt.minute}:{dt.second} {dt.day}.{dt.month}.{dt.year}'
+
+    def set_chat_obj(self, id_obj) -> bool:
+        """get MailForMessageModel object"""
+
+        try:
+            self.chat_obj = MailForMessageModel.objects.get(id=id_obj)
+        except MailForMessageModel.DoesNotExist:
+            return False
+
+        return True
+
+    def get_messages(self):
+        """get all messages by MailForMessageModel"""
+
+        return MessageModel.objects.filter(
+            mail=self.chat_obj
+        )
+
+    def get_messages_serializer(self):
+        """get all messages by MailForMessageModel with normal data"""
+
+        struct = []
+        for i in self.get_messages():
+            people = len(ParsingAttributes.objects.filter(name='people', message=i))
+            emails = len(ParsingAttributes.objects.filter(name='emails', message=i))
+            phones = len(ParsingAttributes.objects.filter(name='phones', message=i))
+            sites = len(ParsingAttributes.objects.filter(name='sites', message=i))
+            companies = len(ParsingAttributes.objects.filter(name='companies', message=i))
+            addresses = len(ParsingAttributes.objects.filter(name='addresses', message=i))
+            positions = len(ParsingAttributes.objects.filter(name='positions', message=i))
+
+            struct.append({
+                'people': people,
+                'emails': emails,
+                'phones': phones,
+                'sites': sites,
+                'companies': companies,
+                'addresses': addresses,
+                'positions': positions,
+                'id': self.chat_obj.id,
+                'id_message': i.id,
+                'datetime': ForGetPageWithMail.get_correct_datetime(i.datetime)
+            })
+
+        return struct

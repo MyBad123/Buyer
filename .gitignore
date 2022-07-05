@@ -221,3 +221,7 @@ env/
 certbot/conf/
 
 /htmlTree/files
+
+celerybeat-schedule.db
+request/for_logs.txt
+request/files/

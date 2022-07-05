@@ -9,6 +9,7 @@ from app.views.user.chat.view_chat import *
 from app.views.user.view_result import *
 from app.views.user.view_csv import *
 from app.views.markup_doc.view_markup_doc import *
+from app.views.admin.views_company_admin import *
 
 
 urlpatterns = [
@@ -18,6 +19,9 @@ urlpatterns = [
     path('update-user-page/', AdminMethods.update_user_page),
     path('update-user/', AdminMethods.update_user),
     path('delete-user/', AdminMethods.delete_user),
+    path('admin-get-all-companies/', AdminCompaniesView.as_view()),
+    path('admin-create-company/', AdminCompanyCreate.as_view()),
+    path('admin-update-company/', AdminUpdateCompanyView.as_view()),
     path('db/', DbView.get_db_page),
     path('delete-db/', DbView.delete),
     path('create-db/', DbView.create),
@@ -36,13 +40,20 @@ urlpatterns = [
     path('control-results/<int:pk>/', ResultsView.get_correct_result_page),
     path('control-results-send-message/', ResultsView.send_messages),
     path('control-results-send-message-thanks/<int:pk>/', ResultsView.thanks_after_message),
+
+    # requests for chat
     path('chat/', ChatViews.get_page),
     path('chat/<int:pk>/', ChatViews.get_page_with_mail),
-    path('chat-get-messages/<int:pk>/', ChatViews.message_get),
-    path('chat-get-send-message/', ChatViews.send_message),
+    path('get-page-send-mesage/<int:pk>/', ChatViews.get_page_send_mesage),
+    path('chat-get-send-message/<int:pk>/', ChatViews.send_message),
+    path('chat-thanks/<int:pk>/', ChatViews.send_thank),
+    path('chat-after-parsing/<int:pk>/', ChatViews.get_page_after_parsing),
 
     # for getting csv
     path('get-csv/', CsvView.get_page),
     path('set-csv/', CsvView.set_csv),
+    path('get-csv-logs/', CsvView.get_logs),
+    path('set-csv-logs/', CsvView.set_logs),
+    path('get-csv-file/', CsvView.get_csv_file),
     path('create-markup-doc/', MarkupDoc.create_markup_doc),
 ]

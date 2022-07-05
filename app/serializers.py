@@ -19,6 +19,7 @@ class UpdateSerialize(serializers.Serializer):
     old_name = serializers.CharField()
     new_name = serializers.CharField()
     password = serializers.CharField()
+    company = serializers.CharField()
 
 
 class DeleteSerializer(serializers.Serializer):
@@ -219,13 +220,18 @@ class ForResultSerialzier:
     def get_data(self):
         """convert OrderList to list"""
 
+        index = 1
         list_data = []
+        black_list = []
         for i in self.serializer.data:
-            list_data.append({
-                'id': i.get('id'),
-                'system': i.get('system'),
-                'url': i.get('url')
-            })
+            if parse.urlparse(i.get('url')).netloc not in black_list:
+                list_data.append({
+                    'id': index,
+                    'system': i.get('system'),
+                    'url': i.get('url')
+                })
+                black_list.append(parse.urlparse(i.get('url')).netloc)
+                index += 1
 
         return list_data
 

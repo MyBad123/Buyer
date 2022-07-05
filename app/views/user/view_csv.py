@@ -1,11 +1,28 @@
+import os
+import requests
 import datetime
+import pathlib
+from django.http import FileResponse, HttpResponse
 import validators
+import threading
 
 from email_validate import validate
 from django.shortcuts import render, redirect
 
 from htmlTree.tasks import get_csv
 from app.models import CsvModel
+
+
+class Bg(threading.Thread):
+    def __init__(self, function_that_downloads, argv1, argv2):
+        threading.Thread.__init__(self)
+        self.runnable = function_that_downloads
+        self.daemon = True
+        self.argv1 = argv1
+        self.argv2 = argv2
+
+    def run(self):
+        self.runnable(self.argv1, self.argv2)
 
 
 class CsvSerializer:
@@ -20,7 +37,7 @@ class CsvSerializer:
         if type(self.mail) != str:
             return False
 
-        if not validate(email_address=self.mail):
+        if not validate(email_address=self.mail, check_blacklist=False):
             return False
 
         # work with url
@@ -54,8 +71,12 @@ class CsvView:
     def set_csv(request):
         """parce site and send mail from celery"""
 
+        # create logs
+        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=start')
+
         # control request
         if request.method != 'POST':
+            requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=error-sev-csv-error-control-request')
             return redirect('/get-csv/')
 
         # get id for path
@@ -66,8 +87,82 @@ class CsvView:
         # control valid data
         valid_object = CsvSerializer(request)
         if valid_object.is_valid():
-            get_csv.delay(
-                valid_object.get_valid_data(), csv_model.id
-            )
+            thread = Bg(get_csv, valid_object.get_valid_data(), csv_model.id)
+            thread.start()
+        else:
+            requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=error-sev-csv-no-valid')
 
         return redirect('/get-csv/')
+
+    @staticmethod
+    def get_logs(request):
+        """method for getting logs file"""
+
+        # create path
+        path = str(pathlib.Path(__file__).parent)
+        path += '/pars_log.txt'
+
+        return FileResponse(open(path, 'rb'))
+
+    @staticmethod
+    def set_logs(request):
+        """method for settings logs"""
+
+        path = str(pathlib.Path(__file__).parent)
+        path += '/pars_log.txt'
+
+        if request.GET.get('message') == 'start':
+            with open(path, 'a') as file:
+                file.write('\n\n\n\n\n\n')
+
+        if request.GET.get('message', None) != None:
+            with open(path, 'a') as file:
+                file.write(
+                    '\n' +
+                    str(datetime.datetime.now()) +
+                    ' ' +
+                    request.GET.get('message')
+                )
+
+        return HttpResponse()
+
+    @staticmethod
+    def get_csv_file(request):
+        """request for getting file"""
+
+        # get number of pass
+        id_path = request.GET.get('id', None)
+        if id_path == None:
+            print(1)
+            return HttpResponse()
+        
+        # valid number or no
+        try:
+            int(id_path)
+        except ValueError:
+            print(2)
+            return HttpResponse()
+
+        # make path 
+        path = pathlib.Path(__file__).parent.parent.parent.parent
+        path = str(path)
+        path += '/htmlTree/files/'
+        path += str(id_path)
+        path += '/'
+
+        # control path
+        if not os.path.exists(path):
+            print(path)
+            print(3)
+            return HttpResponse()
+
+        # control file
+        if os.listdir(path) == []:
+            print(4)
+            return HttpResponse()
+
+        for i in os.listdir(path):
+            if i.endswith('.csv'):
+                path += i
+
+        return FileResponse(open(path, 'rb'))

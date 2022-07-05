@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="{% static 'css/chat/chat_with.css' %}" rel="stylesheet">
+</head>
+<body>
+    <nav b-3agnm270m7="" class="navbar navbar-expand-lg navbar-dark bg-dark bg-gradient my-nav">
+        <div b-3agnm270m7="" class="container">
+            <a class="navbar-brand pt-0 pb-1" href="/">Buyer</a>
+            <div b-3agnm270m7="" class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
+                <ul b-3agnm270m7="" class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li b-3agnm270m7="" class="nav-item">
+                        <a class="nav-link active" href="/user-new-request-page/">Новая заявка</a>
+                    </li>
+                    <li b-3agnm270m7="" class="nav-item">
+                        <a class="nav-link active" href="/db/">База данных</a>
+                    </li>
+                    <li b-3agnm270m7="" class="nav-item">
+                        <a class="nav-link active" href="/exit/">Выйти</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="my-1 p-1 bg-body rounded shadow-sm">
+            <ol class="breadcrumb m-3">
+                <li class="breadcrumb-item"><a href="/request-page/{{ id_request }}/">Заявка</a></li>
+                <li class="breadcrumb-item"><a href="/chat/{{ id_chat }}/">Переписка</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Атрибут</li>
+            </ol>
+        </div>
+
+
+        <div class="my-1 p-1 bg-body rounded shadow-sm">
+            {% if is_text %}
+                <div class="breadcrumb m-3 main-content"></div>
+            {% else %}
+                <div class="breadcrumb m-3">
+                    {% if type == 'people' %}
+                        <h4>Люди в письме: {{ content }}</h4>
+                    {% elif type == 'emails' %}
+                        <h4>Адреса электронной почты в письме: {{ content }}</h4>
+                    {% elif type == 'phones' %}
+                        <h4>Телефоны в письме: {{ content }}</h4>
+                    {% elif type == 'sites' %}
+                        <h4>Сайты в письме: {{ content }}</h4>
+                    {% elif type == 'companies' %}
+                        <h4>Компании в письме: {{ content }}</h4>
+                    {% elif type == 'addresses' %}
+                        <h4>Адреса в письме: {{ content }}</h4>
+                    {% elif type == 'positions' %}
+                        <h4>Позиции в письме: {{ content }}</h4>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+    {% if is_text %}
+        <script>
+            document.querySelector('.main-content').innerHTML = "{{ content }}";
+        </script>
+    {% endif %}
+</body>
+</html>

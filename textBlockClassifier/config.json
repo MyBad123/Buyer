@@ -1,0 +1,5 @@
+{
+    "port": "8000",
+    "loglevel": "0",
+    "logfile": "tbclassifier.log"
+}

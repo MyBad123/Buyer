@@ -30,26 +30,64 @@
     </nav>
 
     <div class="container">
-        
-        
-        <div class="my-1 p-1 bg-body rounded shadow-sm my-messages">
-            <div class="messages-container"></div>
+        <div class="my-1 p-1 bg-body rounded shadow-sm">
+            <ol class="breadcrumb m-3">
+                <li class="breadcrumb-item"><a href="/request-page/{{ id_request }}/">Заявка</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Переписка</li>
+            </ol>
         </div>
-        
+
+        <div class="my-1 p-1 bg-body rounded shadow-sm overflow-scroll my-table">
+            <table class="table m-3">
+                <thead>
+                    <tr>
+                        <th scope="col">Люди</th>
+                        <th scope="col">Адреса(почты)</th>
+                        <th scope="col">Телефоны</th>
+                        <th scope="col">Сайты</th>
+                        <th scope="col">Компании</th>
+                        <th scope="col">Адреса</th>
+                        <th scope="col">Позиции</th>
+                        <th scope="col">Дата</th>
+                        <th scope="col">Текст письма</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in mails %}
+                        <tr>
+                            <td>
+                                <a href="/chat-after-parsing/{{ i.id_message }}/?parameter=people">{{ i.people }} людей</a>
+                            </td>
+                            <td>
+                                <a href="/chat-after-parsing/{{ i.id_message }}/?parameter=emails">{{ i.emails }} адресов электронной почты</a>
+                            </td>
+                            <td>
+                                <a href="/chat-after-parsing/{{ i.id_message }}/?parameter=phones">{{ i.phones }} телефонов</a>
+                            </td>
+                            <td>
+                                <a href="/chat-after-parsing/{{ i.id_message }}/?parameter=sites">{{ i.sites }} сайтов</a>
+                            </td>
+                            <td>
+                                <a href="/chat-after-parsing/{{ i.id_message }}/?parameter=companies">{{ i.companies }} компаний</a>
+                            </td>
+                            <td>
+                                <a href="/chat-after-parsing/{{ i.id_message }}/?parameter=addresses">{{ i.addresses }} адресов</a>
+                            </td>
+                            <td>
+                                <a href="/chat-after-parsing/{{ i.id_message }}/?parameter=positions">{{ i.positions }} позиций</a>
+                            </td>
+                            <td>{{ i.datetime }}</td>
+                            <td>
+                                <a href="/chat-after-parsing/{{ i.id_message }}/?parameter=text">текст</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
         <div class="my-1 p-1 bg-body rounded shadow-sm">
-            <div class="modal-header">
-                <h2 class="modal-title">Написать письмо</h2>
-            </div>
-            <div class="modal-body">
-                <div class="form-floating">
-                    <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
-                    <label for="floatingTextarea2">Тело письма</label>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="push_btn">Отправить</button>
-            </div>
+            <p class="breadcrumb m-3">Вы можете отправить новое письмо <a class="ms-1" href="/get-page-send-mesage/{{ id_chat }}/">здесь</a></p>
         </div>
     </div>
 
@@ -62,7 +100,5 @@
             </g>
         </svg>
     </div>
-
-    <script src="{% static 'js/chat/chat_with.js' %}"></script>
 </body>
 </html>

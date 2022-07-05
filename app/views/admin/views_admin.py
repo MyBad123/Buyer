@@ -12,6 +12,7 @@ from app.serializers import (
 from app.utils import (
     post_and_admin
 )
+from app.models import Company, UserForCompany
 
 
 class AdminMethods:
@@ -32,7 +33,9 @@ class AdminMethods:
     @staticmethod
     def get_new_user_page(request):
         if request.user.is_superuser:
-            return render(request, 'admin/new_user.html')
+            return render(request, 'admin/new_user.html', context={
+                'companies': Company.objects.all()
+            })
         else:
             return redirect("/app/user-page/")
 
@@ -51,6 +54,20 @@ class AdminMethods:
         except:
             data = {}
 
+        # work with company
+        company_name_str = data.get('company', None)
+        if type(company_name_str) != str:
+            return JsonResponse(data={
+                "error": "3"
+            }, status=400)
+
+        if len(Company.objects.filter(name=company_name_str)) == 0:
+            return JsonResponse(data={
+                "error": "3"
+            }, status=400)
+
+        company = Company.objects.filter(name=company_name_str)[0]
+
         # control validation for data
         if not AuthSerizliser(data=data).is_valid():
             return JsonResponse(data={
@@ -66,10 +83,15 @@ class AdminMethods:
                 "error": "4"
             }, status=400)
 
-        User.objects.create_user(
+        user = User.objects.create_user(
             username=data.get('login'),
             password=data.get('password')
         )
+        UserForCompany.objects.create(
+            user=user,
+            company=company
+        )
+
         return JsonResponse(data={}, status=200)
 
     @staticmethod
@@ -82,9 +104,21 @@ class AdminMethods:
         if user.is_superuser:
             return redirect('/app/admin/')
 
+        # get name for user company
+        user_company_name = UserForCompany.objects.get(
+            user=user
+        ).company.name
+
+        # get names of all companies
+        companies = []
+        for i in Company.objects.all().exclude(name=user_company_name):
+            companies.append(i.name)
+
         if request.user.is_superuser:
             return render(request, 'admin/update_user.html', context={
-                "login": user.username
+                "login": user.username,
+                "companies": companies,
+                "user_company": user_company_name
             })
         else:
             return redirect('/app/admin/')
@@ -107,6 +141,27 @@ class AdminMethods:
             return JsonResponse(data={
                 "error": "3"
             }, status=400)
+
+        # control company
+        companies = Company.objects.filter(name=data.get('company'))
+        if len(companies) == 0:
+            return JsonResponse(data={
+                "error": "4"
+            }, status=400)
+        else:
+            # get company for working
+            company = companies[0]
+
+            # control user_and_company model
+            try:
+                user_for_company = UserForCompany.objects.get(user=request.user)
+            except:
+                return JsonResponse(data={
+                    "error": "4"
+                }, status=400)
+
+            user_for_company.company = company
+            user_for_company.save()
 
         if data['old_name'] == data['new_name']:
             user_object = User.objects.get(username=data.get('old_name'))

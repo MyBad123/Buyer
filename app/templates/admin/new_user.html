@@ -23,6 +23,12 @@
                     <a class="nav-link active" href="/user-add-page/">Добавить пользователя</a>
                 </li>
                 <li b-3agnm270m7="" class="nav-item">
+                    <a class="nav-link active" href="/admin-get-all-companies/">Компании</a>
+                </li>
+                <li b-3agnm270m7="" class="nav-item">
+                    <a class="nav-link active" href="/admin-create-company/">Создать компанию</a>
+                </li>
+                <li b-3agnm270m7="" class="nav-item">
                     <a class="nav-link active" href="/exit/">Выйти</a>
                 </li>
             </ul>
@@ -43,6 +49,11 @@
                     <input type="password" class="form-control input_password" placeholder="Пароль">
                     <span class="span_password">Пароль</span>
                 </div>
+                <select class="form-select" aria-label="Default select example">
+                    {% for i in companies %}
+                        <option value="{{ i.name }}">{{ i.name }}</option>
+                    {% endfor %}
+                </select>
                 <p class="btn btn-primary auth_btn">Создать</p>
             </div>
         </div>
@@ -106,7 +117,8 @@
                 },
                 body: JSON.stringify({
                     "login": document.querySelector(".input_login").value,
-                    "password": document.querySelector(".input_password").value
+                    "password": document.querySelector(".input_password").value,
+                    "company": document.querySelector(".form-select").value
                 })
             })
             let response = await request.json();
