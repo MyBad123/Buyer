@@ -18,3 +18,7 @@ sudo -u postgres psql -f init.sql
 /home/itsuppus/svetorezerv/buyerdev/venv/bin/python manage.py migrate
 #собрать статику
 /home/itsuppus/svetorezerv/buyerdev/venv/bin/python manage.py collectstatic
+
+cd /home/itsuppus/svetorezerv/buyerdev/textBlockClassifier/
+docker build -t textblockclassifier .
+sudo docker run -name textBlockClassifier -t -i textblockclassifier
