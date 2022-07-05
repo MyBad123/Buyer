@@ -21,5 +21,5 @@ sudo -u postgres psql -f init.sql
 
 cd /home/itsuppus/svetorezerv/buyerdev/textBlockClassifier/
 docker build -t textblockclassifier .
-docker run --rm -it --name textBlockClassifier textblockclassifier:latest
+docker run -d --rm -it -p 8000:8000 --name textBlockClassifier textblockclassifier:latest
 
