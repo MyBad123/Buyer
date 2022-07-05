@@ -11,7 +11,7 @@ import logging
 import pandas as pd
 from classify4 import classifier_train, classifier_predict
 
-port = 8000
+port = 8080
 logfile = ''
 loglevel = 0 # 0 <=> INFO, 1 <=> DEBUG
 
