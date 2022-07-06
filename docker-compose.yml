@@ -79,6 +79,15 @@ services:
     depends_on:
       - nginx
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+  textblockclassifier:
+    build:
+      context: ./textBlockClassifier/
+      dockerfile: Dockerfile
+    expose:
+      - 8080
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
 volumes:
   postgres_data:
   static_volume:
