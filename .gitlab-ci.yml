@@ -15,4 +15,8 @@ stage_dev:
         - /home/itsuppus/svetorezerv/buyerdev/venv/bin/python manage.py migrate
         #собрать статику
         - /home/itsuppus/svetorezerv/buyerdev/venv/bin/python manage.py collectstatic --no-input
+        - cd /home/itsuppus/svetorezerv/buyerdev/textBlockClassifier/
+        - docker rm -f /textBlockClassifier
+        - docker build -t textblockclassifier .
+        - docker run --restart=always -d --rm -it -p 127.0.0.1:8000:8000 --name textBlockClassifier textblockclassifier
 
