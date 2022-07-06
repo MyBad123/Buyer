@@ -280,8 +280,8 @@ def add(id_object):
         return None
 
     # get results from google(yandex) search
-    serp_object = SerpClass(request_object)
-    serp_object.work_with_search_system()
+    # serp_object = SerpClass(request_object)
+    # serp_object.work_with_search_system()
 
     wow.delay(id_object)
 

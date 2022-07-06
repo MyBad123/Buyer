@@ -1,20 +1,28 @@
 from sqlalchemy import (
     Table, Column, MetaData, DateTime,
-    Integer, String, ForeignKey, Text
+    Integer, String, Text
 )
 
 
 metadata_obj = MetaData()
 
-DataModel = Table(
+MessageModel = Table(
     'messages',
     metadata_obj,
     Column('id', Integer, primary_key=True),
-    Column('user_id', Integer),
-    Column('mail', String(300)),
     Column('datetime', DateTime),
-    Column('route', String(50)),
+    Column('route', String(300)),
     Column('message', Text),
-    Column('number', String(100)),
-    Column('request_id', Integer)
+    Column('number', String(300)),
+    Column('mail_id', Integer),
+)
+
+
+ParsingAttributesTable = Table(
+    'mail_hendler',
+    metadata_obj,
+    Column('id', Integer, primary_key=True),
+    Column('name', String(300)),
+    Column('value', String(300)),
+    Column('message_id', Integer),
 )

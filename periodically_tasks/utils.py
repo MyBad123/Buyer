@@ -1,4 +1,6 @@
 import ssl
+import json
+import requests
 import datetime
 from sqlalchemy import (
     select, insert, create_engine
@@ -6,7 +8,9 @@ from sqlalchemy import (
 import mailparser
 from imapclient import IMAPClient
 
-from models import DataModel
+from .models import (
+    MessageModel, ParsingAttributesTable
+)
 
 
 class MessageNumber:
@@ -24,25 +28,20 @@ class MessageNumber:
 
         # make datetime for acceptable interval
         interval = datetime.datetime.now() \
-            + datetime.timedelta(days=-1)
+            + datetime.timedelta(days=-7)
 
         # make query for get all messages
-        query = select(DataModel) \
-            .where(DataModel.c.datetime > interval) \
-            .order_by(DataModel.c.datetime)
+        query = select(MessageModel) \
+            .where(MessageModel.c.datetime > interval) \
+            .order_by(MessageModel.c.datetime)
 
         with self.engine.connect() as conn:
             result = conn.execute(query)
 
         # work with result of query
         for i in result:
-            if (i[4] == 'from') and (i[6] not in self.number_list):
-                self.number_list.append(i[6])
-            if i[4] != 'from':
-                try:
-                    self.number_list.remove(i[6])
-                except ValueError:
-                    pass
+            if (i[2] == 'from'):
+                self.number_list.append(i[4])
 
     def delete_mail(self, server, uid):
         """delete mail from box"""
@@ -60,9 +59,8 @@ class MessageNumber:
 
             if (number_template in message_data) or (number_template in str(heading)):
                 # get data for saving
-                print('hz')
-                select_saving = select(DataModel) \
-                    .where(DataModel.c.number == i)
+                select_saving = select(MessageModel) \
+                    .where(MessageModel.c.number == i)
 
                 with self.engine.connect() as conn:
                     for j in conn.execute(select_saving):
@@ -70,17 +68,95 @@ class MessageNumber:
 
                 # save to model
                 try:
-                    insert_query = insert(DataModel).values(
-                        user_id=model_data[1],
-                        mail=model_data[2],
+                    insert_query = insert(MessageModel).values(
                         datetime=datetime.datetime.now(),
                         route='to',
                         message=message_data,
-                        number=model_data[6],
-                        request_id=model_data[7]
+                        number=model_data[4],
+                        mail_id=model_data[5]
                     )
                     with self.engine.connect() as conn:
-                        conn.execute(insert_query)
+                        after_insert_data = conn.execute(insert_query)
+
+                    # get id for insert parsing data from mail
+                    key = after_insert_data.inserted_primary_key[0]
+
+                    # it is parsing
+                    mail_hendler_request = requests.post(
+                        'http://127.0.0.1:8011/process_text',
+                        json=json.dumps({'text': str(message_data)})
+                    )
+                    data_from_request = mail_hendler_request.json()
+                    print(data_from_request)
+
+                    # get data after parsing
+                    people = data_from_request.get('people')
+                    emails = data_from_request.get('emails')
+                    phones = data_from_request.get('phones')
+                    sites = data_from_request.get('sites')
+                    companies = data_from_request.get('companies')
+                    addresses = data_from_request.get('addresses')
+                    positions = data_from_request.get('positions')
+
+                    # set data to db
+                    with self.engine.connect() as conn:
+                        '''
+                        for j in people:
+                            insert_query = insert(ParsingAttributesTable).values(
+                                name='people',
+                                value=j,
+                                message_id=key
+                            )
+                            conn.execute(insert_query)
+                        '''
+                        for j in emails:
+                            insert_query = insert(ParsingAttributesTable).values(
+                                name='emails',
+                                value=j,
+                                message_id=key
+                            )
+                            conn.execute(insert_query)
+
+                        for j in phones:
+                            insert_query = insert(ParsingAttributesTable).values(
+                                name='phones',
+                                value=j,
+                                message_id=key
+                            )
+                            conn.execute(insert_query)
+
+                        for j in sites:
+                            insert_query = insert(ParsingAttributesTable).values(
+                                name='sites',
+                                value=j,
+                                message_id=key
+                            )
+                            conn.execute(insert_query)
+                        '''
+                        for j in companies:
+                            insert_query = insert(ParsingAttributesTable).values(
+                                name='companies',
+                                value=j,
+                                message_id=key
+                            )
+                            conn.execute(insert_query)
+
+                        for j in addresses:
+                            insert_query = insert(ParsingAttributesTable).values(
+                                name='addresses',
+                                value=j,
+                                message_id=key
+                            )
+                            conn.execute(insert_query)
+
+                        for j in positions:
+                            insert_query = insert(ParsingAttributesTable).values(
+                                name='positions',
+                                value=j,
+                                message_id=key
+                            )
+                            conn.execute(insert_query)
+                        '''
                 except TypeError:
                     pass
 
@@ -109,7 +185,7 @@ class MessageNumber:
                 try:
                     text_body = mailparser.parse_from_bytes(message_data[b'RFC822']).text_html[0]
                     self.write_to_db(text_body, mailparser.parse_from_bytes(message_data[b'RFC822']))
-                except:
+                except SyntaxError:
                     pass
 
                 # delete mail from message

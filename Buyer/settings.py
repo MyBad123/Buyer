@@ -100,7 +100,7 @@ STATICFILES_DIRS = [
 ]
 
 # celery settings
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "amqp://myuser:mypassword@localhost:5672/myvhost"),
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "amqp://user0407:mypassword@localhost:5672/myvhost0407")
 
 CSRF_TRUSTED_ORIGINS = ["https://buyerdev.1d61.com", "https://sz1.1d61.com"]
 

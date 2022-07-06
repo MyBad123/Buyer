@@ -86,6 +86,9 @@ class ParsingAttributes(models.Model):
 
     message = models.ForeignKey(MessageModel, on_delete=models.CASCADE)
 
+    class Meta:
+        db_table = 'mail_hendler'
+
 
 class CsvModel(models.Model):
     """for csv id"""

@@ -30,10 +30,14 @@ def wow(id_obj):
     request_object.datetime_site_parsing_started = datetime.datetime.now()
     request_object.save()
 
+    for_i = 0
     for i in ResultModel.objects.filter(request=request_object):
-        i.status = True
-        i.mail = 'genag4448@gmail.com'
-        i.save()
+        if for_i < 10:
+            i.status = True
+            i.mail = 'genag4448@gmail.com'
+            i.save()
+
+        for_i += 1
 
     request_object.datetime_processing_finished = datetime.datetime.now()
     request_object.save()
