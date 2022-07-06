@@ -1,0 +1,18 @@
+stages:
+    - build
+    - develop
+stage_dev:
+    stage: develop
+    tags:
+        - django-dev-shell
+    script:
+        - cd /
+        - cd /home/itsuppus/svetorezerv/buyerdev/
+        #получаем из git новую версию
+        - git pull
+        #обновить миграции
+        - /home/itsuppus/svetorezerv/buyerdev/venv/bin/python /home/itsuppus/svetorezerv/buyerdev/venv/bin/pip install -r ./requirements.txt
+        - /home/itsuppus/svetorezerv/buyerdev/venv/bin/python manage.py migrate
+        #собрать статику
+        - /home/itsuppus/svetorezerv/buyerdev/venv/bin/python manage.py collectstatic
+
