@@ -163,9 +163,9 @@ class MessageNumber:
     def work(self):
         """work with mails"""
 
-        HOST = "imap.mail.ru"
-        USERNAME = "gena.kuznetsov@internet.ru"
-        PASSWORD = "N990kdJXnnY58aKjsMb7"
+        HOST = "m.1d61.com"
+        USERNAME = "buyer-vendor@1d61.com"
+        PASSWORD = "GD38asDF348ASdf"
 
         ssl_context = ssl.create_default_context()
 
@@ -189,7 +189,7 @@ class MessageNumber:
                     pass
 
                 # delete mail from message
-                # self.delete_mail(server, uid)
+                self.delete_mail(server, uid)
 
 
 if __name__ == '__main__':
