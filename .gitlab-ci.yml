@@ -19,4 +19,4 @@ stage_dev:
         - docker rm -f /textBlockClassifier
         - docker build -t textblockclassifier .
         - docker run --restart=always -d -it -p 127.0.0.1:8000:8000 --name textBlockClassifier textblockclassifier
-
+when: manual
