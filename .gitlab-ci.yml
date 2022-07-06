@@ -14,5 +14,5 @@ stage_dev:
         - /home/itsuppus/svetorezerv/buyerdev/venv/bin/python /home/itsuppus/svetorezerv/buyerdev/venv/bin/pip install -r ./requirements.txt
         - /home/itsuppus/svetorezerv/buyerdev/venv/bin/python manage.py migrate
         #собрать статику
-        - /home/itsuppus/svetorezerv/buyerdev/venv/bin/python manage.py collectstatic
+        - /home/itsuppus/svetorezerv/buyerdev/venv/bin/python manage.py collectstatic --no-input
 
