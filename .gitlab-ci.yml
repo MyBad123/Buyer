@@ -17,7 +17,7 @@ stage_dev:
         - rm -f /home/itsuppus/svetorezerv/buyerdev/app/migrations/0001_initial.py
         #создаём базу
         - export PGPASSWORD=$POSTGRES_PASSWORD
-        - psql -h "postgres" -U "$POSTGRES_USER" -f init.sql
+        - psql -U "$POSTGRES_USER" -f init.sql
         #- sudo -u postgres psql -U postgres -f init.sql
         #обновить миграции
         - /home/itsuppus/svetorezerv/buyerdev/venv/bin/python /home/itsuppus/svetorezerv/buyerdev/venv/bin/pip install -r ./requirements.txt
