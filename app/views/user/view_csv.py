@@ -135,7 +135,7 @@ class CsvView:
         if id_path == None:
             print(1)
             return HttpResponse()
-        
+
         # valid number or no
         try:
             int(id_path)
@@ -157,12 +157,12 @@ class CsvView:
             return HttpResponse()
 
         # control file
-        if os.listdir(path) == []:
+        if not os.listdir(path):
             print(4)
             return HttpResponse()
 
-        for i in os.listdir(path):
-            if i.endswith('.csv'):
-                path += i
+        files = filter(lambda f: f.endswith('.csv'), os.listdir(path))
+        files = [os.path.join(path, f) for f in files]
+        files.sort(key=lambda x: os.path.getmtime(x))
 
-        return FileResponse(open(path, 'rb'))
+        return FileResponse(open(files[-1], 'rb'))
