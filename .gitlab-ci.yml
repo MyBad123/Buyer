@@ -8,8 +8,15 @@ stage_dev:
     script:
         - cd /
         - cd /home/itsuppus/svetorezerv/buyerdev/
+        #удаляем изменения
+        - git stash
+        - git stash drop
         #получаем из git новую версию
         - git pull
+        #Удалить лишние миграции
+        - sudo rm -f /home/itsuppus/svetorezerv/buyerdev/app/migrations/0001_initial.py
+        #создаём базу
+        - sudo -u postgres psql -f init.sql
         #обновить миграции
         - /home/itsuppus/svetorezerv/buyerdev/venv/bin/python /home/itsuppus/svetorezerv/buyerdev/venv/bin/pip install -r ./requirements.txt
         - /home/itsuppus/svetorezerv/buyerdev/venv/bin/python manage.py migrate
