@@ -171,29 +171,29 @@ class Csv:
         log_file.close()
         df.to_csv(path)
 
-        if self.csv_id is not None:
-            print(log := f"Work with textBlockClassifier")
-            log_file.write(f"{datetime.datetime.now()} - {log}\n")
-            headers = {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            }
-            data = f'path=https://buyerdev.1d61.com/get-csv-file/?id={self.csv_id}'
-
-            r = requests.post('http://localhost:8000', headers=headers, data=data)
-            el_class = r.json()['classes']
-            dictionary_class = {
-                0: "не определено",
-                1: "название",
-                2: "цена",
-                3: "описание",
-                4: "артикул",
-                5: "телефон",
-                6: "e-mail"
-            }
-            el_class = list(map(lambda cl: dictionary_class[int(cl)], el_class))
-            print(log := f"Count of classes = {len(el_class)} and count of rows = {df.shape}")
-            log_file.write(f"{datetime.datetime.now()} - {log}\n")
-            df["class"] = el_class
+        # if self.csv_id is not None:
+        #     print(log := f"Work with textBlockClassifier")
+        #     log_file.write(f"{datetime.datetime.now()} - {log}\n")
+        #     headers = {
+        #         'Content-Type': 'application/x-www-form-urlencoded',
+        #     }
+        #     data = f'path=https://buyerdev.1d61.com/get-csv-file/?id={self.csv_id}'
+        #
+        #     r = requests.post('http://localhost:8000', headers=headers, data=data)
+        #     el_class = r.json()['classes']
+        #     dictionary_class = {
+        #         0: "не определено",
+        #         1: "название",
+        #         2: "цена",
+        #         3: "описание",
+        #         4: "артикул",
+        #         5: "телефон",
+        #         6: "e-mail"
+        #     }
+        #     el_class = list(map(lambda cl: dictionary_class[int(cl)], el_class))
+        #     print(log := f"Count of classes = {len(el_class)} and count of rows = {df.shape}")
+        #     log_file.write(f"{datetime.datetime.now()} - {log}\n")
+        #     df["class"] = el_class
 
         df.to_csv(path)
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-5')
