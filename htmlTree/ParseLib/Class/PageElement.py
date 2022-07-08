@@ -96,7 +96,7 @@ class Elements:
             self.presence_of_ruble = 1
 
         find1 = text.find("артикул")
-        if find1 != -1 or len(re.findall(r'^арт.', text)) > 0 or len(re.findall(r'^арт:', text)) > 0 \
+        if find1 != -1 or len(re.findall(r'^арт\.', text)) > 0 or len(re.findall(r'^арт:', text)) > 0 \
                 or len(re.findall(r'^арт ', text)) > 0:
             self.presence_of_vendor = 1
 
