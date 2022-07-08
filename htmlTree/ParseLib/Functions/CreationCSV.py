@@ -168,7 +168,6 @@ class Csv:
         path = f'{my_path}{uuid4}.csv'
         print(log := f"Count of elements after removal along the border for site with url: {df.shape[0]}")
         log_file.write(f"{datetime.datetime.now()} - {log}\n")
-        log_file.close()
         df.to_csv(path)
 
         if self.csv_id is not None:
@@ -199,6 +198,7 @@ class Csv:
                 self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
 
         df.to_csv(path)
+        log_file.close()
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-5')
         self.elementTable.drop()
         self.htmlTable.drop()
@@ -264,4 +264,5 @@ class Csv:
                 self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
 
         df.to_csv(path)
+        log_file.close()
         return path
