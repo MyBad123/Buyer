@@ -38,8 +38,9 @@ def is_valid(url):
 
 
 class Parser:
-    def __init__(self, url):
+    def __init__(self, url, csv_id):
         print(f"Start site parsing with url: {url}")
+        self.csv_id = csv_id
         self.ignore = ["#"]
         self.list_urls = []
         self.driver = webdriver
@@ -247,7 +248,7 @@ class Parser:
         # options.add_argument('--headless')  # example
         try:
             row = self.siteTable.select(param={"url": self.url})
-            csv = Csv(self.domain_without, txt_path)
+            csv = Csv(self.domain_without, txt_path, self.csv_id)
             if not row:
                 options = Options()
                 options.headless = True

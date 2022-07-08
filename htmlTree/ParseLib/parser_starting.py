@@ -6,8 +6,8 @@ from .Functions.Parser import Parser
 from multiprocessing import Pool, freeze_support
 
 
-def start(path, url):
-    parser = Parser(url)
+def start(path, url, csv_id):
+    parser = Parser(url, csv_id)
     path = parser.site_parsing(str(uuid.uuid4()), path)
 
     return path
