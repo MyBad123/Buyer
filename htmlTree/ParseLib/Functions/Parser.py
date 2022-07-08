@@ -284,7 +284,6 @@ class Parser:
             else:
                 site_id = row[0]['id']
                 path = csv.create_ex_csv(uuid4=uuid4, my_path=my_path, site_id=site_id)
-            self.log_file.close()
             os.remove(txt_path)
             return path
         except Exception as ex:

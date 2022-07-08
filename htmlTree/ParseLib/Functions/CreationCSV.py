@@ -198,7 +198,6 @@ class Csv:
                 print(log := f"exception with request: {ex}")
                 self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
 
-        log_file.close()
         df.to_csv(path)
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-5')
         self.elementTable.drop()
@@ -265,5 +264,4 @@ class Csv:
                 self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
 
         df.to_csv(path)
-        log_file.close()
         return path

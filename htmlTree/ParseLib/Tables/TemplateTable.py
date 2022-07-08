@@ -89,7 +89,6 @@ class TemplateTable:
         except Exception as ex:
             log_file = open(self.log_path, "a+", encoding="UTF-8")
             log_file.write(f"{datetime.datetime.now()} - {ex}\n")
-            log_file.close()
             requests.get(f"https://buyerdev.1d61.com/set-csv-logs/?error-with-creation-bd")
         return
 
@@ -114,7 +113,6 @@ class TemplateTable:
         except Exception as ex:
             log_file = open(self.log_path, "a+", encoding="UTF-8")
             log_file.write(f"{datetime.datetime.now()} - {ex}\n")
-            log_file.close()
             requests.get(f"https://buyerdev.1d61.com/set-csv-logs/?error-with-dropping-bd")
         return
 
