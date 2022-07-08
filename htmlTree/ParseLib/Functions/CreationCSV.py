@@ -195,7 +195,7 @@ class Csv:
         #     log_file.write(f"{datetime.datetime.now()} - {log}\n")
         #     df["class"] = el_class
 
-        df.to_csv(path)
+        # df.to_csv(path)
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-5')
         self.elementTable.drop()
         self.htmlTable.drop()
@@ -257,5 +257,5 @@ class Csv:
         #     log_file.write(f"{datetime.datetime.now()} - {log}\n")
         #     df["class"] = el_class
 
-        df.to_csv(path)
+        # df.to_csv(path)
         return path
