@@ -195,7 +195,7 @@ class Csv:
                 df["class"] = el_class
             except Exception as ex:
                 print(log := f"exception with request: {ex}")
-                self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
+                log_file.write(f"{datetime.datetime.now()} - {log}\n")
 
         df.to_csv(path)
         log_file.close()
@@ -261,7 +261,7 @@ class Csv:
                 df["class"] = el_class
             except Exception as ex:
                 print(log := f"exception with request: {ex}")
-                self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
+                log_file.write(f"{datetime.datetime.now()} - {log}\n")
 
         df.to_csv(path)
         log_file.close()
