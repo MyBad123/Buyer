@@ -158,7 +158,12 @@ class Csv:
             row = {'source': img['source'], 'url': img['url'], 'size_width': img["width"],
                    'size_height': img["height"], 'location_x': img["x"], 'location_y': img["y"],
                    'distance_btw_el_and_ruble': img["distance_btw_el_and_ruble"],
-                   'distance_btw_el_and_article': img["distance_btw_el_and_article"], "content_element": "img"}
+                   'distance_btw_el_and_article': img["distance_btw_el_and_article"], "content_element": "img",
+                   "text": None, "presence_of_ruble": 0, "length": 0, "class_ob": None, "id_element": None,
+                   "style": None, "enclosure": 0, "href": None, "count": 0, "integer": 0, "float": 0, "n_digits": 0,
+                   "presence_of_vendor": 0, "presence_of_link": 0, "presence_of_at": 0, "has_point": 0,
+                   "writing_form": 0, "font_size": None, "hue": 0, "saturation": 0, "brightness": 0,
+                   "font_family": None, "ratio_coordinate_to_height": 0}
             self.templateTable.insert_row(data=[*row.values(), site_id], columns=[*row.keys(), "site_id"])
             new_row = pd.DataFrame([row])
             df = pd.concat([df, new_row])
