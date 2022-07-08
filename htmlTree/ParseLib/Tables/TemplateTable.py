@@ -162,6 +162,15 @@ class TemplateTable:
             arr.append(dict(zip(self.column_names(), el)))
         return arr
 
+    def select_unique(self, columns):
+        if not isinstance(columns, list):
+            columns = [columns]
+        columns = ", ".join(columns)
+        sql = f"SELECT DISTINCT {columns} FROM {self.table_name()}"
+        cur = self.dbConnection.conn.cursor()
+        cur.execute(sql)
+        return cur.fetchall()
+
     def count_rows(self):
         sql = f"SELECT COUNT(*) FROM {self.table_name()}"
         cur = self.dbConnection.conn.cursor()
