@@ -34,7 +34,7 @@ def wow(id_obj):
     for i in ResultModel.objects.filter(request=request_object):
         if for_i < 10:
             i.status = True
-            i.mail = 'genag4448@gmail.com'
+            i.mail = 'buyer-vendor@1d61.com'
             i.save()
 
         for_i += 1

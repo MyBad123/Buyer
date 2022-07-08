@@ -235,7 +235,7 @@ class SerpClass(BatchesApiClass):
             except KeyError:
                 pass
 
-        url_file = super().get_url_for_download(batch_google, results_id)
+        url_file = super().get_url_for_download(batch_yandex, results_id)
         for i in super().get_info_from_file(self.request_object.id, url_file):
             ResultModel.objects.create(
                 request=self.request_object,
