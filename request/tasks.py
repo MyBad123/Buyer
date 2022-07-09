@@ -320,7 +320,7 @@ def send(data: dict):
 def send_marcup_csv_attach(email, url):
     uuid4 = uuid.uuid4()
     parser = Parser()
-    parser.site_parsing(url, uuid4)
+    parser.site_parsing(url, uuid4, None)
     csv_path = parser_path + f'/csv_results/{uuid4}.csv'
     Mail.send_email_attach(email, csv_path)
     os.remove(csv_path)

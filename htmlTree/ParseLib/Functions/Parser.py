@@ -38,8 +38,9 @@ def is_valid(url):
 
 
 class Parser:
-    def __init__(self, url):
+    def __init__(self, url, csv_id):
         print(f"Start site parsing with url: {url}")
+        self.csv_id = csv_id
         self.ignore = ["#"]
         self.list_urls = []
         self.driver = webdriver
@@ -247,7 +248,7 @@ class Parser:
         # options.add_argument('--headless')  # example
         try:
             row = self.siteTable.select(param={"url": self.url})
-            csv = Csv(self.domain_without, txt_path)
+            csv = Csv(self.domain_without, txt_path, self.csv_id)
             if not row:
                 options = Options()
                 options.headless = True
@@ -287,7 +288,7 @@ class Parser:
             os.remove(txt_path)
             return path
         except Exception as ex:
-            self.log_file.write(f"{datetime.datetime.now()} - {ex}\n")
+            self.log_file.write(f"{datetime.datetime.now()} - Exception: {ex}\n")
             self.log_file.close()
             self.elementTable.drop()
             self.imageTable.drop()
@@ -316,7 +317,7 @@ class Parser:
                         new_element['img-xid'] = img_id
                         res_of_el.replaceWith(new_element)
                         img_id += 1
-            print(log := f"insert into HTML table with len of pages {len(html_bs.splitlines())}, " \
+            print(log := f"insert into {self.htmlTable.table_name()} with len of pages {len(html_bs.splitlines())}, " \
                          f"{len(str(beautiful_soup).splitlines())} and url = {link}")
             self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
             self.htmlTable.insert_row(data=[html_bs, str(beautiful_soup), link],

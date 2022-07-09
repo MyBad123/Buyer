@@ -16,7 +16,7 @@ from htmlTree.ParseLib.Tables.SiteTable import *
 
 
 class Csv:
-    def __init__(self, name, log_path):
+    def __init__(self, name, log_path, csv_id):
         self.elementTable = ElementTable(name)
         self.htmlTable = HtmlTable(name)
         self.domain_without = name
@@ -24,6 +24,7 @@ class Csv:
         self.siteTable = SiteTable()
         self.imageTable = ImageTable(name)
         self.log_path = log_path
+        self.csv_id = csv_id
 
     def create_scv(self, uuid4, my_path, site_id):
         log_file = open(self.log_path, "a+", encoding="UTF-8")
@@ -31,9 +32,8 @@ class Csv:
 
         list_of_elements = self.elementTable.all()
         list_of_img = self.imageTable.all()
-        log = f"Count of elements for site with url: {len(list_of_elements)} and Count of images for site with url: " \
-              f"{len(list_of_img)}"
-        print(log)
+        print(log := f"Count of elements for site with url: {len(list_of_elements)} and Count of images for site with "
+                     f"url: {len(list_of_img)}")
         log_file.write(f"{datetime.datetime.now()} - {log}\n")
 
         columns = ("nn", "class", "text", "presence_of_ruble", "content_element", "url", "length",
@@ -79,8 +79,7 @@ class Csv:
         dup_list = pd.DataFrame(data=None, columns=["check_dup"])
         new_list = []
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-2')
-        log = "Start delete duplicate"
-        print(log)
+        print(log := "Start delete duplicate")
         log_file.write(f"{datetime.datetime.now()} - {log}\n")
         for el in list_of_elements:
             check_dup = el['text'] + el['url']
@@ -96,8 +95,7 @@ class Csv:
                 new_row = pd.DataFrame([{"check_dup": check_dup}])
                 dup_list = pd.concat([dup_list, new_row], ignore_index=True)
 
-        log = f"Count of elements after removal duplicate for site with url: {len(new_list)}"
-        print(log)
+        print(log := f"Count of elements after removal duplicate for site with url: {len(new_list)}")
         log_file.write(f"{datetime.datetime.now()} - {log}\n")
 
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-3')
@@ -158,17 +156,49 @@ class Csv:
             row = {'source': img['source'], 'url': img['url'], 'size_width': img["width"],
                    'size_height': img["height"], 'location_x': img["x"], 'location_y': img["y"],
                    'distance_btw_el_and_ruble': img["distance_btw_el_and_ruble"],
-                   'distance_btw_el_and_article': img["distance_btw_el_and_article"], "content_element": "img"}
+                   'distance_btw_el_and_article': img["distance_btw_el_and_article"], "content_element": "img",
+                   "text": None, "presence_of_ruble": 0, "length": 0, "class_ob": None, "id_element": None,
+                   "style": None, "enclosure": 0, "href": None, "count": 0, "integer": 0, "float": 0, "n_digits": 0,
+                   "presence_of_vendor": 0, "presence_of_link": 0, "presence_of_at": 0, "has_point": 0,
+                   "writing_form": 0, "font_size": None, "hue": 0, "saturation": 0, "brightness": 0,
+                   "font_family": None, "ratio_coordinate_to_height": 0}
             self.templateTable.insert_row(data=[*row.values(), site_id], columns=[*row.keys(), "site_id"])
             new_row = pd.DataFrame([row])
             df = pd.concat([df, new_row])
         path = f'{my_path}{uuid4}.csv'
-        log = f"Count of elements after removal along the border for site with url: {df.shape[0]}"
-        print(log)
+        print(log := f"Count of elements after removal along the border for site with url: {df.shape[0]}")
         log_file.write(f"{datetime.datetime.now()} - {log}\n")
-        log_file.close()
         df.to_csv(path)
 
+        if self.csv_id is not None:
+            print(log := f"Work with textBlockClassifier")
+            log_file.write(f"{datetime.datetime.now()} - {log}\n")
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+            data = f'path=https://buyerdev.1d61.com/get-csv-file/?id={self.csv_id}'
+            try:
+                r = requests.post('http://localhost:8000', headers=headers, data=data)
+                el_class = r.json()['classes']
+                dictionary_class = {
+                    0: "не определено",
+                    1: "название",
+                    2: "цена",
+                    3: "описание",
+                    4: "артикул",
+                    5: "телефон",
+                    6: "e-mail"
+                }
+                el_class = list(map(lambda cl: dictionary_class[int(cl)], el_class))
+                print(log := f"Count of classes = {len(el_class)} and count of rows = {df.shape}")
+                log_file.write(f"{datetime.datetime.now()} - {log}\n")
+                df["class"] = el_class
+            except Exception as ex:
+                print(log := f"exception with request: {ex}")
+                log_file.write(f"{datetime.datetime.now()} - {log}\n")
+
+        df.to_csv(path)
+        log_file.close()
         requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-5')
         self.elementTable.drop()
         self.htmlTable.drop()
@@ -178,6 +208,7 @@ class Csv:
         return path
 
     def create_ex_csv(self, uuid4, my_path, site_id):
+        log_file = open(self.log_path, "a+", encoding="UTF-8")
         df = pd.DataFrame(data=None, columns=["nn", "class"])
         for elDic in self.templateTable.select(param={"site_id": site_id}):
             new_row = pd.DataFrame(
@@ -205,4 +236,33 @@ class Csv:
             df = pd.concat([df, new_row])
         path = f'{my_path}{uuid4}.csv'
         df.to_csv(path)
+        if self.csv_id is not None:
+            print(log := f"Work with textBlockClassifier")
+            log_file.write(f"{datetime.datetime.now()} - {log}\n")
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+            data = f'path=https://buyerdev.1d61.com/get-csv-file/?id={self.csv_id}'
+            try:
+                r = requests.post('http://localhost:8000', headers=headers, data=data)
+                el_class = r.json()['classes']
+                dictionary_class = {
+                    0: "не определено",
+                    1: "название",
+                    2: "цена",
+                    3: "описание",
+                    4: "артикул",
+                    5: "телефон",
+                    6: "e-mail"
+                }
+                el_class = list(map(lambda cl: dictionary_class[int(cl)], el_class))
+                print(log := f"Count of classes = {len(el_class)} and count of rows = {df.shape}")
+                log_file.write(f"{datetime.datetime.now()} - {log}\n")
+                df["class"] = el_class
+            except Exception as ex:
+                print(log := f"exception with request: {ex}")
+                log_file.write(f"{datetime.datetime.now()} - {log}\n")
+
+        df.to_csv(path)
+        log_file.close()
         return path
