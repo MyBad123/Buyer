@@ -5,7 +5,7 @@ from django.shortcuts import (
 )
 from app.models import (
     RequestModel, ResultModel, MailForMessageModel,
-    UserForCompany
+    UserForCompany, MessageModel
 )
 from app.serializers import (
     RequestsSerializer,
@@ -16,6 +16,7 @@ from app.serializers import (
 class ForRequestOneView:
     def __init__(self, data):
         self.data = data
+        self.message = None
 
     def get_items_without_duplicate(self):
         """get urls without duplicate"""
@@ -30,6 +31,29 @@ class ForRequestOneView:
         return {
             'count': len(urls_for_getting),
             'urls': urls_for_getting
+        }
+
+    def set_message(self, message):
+        """set all messages from chat to self.message"""
+
+        self.message = message
+
+    def get_message_read_no_read(self):
+        """get status of reading for chats"""
+
+        if self.message is None:
+            return {
+                'read': 0,
+                'no_read': 0,
+                'from': 0,
+                'all': 0
+            }
+
+        return {
+            'read': len(MessageModel.objects.filter(see='yes')),
+            'no_read': len(MessageModel.objects.filter(see='no')),
+            'from': len(MessageModel.objects.filter(see='from')),
+            'all': len(MessageModel.objects.all())
         }
 
 
@@ -98,19 +122,21 @@ class RequestOneView:
         control_results_bool = True if request_object.datetime_processing_finished is None else False
 
         # work with data for chat
-        for_messages_bool = MailForMessageModel.objects.filter(
-            request=request_object,
-            user=request.user
-        )
+        for_messages_bool = MessageModel.objects.filter(
+            mail__request=request_object,
+            mail__user=request.user
+        ).order_by('-datetime')
         messages_bool = True if len(for_messages_bool) else False
         
-        messages = []
         messages_struct = []
+        messages_struct_class = ForRequestOneView(None)
         for i in for_messages_bool:
+            messages_struct_class.set_message(i.mail)
             messages_struct.append({
-                'id': i.id,
-                'mail': i.mail,
-                'site_name': i.site
+                'id': i.mail.id,
+                'mail': i.mail.mail,
+                'site_name': i.mail.site,
+                'site_read': messages_struct_class.get_message_read_no_read()
             })
 
         # it is my request(or no)
@@ -118,7 +144,7 @@ class RequestOneView:
             is_creator = True
         else:
             is_creator = False
-    
+
         # update context with new_data
         context.update({
             'results': results,
