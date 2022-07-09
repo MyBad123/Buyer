@@ -15,6 +15,7 @@ MessageModel = Table(
     Column('message', Text),
     Column('number', String(300)),
     Column('mail_id', Integer),
+    Column('see', String(100))
 )
 
 

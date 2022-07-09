@@ -69,6 +69,7 @@ class MessageModel(models.Model):
     route = models.CharField(max_length=20)
     message = models.TextField()
     number = models.CharField(max_length=50, null=True, blank=True)
+    see = models.CharField(max_length=100, default='from')
 
     # for chats
     mail = models.ForeignKey(MailForMessageModel, on_delete=models.CASCADE)

@@ -73,7 +73,8 @@ class MessageNumber:
                         route='to',
                         message=message_data,
                         number=model_data[4],
-                        mail_id=model_data[5]
+                        mail_id=model_data[5],
+                        see='no'
                     )
                     with self.engine.connect() as conn:
                         after_insert_data = conn.execute(insert_query)

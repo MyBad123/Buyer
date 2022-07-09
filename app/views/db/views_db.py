@@ -208,7 +208,8 @@ class DbMethods:
                     route='from',
                     message=text_for_db,
                     number='10-10',
-                    request=i
+                    request=i,
+                    see='from'
                 )
             hz_index += 1
 
@@ -222,7 +223,8 @@ class DbMethods:
                     route='to',
                     message=text_for_db,
                     number='10-10',
-                    request=i
+                    request=i,
+                    see='no'
                 )
             hz_index += 1
 
