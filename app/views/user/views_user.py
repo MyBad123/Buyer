@@ -215,6 +215,8 @@ class UserMethods:
             ).company
         except UserForCompany.DoesNotExist:
             return JsonResponse(data={}, status=200)
+        except TypeError:
+            return JsonResponse(data={}, status=200)
 
         # get status for all requests from db
         utils_obj = ForGetUsersPageApi(company)

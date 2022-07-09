@@ -80,6 +80,7 @@ class MessageControlData:
         if type(self.data.get('mails')) != list:
             return True
 
+
         for i in self.data.get('mails'):
             # control mail
             if type(i.get('mail')) is not str or (i.get('mail') == ''):
