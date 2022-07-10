@@ -8,7 +8,7 @@ from sqlalchemy import (
 import mailparser
 from imapclient import IMAPClient
 
-from .models import (
+from models import (
     MessageModel, ParsingAttributesTable
 )
 
@@ -83,6 +83,7 @@ class MessageNumber:
                     key = after_insert_data.inserted_primary_key[0]
 
                     # it is parsing
+                    return
                     mail_hendler_request = requests.post(
                         'http://127.0.0.1:8011/process_text',
                         json=json.dumps({'text': str(message_data)})
@@ -164,9 +165,9 @@ class MessageNumber:
     def work(self):
         """work with mails"""
 
-        HOST = "m.1d61.com"
-        USERNAME = "buyer-vendor@1d61.com"
-        PASSWORD = "GD38asDF348ASdf"
+        HOST = "imap.gmail.com"
+        USERNAME = "genag4448@gmail.com"
+        PASSWORD = "ugxfnlulofgiihny"
 
         ssl_context = ssl.create_default_context()
 
@@ -186,11 +187,13 @@ class MessageNumber:
                 try:
                     text_body = mailparser.parse_from_bytes(message_data[b'RFC822']).text_html[0]
                     self.write_to_db(text_body, mailparser.parse_from_bytes(message_data[b'RFC822']))
-                except SyntaxError:
-                    pass
+                except IndexError:
+                    text_body = mailparser.parse_from_bytes(message_data[b'RFC822']).text_plain[0]
+                    self.write_to_db(text_body, mailparser.parse_from_bytes(message_data[b'RFC822']))
 
+                raise IndexError()
                 # delete mail from message
-                self.delete_mail(server, uid)
+                # self.delete_mail(server, uid)
 
 
 if __name__ == '__main__':
