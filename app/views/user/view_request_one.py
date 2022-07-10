@@ -93,7 +93,7 @@ class RequestOneView:
         try:
             request_object = RequestModel.objects.get(
                 id=id, company=company
-        )
+            )
         except RequestModel.DoesNotExist:
             return redirect('/')
 
@@ -125,7 +125,7 @@ class RequestOneView:
         for_messages_bool = MessageModel.objects.filter(
             mail__request=request_object,
             mail__user=request.user
-        ).order_by('-datetime')
+        ).order_by('-datetime').order_by('mail_id').distinct('mail_id')
         messages_bool = True if len(for_messages_bool) else False
         
         messages_struct = []
