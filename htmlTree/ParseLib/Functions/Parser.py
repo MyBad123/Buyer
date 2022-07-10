@@ -332,7 +332,7 @@ class Parser:
                         not any(el not in href for el in self.ignore):
                     continue
 
-                if depth < 6 and self.count < 150:
+                if depth < 6 and self.count < 200:
                     self.list_urls.append(href)
                     rnd = randint(1, 4)
                     time.sleep(1 + rnd)
