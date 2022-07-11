@@ -191,9 +191,8 @@ class MessageNumber:
                     text_body = mailparser.parse_from_bytes(message_data[b'RFC822']).text_plain[0]
                     self.write_to_db(text_body, mailparser.parse_from_bytes(message_data[b'RFC822']))
 
-                raise IndexError()
                 # delete mail from message
-                # self.delete_mail(server, uid)
+                self.delete_mail(server, uid)
 
 
 if __name__ == '__main__':
