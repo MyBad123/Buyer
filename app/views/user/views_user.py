@@ -65,12 +65,23 @@ class AuthMethods:
     def auth_page(request):
         """view for get auth page"""
 
-        if not request.user.is_authenticated:
-            return render(request, 'user/auth/auth.html')
-        elif request.user.is_superuser:
-            return redirect('/admin/')
+        # get params from GET request
+        redirect_page = request.GET.get('redirect')
+        if redirect_page != None:
+            redirect_page = redirect_page.replace('%2F', '/')
+
+        if redirect_page is None:
+            # get page without redirect
+            if not request.user.is_authenticated:
+                return render(request, 'user/auth/auth.html')
+            elif request.user.is_superuser:
+                return redirect('/admin/')
+            else:
+                return redirect('/user-page/')
+
         else:
-            return redirect('/user-page/')
+            # get page with redirect
+            pass
 
     @staticmethod
     def auth(request):

@@ -67,7 +67,9 @@ class ChatViews:
             context={
                 'id_request': mail.request.id,
                 'id_chat': mail.id,
-                'mails': for_get_mails.get_messages_serializer()
+                'mails': for_get_mails.get_messages_serializer(),
+                'request_word': mail.request.name,
+                'request_vendor': mail.site
             }
         )
 

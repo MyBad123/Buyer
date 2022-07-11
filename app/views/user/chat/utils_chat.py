@@ -158,13 +158,107 @@ class ForGetPageWithMail:
 
         struct = []
         for i in self.get_messages():
-            people = len(ParsingAttributes.objects.filter(name='people', message=i))
-            emails = len(ParsingAttributes.objects.filter(name='emails', message=i))
-            phones = len(ParsingAttributes.objects.filter(name='phones', message=i))
-            sites = len(ParsingAttributes.objects.filter(name='sites', message=i))
-            companies = len(ParsingAttributes.objects.filter(name='companies', message=i))
-            addresses = len(ParsingAttributes.objects.filter(name='addresses', message=i))
-            positions = len(ParsingAttributes.objects.filter(name='positions', message=i))
+            # work with values "people"
+            for_people = 0
+            people = ''
+            for j in ParsingAttributes.objects.filter(name='people', message=i):
+                if for_people != 0:
+                    people += ', '
+
+                people += j.value
+                for_people += 1
+
+            if for_people == 0:
+                people = '0 человек'
+
+            # work with value "emails"
+            for_emails = 0
+            emails = ''
+            for j in ParsingAttributes.objects.filter(name='emails', message=i):
+                if for_emails != 0:
+                    emails += ', '
+
+                emails += j.value
+                for_emails += 1
+
+            if for_emails == 0:
+                emails = '0 адресов электронной почты'
+
+            # work with value "phones"
+            for_phones = 0
+            phones = ''
+            for j in ParsingAttributes.objects.filter(name='phones', message=i):
+                if for_phones != 0:
+                    phones += ', '
+
+                phones += j.value
+                for_phones += 1
+
+            if for_phones == 0:
+                phones = '0 номеров телефонов'
+
+            # work with value "sites"
+            for_sites = 0
+            sites = ''
+            for j in ParsingAttributes.objects.filter(name='sites', message=i):
+                if for_sites != 0:
+                    sites += ', '
+
+                sites += j.value
+                for_sites += 1
+
+            if for_sites == 0:
+                sites = '0 сайтов'
+
+            # work with value "companies"
+            for_companies = 0
+            companies = ''
+            for j in ParsingAttributes.objects.filter(name='companies', message=i):
+                if for_companies != 0:
+                    companies += ', '
+
+                companies += j.value
+                for_companies += 1
+
+            if for_companies == 0:
+                companies = '0 компаний'
+
+            # work with value "addresses"
+            for_addresses = 0
+            addresses = ''
+            for j in ParsingAttributes.objects.filter(name='addresses', message=i):
+                if for_addresses != 0:
+                    addresses += ', '
+
+                addresses += j.value
+                for_addresses += 1
+
+            if for_addresses == 0:
+                addresses = '0 адресов'
+
+            # work with value "positions"
+            for_positions = 0
+            positions = ''
+            for j in ParsingAttributes.objects.filter(name='positions', message=i):
+                if for_positions != 0:
+                    positions += ', '
+
+                positions += j.value
+                for_positions += 1
+
+            if for_positions == 0:
+                positions = '0 позиций'
+
+            # get mails
+            if i.route == 'from':
+                for_route = False
+                route = 'исходящее'
+            elif i.route == 'to':
+                for_route = True
+                route = 'входящее'
+            else:
+                for_route = False
+                route = 'неизвестно'
 
             struct.append({
                 'people': people,
@@ -176,7 +270,9 @@ class ForGetPageWithMail:
                 'positions': positions,
                 'id': self.chat_obj.id,
                 'id_message': i.id,
-                'datetime': ForGetPageWithMail.get_correct_datetime(i.datetime)
+                'datetime': ForGetPageWithMail.get_correct_datetime(i.datetime),
+                'route': route,
+                'for_route': for_route
             })
 
         return struct

@@ -8,7 +8,7 @@ from sqlalchemy import (
 import mailparser
 from imapclient import IMAPClient
 
-from models import (
+from .models import (
     MessageModel, ParsingAttributesTable
 )
 
