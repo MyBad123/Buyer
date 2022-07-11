@@ -178,7 +178,7 @@ class DbMethods:
                     system='yandex',
                     url=i.get('page'),
                     status=True,
-                    mail='genag4448@gmail.com'
+                    mail='buyer-vendor@1d61.com'
                 )
 
     @staticmethod

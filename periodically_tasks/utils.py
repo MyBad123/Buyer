@@ -165,9 +165,9 @@ class MessageNumber:
     def work(self):
         """work with mails"""
 
-        HOST = "imap.gmail.com"
-        USERNAME = "genag4448@gmail.com"
-        PASSWORD = "ugxfnlulofgiihny"
+        HOST = "m.1d61.com"
+        USERNAME = "buyer-support@1d61.com"
+        PASSWORD = "AJds38Adj3FSDl3as4"
 
         ssl_context = ssl.create_default_context()
 
