@@ -115,7 +115,7 @@ def get_catalog(data):
     domain = re.findall(r'([\w\-:]+)\/\/', url)[0] + '//' + re.findall(r'\/\/([\w\-.]+)', url)[0]
     domain_without = max(domain.split("//")[-1].split("/")[0].split("."), key=len).replace('-', '_')
     row = siteTable.select(param={"url": url})
-    dict_url = {}
+    dict_url = []
     if not row:
         pass
     else:
@@ -187,9 +187,9 @@ def get_catalog(data):
                 df2 = df.loc[(df['url'] == url_el) & (df['content_element'] == 'img'), "source"]
                 if not df2.empty:
                     dictionary_class.update({"изображение": df2.iloc[0]})
-                dict_url[url_el] = dictionary_class
+                dict_url.append([url_el, *dictionary_class.values()])
         except Exception as ex:
             print(log := f"exception with request: {ex}")
-        print(f"Count of products in catalog = {len(dict_url.keys())}")
+        print(f"Count of products in catalog = {len(dict_url)}")
         os.remove(path)
     return dict_url
