@@ -95,9 +95,3 @@ class CsvModel(models.Model):
     """for csv id"""
 
     datetime = models.DateTimeField()
-
-
-class CatalogModel(models.Model):
-    """model for catalog"""
-
-    datetime = models.DateTimeField()

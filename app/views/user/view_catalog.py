@@ -11,7 +11,6 @@ from django.shortcuts import render, redirect
 
 from htmlTree.tasks import get_catalog
 from app.models import CsvModel
-from app.models import CatalogModel
 
 
 class Bg(threading.Thread):
