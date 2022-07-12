@@ -148,6 +148,7 @@ def get_catalog(data):
                   "source": elDic["source"]}])
             df = pd.concat([df, new_row])
         path = os.path.join(path_name, f"{domain_without}.csv")
+        print(f"Count of elements in site for catalog = {df.shape}")
         df.to_csv(path)
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -167,6 +168,7 @@ def get_catalog(data):
             }
             el_class = list(map(lambda cl: dictionary_class[int(cl)], el_class))
             df["class"] = el_class
+            print(f"Count of url in sites for catalog = {len(df['url'].unique())}")
             for url_el in df['url'].unique():
                 dictionary_class = {
                     "название": None,
@@ -188,6 +190,6 @@ def get_catalog(data):
                 dict_url[url_el] = dictionary_class
         except Exception as ex:
             print(log := f"exception with request: {ex}")
-
+        print(f"Count of products in catalog = {len(dict_url.keys())}")
         os.remove(path)
     return dict_url

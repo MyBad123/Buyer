@@ -69,6 +69,6 @@ class CatalogView:
         valid_object = CsvSerializer(request)
         if valid_object.is_valid():
             dictionary = get_catalog(valid_object.get_valid_data())
-            return render(request, 'user/catalog/catalog.html', dictionary)
+            return render(request, 'user/catalog/catalog.html', {"dictionary": dictionary})
         else:
             return HttpResponse(content="Invalid link")
