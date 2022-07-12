@@ -55,7 +55,7 @@ class CatalogView:
     def get_page(request):
         """get catalog page with form"""
 
-        return render(request, 'user/catalog/catalog.html')
+        return render(request, 'user/catalog/get_catalog.html')
 
     @staticmethod
     def set_catalog(request):
@@ -68,8 +68,7 @@ class CatalogView:
         # control valid data
         valid_object = CsvSerializer(request)
         if valid_object.is_valid():
-            thread = Bg(get_catalog, valid_object.get_valid_data())
-            dictionary = thread.start()
-            return render(request, 'user/catalog/get_catalog.html', dictionary)
+            dictionary = get_catalog(valid_object.get_valid_data())
+            return render(request, 'user/catalog/catalog.html', dictionary)
         else:
-            return redirect('/get-catalog/')
+            return HttpResponse(content="Invalid link")

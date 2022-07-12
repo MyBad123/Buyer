@@ -27,21 +27,20 @@
 
 <div class="container">
     <div class="mt-4 my-3 p-3 bg-body rounded shadow-sm">
-        <table class="table">
-            <thead>
-                <th scope="col">Название</th>
-                <th scope="col">Артикль</th>
-                <th scope="col">Описание</th>
-                <th scope="col">Цена</th>
-                <th scope="col">Изображение</th>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-        {% for el in value %}
-            <p>{{ el }}</p>
-        {% endfor %}
+        <h2 class="m-2">Введите сайт</h2>
+        <form method="post" action="/set-catalog/">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="m-2" for="exampleInputPassword1">Сайт</label>
+                <input type="url" class="form-control m-2" id="exampleInputPassword1" name="url">
+            </div>
+            <button type="submit" class="btn btn-primary m-2">Отправить</button>
+          </form>
+
     </div>
+
+
+
 </div>
 
 
