@@ -29,6 +29,7 @@
     <div class="mt-4 my-3 p-3 bg-body rounded shadow-sm">
         <table class="table">
             <thead>
+                <th scope="col">URL</th>
                 <th scope="col">Название</th>
                 <th scope="col">Артикль</th>
                 <th scope="col">Описание</th>
@@ -36,11 +37,18 @@
                 <th scope="col">Изображение</th>
             </thead>
             <tbody>
+                {% for el in dictionary %}
+                    <tr>
+                        <td>{{ el.0 }}</td>
+                        <td>{{ el.1 }}</td>
+                        <td>{{ el.2 }}</td>
+                        <td>{{ el.3 }}</td>
+                        <td>{{ el.4 }}</td>
+                        <td class="w-25"><img src="{{ el.5 }}" class="img-fluid img-thumbnail"></td>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
-        {% for el in dictionary %}
-            <p>{{ el }}</p>
-        {% endfor %}
     </div>
 </div>
 
