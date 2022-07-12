@@ -61,12 +61,8 @@ class CatalogView:
     def set_catalog(request):
         """get catalog from bd"""
 
-        # create logs
-        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=start-get-catalog')
-
         # control request
         if request.method != 'POST':
-            requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=error-set-catalog-error-control-request')
             return redirect('/get-csv/')
 
         # control valid data
@@ -76,5 +72,4 @@ class CatalogView:
             dictionary = thread.start()
             return render(request, 'user/catalog/get_catalog.html', dictionary)
         else:
-            requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=error-sev-csv-no-valid')
-            return redirect('/get-csv/')
+            return redirect('/get-catalog/')

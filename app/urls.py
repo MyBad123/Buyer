@@ -60,5 +60,5 @@ urlpatterns = [
 
     # for getting catalog
     path('get-catalog/', CatalogView.get_page),
-    path('seg-catalog/', CatalogView.set_catalog)
+    path('set-catalog/', CatalogView.set_catalog)
 ]
