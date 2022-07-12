@@ -10,6 +10,7 @@ from app.views.user.view_result import *
 from app.views.user.view_csv import *
 from app.views.markup_doc.view_markup_doc import *
 from app.views.admin.views_company_admin import *
+from app.views.user.view_catalog import *
 
 
 urlpatterns = [
@@ -56,4 +57,8 @@ urlpatterns = [
     path('set-csv-logs/', CsvView.set_logs),
     path('get-csv-file/', CsvView.get_csv_file),
     path('create-markup-doc/', MarkupDoc.create_markup_doc),
+
+    # for getting catalog
+    path('get-catalog/', CatalogView.get_page),
+    path('seg-catalog/', CatalogView.set_catalog)
 ]
