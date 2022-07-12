@@ -49,7 +49,7 @@ stage_prod:
         - psql -h "127.0.0.1" -U "$POSTGRES_USER" -f init.sql
         #- sudo -u postgres psql -U postgres -f init.sql
         #обновить миграции
-        - /home/itsuppus/svetorezerv/buyer/venv/bin/python /home/itsuppus/svetorezerv/buyerdev/venv/bin/pip install -r ./requirements.txt
+        - /home/itsuppus/svetorezerv/buyer/venv/bin/python /home/itsuppus/svetorezerv/buyer/venv/bin/pip install -r ./requirements.txt
         - /home/itsuppus/svetorezerv/buyer/venv/bin/python manage.py migrate
         #собрать статику
         - /home/itsuppus/svetorezerv/buyer/venv/bin/python manage.py collectstatic --no-input
