@@ -176,11 +176,15 @@ def get_catalog(data):
                 }
                 for name_dic in dictionary_class.keys():
                     try:
-                        df.loc[df['url'] == url_el and df['class'] == name_dic][:1]['text']
+                        df1 = df.loc[(df['url'] == url_el) & (df['class'] == name_dic), ['text', "length"]].sort_values(
+                            by=['length'])
+                        if not df1.empty:
+                            dictionary_class[name_dic] = df1.iloc[0]['text']
                     except:
                         pass
-                dictionary_class["изображение"] = df.loc[df['url'] == url_el
-                                                         and df['content_element'] == 'img'][:1]['source']
+                df2 = df.loc[(df['url'] == url_el) & (df['content_element'] == 'img'), "source"]
+                if not df2.empty:
+                    dictionary_class.update({"изображение": df2.iloc[0]})
                 dict_url[url_el] = dictionary_class
         except Exception as ex:
             print(log := f"exception with request: {ex}")
