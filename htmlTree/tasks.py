@@ -7,8 +7,8 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email_validate import validate
-from .ParseLib.Tables import TemplateTable
-from .ParseLib.Tables import SiteTable
+from .ParseLib.Tables.TemplateTable import *
+from .ParseLib.Tables.SiteTable import *
 
 from app.models import RequestModel, ResultModel
 from .for_task_utils import Mail
