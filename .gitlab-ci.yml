@@ -10,8 +10,8 @@ stage_dev:
         - cd /
         - cd /home/itsuppus/svetorezerv/buyerdev/
         #удаляем изменения
-        #- git stash
-        #- git stash drop
+        - git stash
+        - git stash drop
         #получаем из git новую версию
         - git pull
         #Удалить лишние миграции
