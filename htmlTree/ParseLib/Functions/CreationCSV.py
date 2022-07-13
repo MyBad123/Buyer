@@ -3,9 +3,11 @@ import uuid
 import pathlib
 import datetime
 import requests
+import os
 
 import pandas as pd
 import numpy as np
+from dotenv import load_dotenv
 
 from htmlTree.ParseLib.parser_path import parser_path
 from htmlTree.ParseLib.Tables.ElementTable import *
@@ -27,8 +29,14 @@ class Csv:
         self.csv_id = csv_id
 
     def create_scv(self, uuid4, my_path, site_id):
+        # work with env
+        path_my_my = str(pathlib.Path(__file__).parent.parent.parent.parent) + '/Buyer/'
+        dotenv_path = os.path.join(path_my_my, '.env')
+        if os.path.exists(dotenv_path):
+            load_dotenv(dotenv_path)
+        root_domain = os.environ.get('ROOT_DOMAIN')
         log_file = open(self.log_path, "a+", encoding="UTF-8")
-        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv')
+        requests.get(f'https://{root_domain}/set-csv-logs/?message=create-csv')
 
         list_of_elements = self.elementTable.all()
         list_of_img = self.imageTable.all()
@@ -78,7 +86,7 @@ class Csv:
 
         dup_list = pd.DataFrame(data=None, columns=["check_dup"])
         new_list = []
-        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-2')
+        requests.get(f'https://{root_domain}/set-csv-logs/?message=create-csv-2')
         print(log := "Start delete duplicate")
         log_file.write(f"{datetime.datetime.now()} - {log}\n")
         for el in list_of_elements:
@@ -98,11 +106,11 @@ class Csv:
         print(log := f"Count of elements after removal duplicate for site with url: {len(new_list)}")
         log_file.write(f"{datetime.datetime.now()} - {log}\n")
 
-        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-3')
+        requests.get(f'https://{root_domain}/set-csv-logs/?message=create-csv-3')
         list_of_elements.clear()
         df = pd.DataFrame(data=None, columns=columns)
 
-        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-4')
+        requests.get(f'https://{root_domain}/set-csv-logs/?message=create-csv-4')
         border = self.htmlTable.count_rows() * 0.9
         emails = []
         for el_to_add in new_list:
@@ -176,7 +184,7 @@ class Csv:
             headers = {
                 'Content-Type': 'application/x-www-form-urlencoded',
             }
-            data = f'path=https://buyerdev.1d61.com/get-csv-file/?id={self.csv_id}'
+            data = f'path=https://{root_domain}/get-csv-file/?id={self.csv_id}'
             try:
                 r = requests.post('http://localhost:8000', headers=headers, data=data)
                 el_class = r.json()['classes']
@@ -199,15 +207,21 @@ class Csv:
 
         df.to_csv(path)
         log_file.close()
-        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-5')
+        requests.get(f'https://{root_domain}/set-csv-logs/?message=create-csv-5')
         self.elementTable.drop()
         self.htmlTable.drop()
         self.imageTable.drop()
 
-        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=create-csv-end')
+        requests.get(f'https://{root_domain}/set-csv-logs/?message=create-csv-end')
         return path
 
     def create_ex_csv(self, uuid4, my_path, site_id):
+        # work with env
+        path_my_my = str(pathlib.Path(__file__).parent.parent.parent.parent) + '/Buyer/'
+        dotenv_path = os.path.join(path_my_my, '.env')
+        if os.path.exists(dotenv_path):
+            load_dotenv(dotenv_path)
+        root_domain = os.environ.get('ROOT_DOMAIN')
         log_file = open(self.log_path, "a+", encoding="UTF-8")
         df = pd.DataFrame(data=None, columns=["nn", "class"])
         for elDic in self.templateTable.select(param={"site_id": site_id}):
@@ -242,7 +256,7 @@ class Csv:
             headers = {
                 'Content-Type': 'application/x-www-form-urlencoded',
             }
-            data = f'path=https://buyerdev.1d61.com/get-csv-file/?id={self.csv_id}'
+            data = f'path=https://{root_domain}/get-csv-file/?id={self.csv_id}'
             try:
                 r = requests.post('http://localhost:8000', headers=headers, data=data)
                 el_class = r.json()['classes']

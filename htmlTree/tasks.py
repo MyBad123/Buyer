@@ -1,9 +1,11 @@
 import os
 from celery import shared_task
+from dotenv import load_dotenv
 import requests
 import datetime
 import pathlib
 import smtplib
+
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email_validate import validate
@@ -98,6 +100,13 @@ def get_csv(data, csv_model_id):
 
 
 def get_catalog(data):
+    # work with env
+    path_my_my = str(pathlib.Path(__file__).parent.parent) + '/Buyer/'
+    dotenv_path = os.path.join(path_my_my, '.env')
+    if os.path.exists(dotenv_path):
+        load_dotenv(dotenv_path)
+    root_domain = os.environ.get('ROOT_DOMAIN')
+
     """get catalog"""
     url = data.get('url')
 
@@ -153,7 +162,7 @@ def get_catalog(data):
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
         }
-        data = 'path=https://buyerdev.1d61.com/get-csv-file/?id=catalog'
+        data = f'path=https://{root_domain}/get-csv-file/?id=catalog'
         try:
             r = requests.post('http://localhost:8000', headers=headers, data=data)
             el_class = r.json()['classes']

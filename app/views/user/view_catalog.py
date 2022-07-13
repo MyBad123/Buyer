@@ -4,24 +4,10 @@ import datetime
 import pathlib
 from django.http import FileResponse, HttpResponse
 import validators
-import threading
 
-from email_validate import validate
 from django.shortcuts import render, redirect
 
 from htmlTree.tasks import get_catalog
-from app.models import CsvModel
-
-
-class Bg(threading.Thread):
-    def __init__(self, function_that_downloads, argv1):
-        threading.Thread.__init__(self)
-        self.runnable = function_that_downloads
-        self.daemon = True
-        self.argv1 = argv1
-
-    def run(self):
-        self.runnable(self.argv1)
 
 
 class CsvSerializer:

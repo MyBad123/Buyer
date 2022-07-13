@@ -90,7 +90,7 @@ class TemplateTable:
             log_file = open(self.log_path, "a+", encoding="UTF-8")
             log_file.write(f"{datetime.datetime.now()} - {ex}\n")
             log_file.close()
-            requests.get(f"https://buyerdev.1d61.com/set-csv-logs/?error-with-creation-bd")
+            print("error-with-creating-bd")
         return
 
     def insert_row(self, data, columns):
@@ -115,7 +115,7 @@ class TemplateTable:
             log_file = open(self.log_path, "a+", encoding="UTF-8")
             log_file.write(f"{datetime.datetime.now()} - {ex}\n")
             log_file.close()
-            requests.get(f"https://buyerdev.1d61.com/set-csv-logs/?error-with-dropping-bd")
+            print("error-with-dropping-bd")
         return
 
     def truncate(self):
