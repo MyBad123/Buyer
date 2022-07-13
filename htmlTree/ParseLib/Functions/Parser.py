@@ -255,7 +255,6 @@ class Parser:
 
                 # self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
                 self.driver = webdriver.Firefox(
-                    firefox_profile=os.environ.get('WEBDRIVER_PATH'),
                     options=options
                 )
                 self.driver.maximize_window()
