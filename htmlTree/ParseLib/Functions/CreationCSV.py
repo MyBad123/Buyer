@@ -72,6 +72,8 @@ class Csv:
         for img in list_of_img:
             size = math.sqrt(np.square(float(img["width"])) + np.square(float(img["height"])))
             max_size = list(filter_img.loc[filter_img["url"] == img["url"], "size"])[0]
+            if max_size == 0:
+                max_size = size
             max_ruble = list(filter_img.loc[filter_img["url"] == img["url"], "ruble"])[0]
             if max_ruble == 0:
                 max_ruble = 1
