@@ -16,8 +16,8 @@ function getCookie(name) {
 }
 const csrftoken = getCookie('csrftoken');
 
-// send message to mail
-document.getElementById("push_btn").onclick = async () => {
+// get id of request
+function getIdRequest() {
     // get id for redirect and making request
     let thisHrefBool = true;
     let index = -1;
@@ -28,8 +28,14 @@ document.getElementById("push_btn").onclick = async () => {
             thisHrefBool = false;
         }
     }
-    let thisPk = window.location.href.slice(index + 1, -1);
 
+    return window.location.href.slice(index + 1, -1);
+}
+
+// send message to mail
+document.getElementById("push_btn").onclick = async () => {
+    // get id of request
+    let thisPk = getIdRequest();
 
     // get text by input area 
     let textMessage = document.getElementById('floatingTextarea2').value;
@@ -78,12 +84,6 @@ document.getElementById("push_btn").onclick = async () => {
 
 
 // work with change of mail
-for (let i of document.querySelectorAll('.my-change-btn')) {
-    i.addEventListener('click', () => {
-        console.log(i);
-    })
-}
-
 for (let i of document.querySelectorAll('.input-mail')) {
     i.addEventListener('input', () => {
         // set and delete some class for settings new mail
@@ -95,7 +95,7 @@ for (let i of document.querySelectorAll('.input-mail')) {
 }
 
 for (let i of document.querySelectorAll('.my-change-btn')) {
-    i.addEventListener('click', () => {
+    i.addEventListener('click', async () => {
         // make control what is this btn (with new mail or no)
         let forClass = 0;
         for (let j of i.classList) {
@@ -105,13 +105,47 @@ for (let i of document.querySelectorAll('.my-change-btn')) {
         }
 
         // work after control
-        if (forClass !== 0) {
+        if (forClass === 0) {
             // get data for request
             let textMail = i.closest('.item').querySelector('.input-mail').value;
+            let textSite = i.closest('.item').querySelectorAll('td')[3].innerText;
+            let idRequest = getIdRequest();
 
             // control valid or no textMail
+            let forDog = 0;
+            let forDot = 0;
+            for (let j of textMail.slice('')) {
+                if (j === '@') {
+                    forDog++;
+                }
+                if (j === '.') {
+                    forDot++;
+                }
+            }
+            if (forDog === 0) {
+                return
+            }
+            if (forDot === 0) {
+                return
+            }
 
             // set new request for change mail
+            let request = await fetch('/request-page-change-mail/', {
+                 method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json;charset=utf-8',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({
+                        mail: textMail,
+                        site: textSite,
+                        id_request: idRequest
+                    })
+            })
+
+            // change color and opacity for btn
+            let responce = await request.json()
+            console.log(responce);
         }
     })
 }

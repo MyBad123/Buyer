@@ -175,7 +175,12 @@ class ForChangeMailUtils:
         if self.data.get('id_request') is None:
             return False
 
-        if type(self.data.get('id_request')) != int:
+        if type(self.data.get('id_request')) != str:
+            return False
+
+        try:
+            int(self.data.get('id_request'))
+        except ValueError:
             return False
 
         # control site
@@ -216,7 +221,7 @@ class ForChangeMailUtils:
         for_control = 0
         for i in companies:
             if i.company.id == request_obj.company.id:
-                for_control
+                for_control += 1
 
         if for_control == 0:
             return False
@@ -397,7 +402,7 @@ class ResultsView:
 
         # get RequestModel object
         try:
-            request_obj = RequestModel.objects.get(id=data.get('id_request'))
+            request_obj = RequestModel.objects.get(id=int(data.get('id_request')))
         except RequestModel.DoesNotExist:
             return JsonResponse(data={
                 'error': 3,
