@@ -1,12 +1,16 @@
 import os
 from celery import shared_task
+from dotenv import load_dotenv
 import requests
 import datetime
 import pathlib
 import smtplib
+
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email_validate import validate
+from .ParseLib.Tables.TemplateTable import *
+from .ParseLib.Tables.SiteTable import *
 
 from app.models import RequestModel, ResultModel
 from .for_task_utils import Mail
@@ -93,3 +97,108 @@ def get_csv(data, csv_model_id):
         os.rmdir(f"{str(pathlib.Path(__file__).parent)}/files/{str(csv_model_id)}/")
     except Exception as ex:
         print(f"Exception with os.rmdir: {ex}")
+
+
+def get_catalog(data):
+    # work with env
+    path_my_my = str(pathlib.Path(__file__).parent.parent) + '/Buyer/'
+    dotenv_path = os.path.join(path_my_my, '.env')
+    if os.path.exists(dotenv_path):
+        load_dotenv(dotenv_path)
+    root_domain = os.environ.get('ROOT_DOMAIN')
+
+    """get catalog"""
+    url = data.get('url')
+
+    # create path for csv file
+    path_name = str(pathlib.Path(__file__).parent) + '/files/'
+    if not os.path.exists(path_name):
+        os.mkdir(path_name)
+
+    path_name += 'catalog/'
+    if not os.path.exists(path_name):
+        os.mkdir(path_name)
+
+    siteTable = SiteTable()
+    import re
+    domain = re.findall(r'([\w\-:]+)\/\/', url)[0] + '//' + re.findall(r'\/\/([\w\-.]+)', url)[0]
+    domain_without = max(domain.split("//")[-1].split("/")[0].split("."), key=len).replace('-', '_')
+    row = siteTable.select(param={"url": url})
+    dict_url = []
+    if not row:
+        pass
+    else:
+        import pandas as pd
+        templateTable = TemplateTable()
+        site_id = row[0]['id']
+        df = pd.DataFrame(data=None, columns=["nn", "class"])
+        for elDic in templateTable.select(param={"site_id": site_id}):
+            new_row = pd.DataFrame(
+                [{"text": elDic['text'], "presence_of_ruble": elDic['presence_of_ruble'],
+                  "content_element": elDic['content_element'], "url": elDic['url'],
+                  "length": elDic['length'],
+                  "class_ob": elDic['class_ob'], "id_element": elDic['id_element'],
+                  "style": elDic['style'],
+                  "enclosure": elDic['enclosure'], "href": elDic['href'], "count": elDic['count'],
+                  "location_x": elDic['location_x'], "location_y": elDic['location_y'],
+                  "size_width": elDic['size_width'], "size_height": elDic['size_height'],
+                  "integer": elDic['integer'], "float": elDic['float'], "n_digits": elDic['n_digits'],
+                  "presence_of_vendor": elDic['presence_of_vendor'],
+                  "presence_of_link": elDic['presence_of_link'],
+                  "presence_of_at": elDic['presence_of_at'], "has_point": elDic['has_point'],
+                  "writing_form": elDic['writing_form'], "font_size": elDic['font_size'],
+                  "hue": elDic['hue'],
+                  "saturation": elDic['saturation'], "brightness": elDic['brightness'],
+                  "font_family": elDic['font_family'],
+                  "ratio_coordinate_to_height": elDic['ratio_coordinate_to_height'],
+                  "distance_btw_el_and_ruble": elDic['distance_btw_el_and_ruble'],
+                  "distance_btw_el_and_article": elDic['distance_btw_el_and_article'],
+                  "id_xpath": str(elDic['content_element']) + "//" + str(elDic['path']) + "//" + str(elDic['url']),
+                  "source": elDic["source"]}])
+            df = pd.concat([df, new_row])
+        path = os.path.join(path_name, f"{domain_without}.csv")
+        print(f"Count of elements in site for catalog = {df.shape}")
+        df.to_csv(path)
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+        data = f'path=https://{root_domain}/get-csv-file/?id=catalog'
+        try:
+            r = requests.post('http://localhost:8000', headers=headers, data=data)
+            el_class = r.json()['classes']
+            dictionary_class = {
+                0: "не определено",
+                1: "название",
+                2: "цена",
+                3: "описание",
+                4: "артикул",
+                5: "телефон",
+                6: "e-mail"
+            }
+            el_class = list(map(lambda cl: dictionary_class[int(cl)], el_class))
+            df["class"] = el_class
+            print(f"Count of url in sites for catalog = {len(df['url'].unique())}")
+            for url_el in df['url'].unique():
+                dictionary_class = {
+                    "название": None,
+                    "цена": None,
+                    "описание": None,
+                    "артикул": None
+                }
+                for name_dic in dictionary_class.keys():
+                    try:
+                        df1 = df.loc[(df['url'] == url_el) & (df['class'] == name_dic), ['text', "length"]].sort_values(
+                            by=['length'])
+                        if not df1.empty:
+                            dictionary_class[name_dic] = df1.iloc[0]['text']
+                    except:
+                        pass
+                df2 = df.loc[(df['url'] == url_el) & (df['content_element'] == 'img'), "source"]
+                if not df2.empty:
+                    dictionary_class.update({"изображение": df2.iloc[0]})
+                dict_url.append([url_el, *dictionary_class.values()])
+        except Exception as ex:
+            print(log := f"exception with request: {ex}")
+        print(f"Count of products in catalog = {len(dict_url)}")
+        os.remove(path)
+    return dict_url

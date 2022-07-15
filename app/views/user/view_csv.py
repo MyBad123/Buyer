@@ -136,13 +136,6 @@ class CsvView:
             print(1)
             return HttpResponse()
 
-        # valid number or no
-        try:
-            int(id_path)
-        except ValueError:
-            print(2)
-            return HttpResponse()
-
         # make path 
         path = pathlib.Path(__file__).parent.parent.parent.parent
         path = str(path)
@@ -153,12 +146,12 @@ class CsvView:
         # control path
         if not os.path.exists(path):
             print(path)
-            print(3)
+            print(2)
             return HttpResponse()
 
         # control file
         if not os.listdir(path):
-            print(4)
+            print(3)
             return HttpResponse()
 
         files = filter(lambda f: f.endswith('.csv'), os.listdir(path))

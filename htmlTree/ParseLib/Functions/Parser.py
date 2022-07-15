@@ -58,9 +58,10 @@ class Parser:
         self.siteTable.create()
         self.templateTable.create()
         self.log_file = None
+        self.root_domain = None
 
     def get_elements(self, site_id):
-        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements')
+        requests.get(f'https://{self.root_domain}/set-csv-logs/?message=get-elements')
         try:
             site_html = self.htmlTable.one(site_id)
             list_of_data_xid = list(filter(None, site_html['elements'].split(",")))
@@ -231,7 +232,7 @@ class Parser:
             print(log := f"selenium.common.exceptions.WebDriverException link: {site_html['url']}")
             self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
 
-        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=get-elements-end')
+        requests.get(f'https://{self.root_domain}/set-csv-logs/?message=get-elements-end')
 
     def site_parsing(self, uuid4, my_path):
         # work with env
@@ -239,6 +240,7 @@ class Parser:
         dotenv_path = os.path.join(path_my_my, '.env')
         if os.path.exists(dotenv_path):
             load_dotenv(dotenv_path)
+        self.root_domain = os.environ.get('ROOT_DOMAIN')
         txt_path = f'{my_path}{uuid4}.txt'
         log_file = open(txt_path, "w+", encoding="UTF-8")
         log_file.close()
@@ -255,7 +257,6 @@ class Parser:
 
                 # self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
                 self.driver = webdriver.Firefox(
-                    firefox_profile=os.environ.get('WEBDRIVER_PATH'),
                     options=options
                 )
                 self.driver.maximize_window()
@@ -270,7 +271,7 @@ class Parser:
                 self.templateTable.log_path = txt_path
 
                 # write logs
-                requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=site-parsing-start')
+                requests.get(f'https://{self.root_domain}/set-csv-logs/?message=site-parsing-start')
 
                 self.get_html_site(self.url, 1)
                 print(log := f"count of html pages after parsing: {self.htmlTable.count_rows()}")
@@ -346,13 +347,13 @@ class Parser:
             self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
 
     def delete_pattern(self):
-        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern')
+        requests.get(f'https://{self.root_domain}/set-csv-logs/?message=delete-pattern')
         arr_html = self.htmlTable.all()
         print(log := f"count of html pages before delete pattern: {len(arr_html)} for site {self.domain}")
         self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
         arr = np.zeros([len(arr_html), len(arr_html)])
 
-        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern-before-1-for')
+        requests.get(f'https://{self.root_domain}/set-csv-logs/?message=delete-pattern-before-1-for')
         for i in range(len(arr_html)):
             for j in range(len(arr_html)):
                 if i != j:
@@ -367,7 +368,7 @@ class Parser:
                 else:
                     arr[i][j] = 10000
 
-        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern-before-2-for')
+        requests.get(f'https://{self.root_domain}/set-csv-logs/?message=delete-pattern-before-2-for')
         for i in range(len(arr_html)):
             min_val = arr[i][0]
             position = 0
@@ -408,8 +409,8 @@ class Parser:
             self.htmlTable.update_row({"elements": elements}, arr_html[i]['id'])
             self.htmlTable.update_row({"images": images}, arr_html[i]['id'])
 
-        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern-before-3-for')
+        requests.get(f'https://{self.root_domain}/set-csv-logs/?message=delete-pattern-before-3-for')
         for i in range(len(arr_html)):
             self.get_elements(arr_html[i]['id'])
 
-        requests.get('https://buyerdev.1d61.com/set-csv-logs/?message=delete-pattern-end')
+        requests.get(f'https://{self.root_domain}/set-csv-logs/?message=delete-pattern-end')
