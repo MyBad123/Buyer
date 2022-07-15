@@ -41,6 +41,7 @@ stage_prod:
         #удаляем изменения
         #- git stash
         #- git stash drop
+        - git reset --hard HEAD
         #получаем из git новую версию
         - git pull
         #Удалить лишние миграции
