@@ -93,3 +93,12 @@ flake8 ./directory
 ```sh
 flake8 file.py
 ```
+
+# Instructions for use
+1. Go under the user 0@gmail.com (if available in the database) and password Pass@word1. If there is no password, then go to buyer.1d61.com/db / and enter the password and login of the administrator. Together with the creation of the administrator, users are created, including 0@gmail.com
+2. Next, we are on the page where all applications meet us, there we can create a new application in the link "You can create a new application here", clicking on the link you need to enter 2 fields - the first field is a certain main word that will be displayed in all applications and keywords (for which it will be carried out search).
+3. Next, we wait 15-20 minutes on the main page, when the search is over, the page will update the delivery status itself
+4. Go to the application page. Here we can look at all the results (the top link of the "search results" section) and those selected by the scanner (with a potential product). Also, there is an opportunity to go to the correspondence that appears after sending letters (see the next paragraph).
+5. Go to the scanned results, tick the box to which addresses we want to send, write the text, that's it, the letter is sent to the mail.
+6. We go into correspondence - here we have all the messages that we or we have sent. here you can view all the information about the messages, we can send a message (in the corresponding section).
+7. If we want to receive an incoming message, we must log in to the mail (link m.1d61.com ) under the name buyer-vendor@1d61.com and password GD38asDF348ASdf. Next, you need to send a response to the letter or enter the application number in the header or body of the letter (the application number has the form [1-1], where the numbers tend to change). After that, the letter will be processed by the parser (mail, phone numbers, full name, etc. will be displayed) and added to the table with messages.

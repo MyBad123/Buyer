@@ -1,3 +1,4 @@
+import json
 from urllib import parse
 from django.shortcuts import (
     render,
@@ -11,6 +12,7 @@ from app.serializers import (
     RequestsSerializer,
     RequestsTableSerializer
 )
+from django.http import JsonResponse
 
 
 class ForRequestOneView:

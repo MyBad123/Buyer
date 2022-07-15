@@ -211,7 +211,7 @@ class UserMethods:
             creator=request.user,
             company=company
         )
-        add.delay(new_request_object.id)
+        # add.delay(new_request_object.id)
 
         return redirect('/user-thanks/')
 

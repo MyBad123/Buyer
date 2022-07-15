@@ -74,3 +74,5 @@ document.getElementById("push_btn").onclick = async () => {
     window.location.href = '/control-results-send-message-thanks/' + thisPk + '/';
 }
 
+
+

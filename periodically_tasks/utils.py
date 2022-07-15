@@ -47,11 +47,11 @@ class MessageNumber:
         """delete mail from box"""
 
         try:
-            server.delete_messages(uid)
+            server.move(uid, 'Удаленные')
         except:
             pass
 
-    def write_to_db(self, message_data, heading):
+    def write_to_db(self, message_data, heading, uid, server):
         """add text of message to db"""
 
         for i in self.number_list:
@@ -83,13 +83,11 @@ class MessageNumber:
                     key = after_insert_data.inserted_primary_key[0]
 
                     # it is parsing
-                    return
                     mail_hendler_request = requests.post(
                         'http://127.0.0.1:8011/process_text',
                         json=json.dumps({'text': str(message_data)})
                     )
                     data_from_request = mail_hendler_request.json()
-                    print(data_from_request)
 
                     # get data after parsing
                     people = data_from_request.get('people')
@@ -159,6 +157,8 @@ class MessageNumber:
                             )
                             conn.execute(insert_query)
                         '''
+
+                    self.delete_mail(server, uid)
                 except TypeError:
                     pass
 
@@ -186,13 +186,12 @@ class MessageNumber:
                 # add text to db
                 try:
                     text_body = mailparser.parse_from_bytes(message_data[b'RFC822']).text_html[0]
-                    self.write_to_db(text_body, mailparser.parse_from_bytes(message_data[b'RFC822']))
+                    self.write_to_db(text_body, mailparser.parse_from_bytes(message_data[b'RFC822']), uid, server)
                 except IndexError:
                     text_body = mailparser.parse_from_bytes(message_data[b'RFC822']).text_plain[0]
-                    self.write_to_db(text_body, mailparser.parse_from_bytes(message_data[b'RFC822']))
+                    self.write_to_db(text_body, mailparser.parse_from_bytes(message_data[b'RFC822']), uid, server)
 
-                # delete mail from message
-                self.delete_mail(server, uid)
+
 
 
 if __name__ == '__main__':

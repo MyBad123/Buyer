@@ -76,3 +76,42 @@ document.getElementById("push_btn").onclick = async () => {
     window.location.href = '/control-results-send-message-thanks/' + thisPk + '/';
 }
 
+
+// work with change of mail
+for (let i of document.querySelectorAll('.my-change-btn')) {
+    i.addEventListener('click', () => {
+        console.log(i);
+    })
+}
+
+for (let i of document.querySelectorAll('.input-mail')) {
+    i.addEventListener('input', () => {
+        // set and delete some class for settings new mail
+        let btnChange = i.closest('.item').querySelector('.my-change-btn');
+        btnChange.classList.add('btn');
+        btnChange.classList.add('btn-primary');
+        btnChange.classList.remove('opacity-0');
+    })
+}
+
+for (let i of document.querySelectorAll('.my-change-btn')) {
+    i.addEventListener('click', () => {
+        // make control what is this btn (with new mail or no)
+        let forClass = 0;
+        for (let j of i.classList) {
+            if (j === 'opacity-0') {
+                forClass++;
+            }
+        }
+
+        // work after control
+        if (forClass !== 0) {
+            // get data for request
+            let textMail = i.closest('.item').querySelector('.input-mail').value;
+
+            // control valid or no textMail
+
+            // set new request for change mail
+        }
+    })
+}

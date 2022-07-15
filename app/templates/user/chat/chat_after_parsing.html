@@ -63,9 +63,14 @@
             {% endif %}
         </div>
 
+    </div>
     {% if is_text %}
         <script>
-            document.querySelector('.main-content').innerHTML = `{{ content }}`;
+            let htmlText = `{{ content }}`;
+            let htmlText1 = htmlText.replaceAll('&lt;', '<');
+            let htmlText3 = htmlText1.replaceAll('&gt;', '>');
+            console.log(htmlText3);
+            document.querySelector('.main-content').innerHTML = htmlText3;
         </script>
     {% endif %}
 </body>

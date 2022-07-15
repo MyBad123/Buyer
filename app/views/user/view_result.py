@@ -4,7 +4,10 @@ from email.utils import parseaddr
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
-from app.models import RequestModel, ResultModel, MailForMessageModel
+from app.models import (
+    RequestModel, ResultModel,
+    MailForMessageModel, UserForCompany
+)
 from app.serializers import ResultSerialzier, ForResultSerialzier
 
 from request.tasks import send
@@ -157,7 +160,69 @@ class MessageUtils(MessageControlData):
         })
         
         send.delay(self.data)
-        
+
+
+class ForChangeMailUtils:
+    """class for work with ResultsView.change_mail"""
+
+    def __init__(self, data):
+        self.data = data
+
+    def control_data(self) -> bool:
+        """control valid self.data or no"""
+
+        # control id
+        if self.data.get('id_request') is None:
+            return False
+
+        if type(self.data.get('id_request')) != int:
+            return False
+
+        # control site
+        if self.data.get('site') is None:
+            return False
+
+        if type(self.data.get('site')) != str:
+            return False
+
+        # control mail str
+        if self.data.get('mail') is None:
+            return False
+
+        if type(self.data.get('mail')) != str:
+            return False
+
+        return True
+
+    def control_permission_request(self, user):
+        """control permission user to this request(RequestModel)"""
+
+        # get object for control
+        try:
+            request_obj = RequestModel.objects.get(
+                id=self.data.get('id_request')
+            )
+        except RequestModel.DoesNotExist:
+            return False
+
+        # get company for user
+        companies = UserForCompany.objects.filter(
+            user=user
+        )
+        if len(companies) == 0:
+            return False
+
+        # control permission
+        for_control = 0
+        for i in companies:
+            if i.company.id == request_obj.company.id:
+                for_control
+
+        if for_control == 0:
+            return False
+
+        return True
+
 
 class ResultsView:
     """views for result"""
@@ -308,3 +373,51 @@ class ResultsView:
         return render(request, 'user/request_one/thanks.html', context={
             'pk': pk
         })
+
+    @staticmethod
+    def change_mail(request):
+        """change mail"""
+
+        # get data from request
+        try:
+            data = json.loads(request.body)
+        except json.decoder.JSONDecodeError:
+            return JsonResponse(data={
+                'error': 1,
+                'comment': 'bad struct for data'
+            }, status=400)
+
+        # control data: valid or no
+        utils_obj = ForChangeMailUtils(data=data)
+        if not utils_obj.control_data():
+            return JsonResponse(data={
+                'error': 2,
+                'comment': 'no valid data'
+            }, status=400)
+
+        # get RequestModel object
+        try:
+            request_obj = RequestModel.objects.get(id=data.get('id_request'))
+        except RequestModel.DoesNotExist:
+            return JsonResponse(data={
+                'error': 3,
+                'comment': 'object for request(Model) is exist'
+            }, status=400)
+
+        # control user's permission
+        if not utils_obj.control_permission_request(request.user):
+            return JsonResponse(data={
+                'error': 4,
+                'comment': 'you dont has permission for request(Model)'
+            }, status=400)
+
+        # work with changing
+        results = ResultModel.objects.filter(
+            request=request_obj,
+            url__contains=data.get('site')
+        )
+        for i in results:
+            i.mail = data.get('mail')
+            i.save()
+
+        return JsonResponse(data={}, status=200)

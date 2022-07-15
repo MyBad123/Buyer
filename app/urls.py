@@ -40,6 +40,7 @@ urlpatterns = [
     path('control-results/<int:pk>/', ResultsView.get_correct_result_page),
     path('control-results-send-message/', ResultsView.send_messages),
     path('control-results-send-message-thanks/<int:pk>/', ResultsView.thanks_after_message),
+    path('request-page-change-mail/', ResultsView.change_mail),
 
     # requests for chat
     path('chat/', ChatViews.get_page),
