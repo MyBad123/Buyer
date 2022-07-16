@@ -250,8 +250,6 @@ class Parser:
             if not row:
                 options = Options()
                 options.headless = True
-                options.add_argument(
-                    '--user-agent="Mozilla/5.0 (Windows Phone 10.0; Android 4.2.1; Microsoft; Lumia 640 XL LTE) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Mobile Safari/537.36 Edge/12.10166"')
 
                 # self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
                 self.driver = webdriver.Firefox(
