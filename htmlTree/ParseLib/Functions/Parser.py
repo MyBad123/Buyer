@@ -226,8 +226,8 @@ class Parser:
         except selenium.common.exceptions.TimeoutException:
             print(log := f"selenium.common.exceptions.TimeoutException link: {site_html['url']}")
             self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
-        except selenium.common.exceptions.WebDriverException:
-            print(log := f"selenium.common.exceptions.WebDriverException link: {site_html['url']}")
+        except selenium.common.exceptions.WebDriverException as ex:
+            print(log := f"selenium.common.exceptions.WebDriverException link: {site_html['url']}, {ex}")
             self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
 
     def site_parsing(self, uuid4, my_path):
@@ -249,7 +249,7 @@ class Parser:
             csv = Csv(self.domain_without, txt_path, self.csv_id)
             if not row:
                 options = Options()
-                # options.headless = True
+                options.headless = True
                 options.add_argument(
                     '--user-agent="Mozilla/5.0 (Windows Phone 10.0; Android 4.2.1; Microsoft; Lumia 640 XL LTE) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Mobile Safari/537.36 Edge/12.10166"')
 
@@ -337,8 +337,8 @@ class Parser:
         except selenium.common.exceptions.TimeoutException:
             print(log := f"selenium.common.exceptions.TimeoutException: {link}")
             self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
-        except selenium.common.exceptions.WebDriverException:
-            print(log := f"selenium.common.exceptions.WebDriverException: {link}")
+        except selenium.common.exceptions.WebDriverException as ex:
+            print(log := f"selenium.common.exceptions.WebDriverException link: {link}, {ex}")
             self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
 
     def delete_pattern(self):
