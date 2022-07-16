@@ -1,5 +1,4 @@
 import math
-import requests
 import re
 import os
 import time
@@ -61,7 +60,6 @@ class Parser:
         self.root_domain = None
 
     def get_elements(self, site_id):
-        requests.get(f'https://{self.root_domain}/set-csv-logs/?message=get-elements')
         try:
             site_html = self.htmlTable.one(site_id)
             list_of_data_xid = list(filter(None, site_html['elements'].split(",")))
@@ -232,8 +230,6 @@ class Parser:
             print(log := f"selenium.common.exceptions.WebDriverException link: {site_html['url']}")
             self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
 
-        requests.get(f'https://{self.root_domain}/set-csv-logs/?message=get-elements-end')
-
     def site_parsing(self, uuid4, my_path):
         # work with env
         path_my_my = str(pathlib.Path(__file__).parent.parent.parent.parent) + '/Buyer/'
@@ -253,7 +249,9 @@ class Parser:
             csv = Csv(self.domain_without, txt_path, self.csv_id)
             if not row:
                 options = Options()
-                options.headless = True
+                # options.headless = True
+                options.add_argument(
+                    '--user-agent="Mozilla/5.0 (Windows Phone 10.0; Android 4.2.1; Microsoft; Lumia 640 XL LTE) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Mobile Safari/537.36 Edge/12.10166"')
 
                 # self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
                 self.driver = webdriver.Firefox(
@@ -269,9 +267,6 @@ class Parser:
                 self.htmlTable.log_path = txt_path
                 self.imageTable.log_path = txt_path
                 self.templateTable.log_path = txt_path
-
-                # write logs
-                requests.get(f'https://{self.root_domain}/set-csv-logs/?message=site-parsing-start')
 
                 self.get_html_site(self.url, 1)
                 print(log := f"count of html pages after parsing: {self.htmlTable.count_rows()}")
@@ -333,7 +328,7 @@ class Parser:
                         not any(el not in href for el in self.ignore):
                     continue
 
-                if depth < 6 and self.count < 200:
+                if depth < 7 and self.count < 400:
                     self.list_urls.append(href)
                     rnd = randint(1, 4)
                     time.sleep(1 + rnd)
@@ -347,13 +342,11 @@ class Parser:
             self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
 
     def delete_pattern(self):
-        requests.get(f'https://{self.root_domain}/set-csv-logs/?message=delete-pattern')
         arr_html = self.htmlTable.all()
         print(log := f"count of html pages before delete pattern: {len(arr_html)} for site {self.domain}")
         self.log_file.write(f"{datetime.datetime.now()} - {log}\n")
         arr = np.zeros([len(arr_html), len(arr_html)])
 
-        requests.get(f'https://{self.root_domain}/set-csv-logs/?message=delete-pattern-before-1-for')
         for i in range(len(arr_html)):
             for j in range(len(arr_html)):
                 if i != j:
@@ -368,7 +361,6 @@ class Parser:
                 else:
                     arr[i][j] = 10000
 
-        requests.get(f'https://{self.root_domain}/set-csv-logs/?message=delete-pattern-before-2-for')
         for i in range(len(arr_html)):
             min_val = arr[i][0]
             position = 0
@@ -392,8 +384,12 @@ class Parser:
                             else:
                                 j = k
                                 while True:
-                                    if len(re.findall(r'<[^/<>]+>', str1[j])) > len(re.findall(r'</[^/<>]+>', str1[j])):
+                                    if len(re.findall(r'<[^/<>]+>', str1[j])) >= \
+                                            len(re.findall(r'</[^/<>]+>', str1[j])):
                                         unique_str += str3[j]
+                                        if j == 1 or j == 0:
+                                            break
+                                        unique_str += str3[j-1]
                                         break
                                     if j == 1 or j == 0:
                                         break
@@ -409,8 +405,5 @@ class Parser:
             self.htmlTable.update_row({"elements": elements}, arr_html[i]['id'])
             self.htmlTable.update_row({"images": images}, arr_html[i]['id'])
 
-        requests.get(f'https://{self.root_domain}/set-csv-logs/?message=delete-pattern-before-3-for')
         for i in range(len(arr_html)):
             self.get_elements(arr_html[i]['id'])
-
-        requests.get(f'https://{self.root_domain}/set-csv-logs/?message=delete-pattern-end')
