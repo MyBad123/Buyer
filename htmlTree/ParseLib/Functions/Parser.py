@@ -250,9 +250,14 @@ class Parser:
             if not row:
                 options = Options()
                 options.headless = True
+                useragent = "Mozilla/5.0 (Linux; Android 8.0.0; Pixel 2 XL Build/OPD1.170816.004) " \
+                            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Mobile Safari/537.36"
+                profile = webdriver.FirefoxProfile()
+                profile.set_preference("general.useragent.override", useragent)
 
                 # self.driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.FIREFOX, options=options)
                 self.driver = webdriver.Firefox(
+                    firefox_profile=profile,
                     options=options
                 )
                 self.driver.maximize_window()
