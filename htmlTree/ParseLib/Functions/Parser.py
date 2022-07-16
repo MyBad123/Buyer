@@ -40,7 +40,7 @@ class Parser:
     def __init__(self, url, csv_id):
         print(f"Start site parsing with url: {url}")
         self.csv_id = csv_id
-        self.ignore = ["#"]
+        self.ignore = ["#", "tel:"]
         self.list_urls = []
         self.driver = webdriver
         self.count = 0
