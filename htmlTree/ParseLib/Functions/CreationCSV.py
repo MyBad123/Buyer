@@ -36,7 +36,6 @@ class Csv:
             load_dotenv(dotenv_path)
         root_domain = os.environ.get('ROOT_DOMAIN')
         log_file = open(self.log_path, "a+", encoding="UTF-8")
-        requests.get(f'https://{root_domain}/set-csv-logs/?message=create-csv')
 
         list_of_elements = self.elementTable.all()
         list_of_img = self.imageTable.all()
@@ -72,6 +71,8 @@ class Csv:
         for img in list_of_img:
             size = math.sqrt(np.square(float(img["width"])) + np.square(float(img["height"])))
             max_size = list(filter_img.loc[filter_img["url"] == img["url"], "size"])[0]
+            if max_size == 0:
+                max_size = size
             max_ruble = list(filter_img.loc[filter_img["url"] == img["url"], "ruble"])[0]
             if max_ruble == 0:
                 max_ruble = 1
@@ -86,7 +87,6 @@ class Csv:
 
         dup_list = pd.DataFrame(data=None, columns=["check_dup"])
         new_list = []
-        requests.get(f'https://{root_domain}/set-csv-logs/?message=create-csv-2')
         print(log := "Start delete duplicate")
         log_file.write(f"{datetime.datetime.now()} - {log}\n")
         for el in list_of_elements:
@@ -106,11 +106,9 @@ class Csv:
         print(log := f"Count of elements after removal duplicate for site with url: {len(new_list)}")
         log_file.write(f"{datetime.datetime.now()} - {log}\n")
 
-        requests.get(f'https://{root_domain}/set-csv-logs/?message=create-csv-3')
         list_of_elements.clear()
         df = pd.DataFrame(data=None, columns=columns)
 
-        requests.get(f'https://{root_domain}/set-csv-logs/?message=create-csv-4')
         border = self.htmlTable.count_rows() * 0.9
         emails = []
         for el_to_add in new_list:
@@ -207,12 +205,10 @@ class Csv:
 
         df.to_csv(path)
         log_file.close()
-        requests.get(f'https://{root_domain}/set-csv-logs/?message=create-csv-5')
         self.elementTable.drop()
         self.htmlTable.drop()
         self.imageTable.drop()
 
-        requests.get(f'https://{root_domain}/set-csv-logs/?message=create-csv-end')
         return path
 
     def create_ex_csv(self, uuid4, my_path, site_id):
