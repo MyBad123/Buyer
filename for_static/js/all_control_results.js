@@ -49,8 +49,12 @@ document.getElementById("push_btn").onclick = async () => {
         
         // if checkbox is true, add mail to arr
         if (i.checked) {
-            mailName = i.closest(".item").querySelectorAll("td")[1].innerHTML;
-            siteName = i.closest(".item").querySelectorAll("td")[2].innerHTML;
+            let mailName = i.closest(".item").querySelector('.input-mail').value;
+            let siteName = i.closest(".item").querySelectorAll("td")[3].innerHTML;
+
+            if (mailName === '') {
+                continue
+            }
             
             // if mailArr has no mail, add it
             mailArrWithSite.push({
@@ -136,7 +140,7 @@ for (let i of document.querySelectorAll('.my-change-btn')) {
                         'Content-Type': 'application/json;charset=utf-8',
                         'X-CSRFToken': csrftoken
                     },
-                    body: JSON.stringify({
+                    body: JSON.satringify({
                         mail: textMail,
                         site: textSite,
                         id_request: idRequest

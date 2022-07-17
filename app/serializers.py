@@ -291,9 +291,15 @@ class ForResultSerialzier:
         # update data for return
         list_data = []
         for i in data_after_root.keys():
+            # make mail with None to ''
+            if data_after_root.get(i).get('mail') is None:
+                mail_to_adding = ''
+            else:
+                mail_to_adding = data_after_root.get(i).get('mail')
+
             list_data.append({
                 'root': i,
-                'mail': data_after_root.get(i).get('mail'),
+                'mail': mail_to_adding,
                 'system': data_after_root.get(i).get('system'),
                 'urls': data_after_root.get(i).get('urls'),
                 'contact': data_after_root.get(i).get('contact')

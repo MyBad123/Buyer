@@ -422,7 +422,15 @@ class ResultsView:
             url__contains=data.get('site')
         )
         for i in results:
-            i.mail = data.get('mail')
+            # control: mail is None or no
+            for_mail_to_read = data.get('mail')
+            if for_mail_to_read == '':
+                mail_to_read = None
+            else:
+                mail_to_read = for_mail_to_read
+
+            # save to data
+            i.mail = mail_to_read
             i.save()
 
         return JsonResponse(data={}, status=200)

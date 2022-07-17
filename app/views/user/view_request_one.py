@@ -133,6 +133,19 @@ class RequestOneView:
         messages_struct = []
         messages_struct_class = ForRequestOneView(None)
         for i in for_messages_bool:
+            # get date and time of last message
+            '''
+            message_obj_date = MessageModel.objects.filter(
+                mail=i
+            ).order_by('-datetime')
+            
+            if len(message_obj_date) == 0:
+                last_date = message_obj_date[0].datetime
+            else:
+                last_date = 'неизвестно'
+            
+            '''
+
             messages_struct_class.set_message(i.mail)
             messages_struct.append({
                 'id': i.mail.id,
