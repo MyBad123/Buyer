@@ -95,3 +95,11 @@ class CsvModel(models.Model):
     """for csv id"""
 
     datetime = models.DateTimeField()
+
+
+class LocationModel(models.Model):
+    """model for save serpwow location names"""
+
+    name = models.CharField(max_length=300)
+    system = models.CharField(max_length=50)
+    number = models.CharField(max_length=10, null=True, blank=True, default=None)

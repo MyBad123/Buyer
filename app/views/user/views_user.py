@@ -11,7 +11,7 @@ from app.serializers import (
     RequestsSerializer
 )
 from app.models import (
-    RequestModel, UserForCompany
+    RequestModel, UserForCompany, LocationModel
 )
 from app.utils import (
     post_and_auth
@@ -177,7 +177,13 @@ class UserMethods:
         else:
             return render(request, 'user/request/new_request.html', context={
                 'error_name': False,
-                'error_words': False
+                'error_words': False,
+                'google_locations': LocationModel.objects.filter(
+                    system='google'
+                )[:1000],
+                'yandex_locations': LocationModel.objects.filter(
+                    system='yandex'
+                )
             })
 
     @staticmethod

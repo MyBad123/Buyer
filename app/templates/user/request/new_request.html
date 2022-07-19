@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link href="{% static 'css/main.css' %}" rel="stylesheet">
 </head>
 <body>
@@ -32,6 +32,8 @@
 <div class="container">
     <form method="post" action="/user-new-request/" method="post">
         {% csrf_token %}
+        <input value="no" style="display: none;" name="google" id="google_input">
+        <input value="no" style="display: none;" name="google" id="yandex_input">
 
         <div class="mt-4 my-3 p-3 bg-body rounded shadow-sm">
             <div class="row mb-3 align-items-center">
@@ -62,6 +64,45 @@
                     {% endif %}
                 </div>
             </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-12 col-md-3">
+                    <label class="col-form-label p-0" for="Name">Геолокация google</label>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="google_btn" data-bs-toggle="dropdown" aria-expanded="false">
+                            Отключить геопозицию
+                        </button>
+                        <ul style="overflow: scroll; max-height: 40vh" class="dropdown-menu mh-30" aria-labelledby="google_btn">
+                            <li style="cursor: pointer" class="dropdown-item">Отключить геопозицию</li>
+                            <li style="cursor: pointer" class="dropdown-item">Не искать в google</li>
+                            {% for i in google_locations %}
+                                <li style="cursor: pointer" class="dropdown-item">{{ i.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3 align-items-center">
+                <div class="col-12 col-md-3">
+                    <label class="col-form-label p-0" for="Name">Геолокация yandex</label>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="dropdown">
+                        <button id="yandex_btn" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Отключить геопозицию
+                        </button>
+                        <ul style="overflow: scroll; max-height: 40vh" class="dropdown-menu" aria-labelledby="yandex_btn">
+                            <li style="cursor: pointer" class="dropdown-item">Отключить геопозицию</li>
+                            <li style="cursor: pointer" class="dropdown-item">Не искать в yandex</li>
+                            {% for i in yandex_locations %}
+                                <li style="cursor: pointer" class="dropdown-item">{{ i.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
             <div class="row pt-2">
                 <div class="col-12 col-md-9 text-center text-md-end">
                     <button type="submit" class="btn btn-primary" >Создать</button>
@@ -89,9 +130,7 @@
          }
 
      </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <script src="{% static 'js/new_request.js' %}"></script>
 </body>
 </html>
